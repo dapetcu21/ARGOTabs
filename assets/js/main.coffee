@@ -9,5 +9,9 @@ require.config
 
 require ['jquery', 'jquery.bootstrap', 'tournament', 'localbackend'], ($, NULL, Tournament, LocalBackend) ->
   tournament = document.tournament = new Tournament(new LocalBackend("ocompetitie"))
-  tournament.load -> console.log 'tournament loaded' + tournament.name
+  tournament.load -> console.log 'tournament loaded ' + tournament.name
+  window.setInterval ->
+    tournament.save ->
+      console.log 'tournament saved ' + tournament.name
+  , 5000
 

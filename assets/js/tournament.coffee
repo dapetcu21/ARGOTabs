@@ -1,17 +1,18 @@
-define ['jquery'], ($) ->
+define ->
   class Tournament
     constructor: (@backend) ->
+
     load: (fn) ->
-      @backend.load (loadedString) ->
-        model = try $.parseJSON(loadedString) catch
+      @backend.load (loadedString) =>
+        try model = JSON.parse(loadedString) catch
         model ?= {}
         @name = model.name
-        @name = "No namer" if @name == "undefined"
+        @name ?= "No namer"
         fn()
         return
 
     save: (fn) ->
       model =
         name: @name
-      @backend.save model.toJSON(), fn
+      @backend.save JSON.stringify(model), fn
 
