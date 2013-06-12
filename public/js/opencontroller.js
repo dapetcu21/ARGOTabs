@@ -239,7 +239,7 @@
       OpenController.prototype.prepareFileReader = function() {
         var _this = this;
         return {
-          dragClass: "drop",
+          dragClass: "dropbox",
           on: {
             beforestart: function(file) {
               return (file.name.match(/\.atab$/)) != null;
