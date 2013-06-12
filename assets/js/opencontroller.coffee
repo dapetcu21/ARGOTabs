@@ -50,7 +50,15 @@ define ['jquery', 'tournament', 'backends', 'localbackend', 'templates', 'jquery
               @resetAdd()
               return false
           return true
-        
+
+        controlGroup = textBox.parent()
+        textBox.bind 'input propertychange', =>
+          newName = textBox[0].value
+          console.log "plm "
+          if @filenameAvailable newName, LocalBackend
+            controlGroup.removeClass 'error'
+          else
+            controlGroup.addClass 'error'
 
         openModal.find('.omodal-add-div').transition
           x: '-66.66%'
@@ -80,22 +88,58 @@ define ['jquery', 'tournament', 'backends', 'localbackend', 'templates', 'jquery
 
       animDiv = itemNode.find('.omodal-edit-div')
       textBox = itemNode.find('.omodal-text')
+      controlGroup = textBox.parent()
 
       textBox.keypress (e) =>
         if e.which == 13 and not textBox[0].readOnly
           newName = textBox[0].value
-          if @filenameAvailable newName, backend
-            be = new backend(itemName)
-            be.rename(newName)
-            textBox[0].readOnly = true
-            fl[itemName] = false
-            fl[newName] = true
-            itemNode.find('.omodal-label').html(newName)
-            itemName = newName
-            animDiv.transition
-              x: 0
-            return false
+          if textBox[0].ongoingDeletion
+            if newName == "confirm"
+              new backend(itemName).delete()
+              fl[itemName] = false
+              itemNode.remove()
+
+              textBox[0].readOnly = true
+              animDiv.transition
+                x: 0
+              return false
+          else
+            if newName == itemName
+              textBox[0].readOnly = true
+              animDiv.transition
+                x: 0
+              return false
+            if @filenameAvailable newName, backend
+              be = new backend(itemName)
+              be.rename(newName)
+              textBox[0].readOnly = true
+              fl[itemName] = false
+              fl[newName] = true
+              itemNode.find('.omodal-label').html(newName)
+              itemName = newName
+              animDiv.transition
+                x: 0
+              return false
         return true
+
+      textBox.bind 'input propertychange', validateEntry = =>
+        newName = textBox[0].value
+        ongoingDeletion = textBox[0].ongoingDeletion
+        valid = if ongoingDeletion
+          newName == "confirm"
+        else
+          newName == itemName or @filenameAvailable newName, backend
+
+        if valid
+          controlGroup.removeClass 'error'
+          if ongoingDeletion
+            controlGroup.addClass 'success'
+          else
+            controlGroup.removeClass 'success'
+        else
+          controlGroup.removeClass 'success'
+          controlGroup.addClass 'error'
+
 
       itemNode.find('.omodal-btn-close').click =>
         textBox[0].readOnly = true
@@ -103,15 +147,24 @@ define ['jquery', 'tournament', 'backends', 'localbackend', 'templates', 'jquery
           x: 0
 
       itemNode.find('.omodal-btn-edit').click =>
+        textBox[0].placeholder = 'Type the new file name'
         textBox[0].value = itemName
         textBox[0].readOnly = false
+        textBox[0].ongoingDeletion = false
+        textBox.focus()
+        validateEntry()
         animDiv.transition
           x: "-50%"
 
       itemNode.find('.omodal-btn-delete').click ->
-        new backend(itemName).delete()
-        fl[itemName] = false
-        itemNode.remove()
+        textBox[0].placeholder = 'Type "confirm" to delete'
+        textBox[0].value = ''
+        textBox[0].readOnly = false
+        textBox[0].ongoingDeletion = true
+        textBox.focus()
+        validateEntry()
+        animDiv.transition
+          x: "-50%"
 
     newItem: (item, backend) ->
       be = new backend(item)
@@ -120,6 +173,7 @@ define ['jquery', 'tournament', 'backends', 'localbackend', 'templates', 'jquery
         @addItem item, backend
       
     filenameAvailable: (fileName, backend) ->
+      return false if fileName == ""
       fl = @fileLists[backend]
       return true if not fl?
       return not fl[fileName]
