@@ -46,6 +46,20 @@
         fn();
       };
 
+      LocalBackend.prototype["delete"] = function() {
+        localStorage.removeItem(this.fileName + '.atab');
+        return localStorage.removeItem(this.fileName + '.mdate');
+      };
+
+      LocalBackend.prototype.rename = function(newName) {
+        var _this = this;
+        return this.load(function(obj) {
+          _this["delete"]();
+          _this.fileName = newName;
+          return _this.save(obj, (function() {}), true);
+        });
+      };
+
       LocalBackend.listFiles = function(fn) {
         var i, result, v, _i, _ref;
         result = [];
