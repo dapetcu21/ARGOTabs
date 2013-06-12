@@ -63,8 +63,9 @@ define ['jquery', 'tournament', 'backends', 'localbackend', 'templates', 'jquery
         div.find('#omodal-add-page3').html ""
 
     addItem: (item, backend) ->
-      @openModal.find("#open-modal-add-tr").before templates.openModalAddItem
+      itemNode = @openModal.find("#open-modal-add-tr").before templates.openModalAddItem
         item: item
+        backend: backend
 
     newItem: (item, backend) ->
       be = new backend(item)

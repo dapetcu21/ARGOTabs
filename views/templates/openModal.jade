@@ -21,13 +21,14 @@
                 button(type='button')#omodal-btn-upload.btn
                   i.icon-upload-alt
                   |  Upload
-              button.close.pull-right.omodal-btn-close &times;
+              button.close.pull-right.omodal-btn-close
+                i.icon-remove
             #omodal-add-page3.omodal-add-page
             
-  .modal-footer
-    if closeable
+  if closeable
+    .modal-footer
       a(data-dismiss="modal").btn Cancel
-    a.btn.btn-primary Do something
+      a.btn.btn-primary Do something
 
 
 
@@ -58,10 +59,26 @@
     display: inline-block
 
   .omodal-btn-close
-    position: relative
-    top: 3px
-    right: 3px
+    margin: 8px 11px 8px 3px
+    font-size: 110%
 
   .omodal-text
     position: absolute
     top: 2px
+
+  .omodal-file-btn
+    display: none
+    margin: 0px 3px
+    font-size: 110%
+
+  .omodal-btn-edit
+    font-size: 100%
+    position: relative
+    top: 1px
+
+  .omodal-btn-remove
+    font-size: 110%
+
+  td:hover .omodal-file-btn
+    display: inline-block
+

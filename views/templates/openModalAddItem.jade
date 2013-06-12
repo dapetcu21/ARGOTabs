@@ -1,2 +1,10 @@
+- if (backend.name == "LocalBackend")
+-   var icon = "<i class='icon-desktop'/>"
 tr
-  td: a(href="#")= item
+  td
+    a(href="#")
+      != icon + " " + item
+    button.close.pull-right.omodal-file-btn.omodal-btn-delete
+      i.icon-remove
+    button.close.pull-right.omodal-file-btn.omodal-btn-edit
+      i.icon-edit
