@@ -1,4 +1,4 @@
-#open-modal.modal.hide.fade
+#open-modal.modal.hide.fade.animated
   .modal-header
     if closeable
       button(type="button", data-dismiss="modal", aria-hidden="true").close &times;
@@ -33,6 +33,12 @@
 
 
 :stylus
+  #open-modal
+    transition: transform 0.3s
+
+  #open-modal.dropbox
+    transform: scale(1.2) 
+
   #open-modal-table td
     border-top: 0px
     padding: 0px !important
@@ -117,3 +123,4 @@
     position: absolute
     top: -50
     left: -50
+

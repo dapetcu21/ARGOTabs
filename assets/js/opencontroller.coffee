@@ -185,7 +185,7 @@ define ['jquery', 'filereader', 'tournament', 'backends', 'localbackend', 'templ
       return not fl[fileName]
 
     prepareFileReader: ->
-      dragClass: "drop"
+      dragClass: "dropbox"
       on:
         beforestart: (file) ->
           return (file.name.match /\.atab$/)?
