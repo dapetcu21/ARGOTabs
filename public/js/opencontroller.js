@@ -89,8 +89,10 @@
       };
 
       OpenController.prototype.addItem = function(item, backend) {
-        return this.openModal.find("#open-modal-add-tr").before(templates.openModalAddItem({
-          item: item
+        var itemNode;
+        return itemNode = this.openModal.find("#open-modal-add-tr").before(templates.openModalAddItem({
+          item: item,
+          backend: backend
         }));
       };
 
