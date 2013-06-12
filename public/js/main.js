@@ -4,7 +4,8 @@
     paths: {
       jquery: '/components/jquery/jquery',
       'jquery.bootstrap': '/components/bootstrap/js/bootstrap',
-      'jquery.transit': '/components/jquery.transit/jquery.transit'
+      'jquery.transit': '/components/jquery.transit/jquery.transit',
+      filereader: '/components/filereader/filereader'
     },
     shim: {
       'jquery.bootstrap': ['jquery'],
