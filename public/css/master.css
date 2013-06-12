@@ -1,0 +1,16 @@
+@import '../components/bootstrap/css/bootstrap.css';
+@import '../components/bootstrap/css/bootstrap-responsive.css';
+@import '../components/font-awesome/css/font-awesome.css';
+.sidebar-nav {
+  padding: 9px 0;
+}
+body {
+  padding-top: 60px;
+  padding-bottom: 40px;
+}
+@media max-width: 980px {
+  body {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+}
