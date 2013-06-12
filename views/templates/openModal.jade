@@ -18,7 +18,8 @@
                   i.icon-file
                   |  New file
               .omodal-btn-padding
-                button(type='button')#omodal-btn-upload.btn
+                input(type='file').omodal-file
+                button(type='file')#omodal-btn-upload.btn
                   i.icon-upload-alt
                   |  Upload
               button.close.pull-right.omodal-btn-close
@@ -111,3 +112,8 @@
     display: inline-block
     position: relative
 
+  .omodal-file
+    visibility: hidden
+    position: absolute
+    top: -50
+    left: -50

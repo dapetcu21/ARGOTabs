@@ -1,4 +1,4 @@
-define ['jquery', 'tournament', 'backends', 'localbackend', 'templates', 'jquery.transit'], ($, Tournament, backends, LocalBackend) ->
+define ['jquery', 'filereader', 'tournament', 'backends', 'localbackend', 'templates', 'jquery.transit'], ($, FileReaderJS, Tournament, backends, LocalBackend) ->
   getObjectClass = (obj) ->
     if obj and obj.constructor and obj.constructor.toString
       arr = obj.constructor.toString().match /function\s*(\w+)/
@@ -69,6 +69,12 @@ define ['jquery', 'tournament', 'backends', 'localbackend', 'templates', 'jquery
           for name in fileNames
             @addItem name, backend
 
+      openModal.find('#omodal-btn-upload').click =>
+        openModal.find('.omodal-file').click()
+      
+      openModal.fileReaderJS @prepareFileReader()
+      openModal.find('.omodal-file').fileReaderJS @prepareFileReader()
+
     resetAdd: ->
       div = @openModal.find('.omodal-add-div')
       div.transition {x : 0}, =>
@@ -94,7 +100,7 @@ define ['jquery', 'tournament', 'backends', 'localbackend', 'templates', 'jquery
         if e.which == 13 and not textBox[0].readOnly
           newName = textBox[0].value
           if textBox[0].ongoingDeletion
-            if newName == "confirm"
+            if newName == "confirm deletion of file"
               new backend(itemName).delete()
               fl[itemName] = false
               itemNode.remove()
@@ -126,7 +132,7 @@ define ['jquery', 'tournament', 'backends', 'localbackend', 'templates', 'jquery
         newName = textBox[0].value
         ongoingDeletion = textBox[0].ongoingDeletion
         valid = if ongoingDeletion
-          newName == "confirm"
+          newName == "confirm deletion of file"
         else
           newName == itemName or @filenameAvailable newName, backend
 
@@ -157,7 +163,7 @@ define ['jquery', 'tournament', 'backends', 'localbackend', 'templates', 'jquery
           x: "-50%"
 
       itemNode.find('.omodal-btn-delete').click ->
-        textBox[0].placeholder = 'Type "confirm" to delete'
+        textBox[0].placeholder = 'Type "confirm deletion of file"'
         textBox[0].value = ''
         textBox[0].readOnly = false
         textBox[0].ongoingDeletion = true
@@ -177,4 +183,19 @@ define ['jquery', 'tournament', 'backends', 'localbackend', 'templates', 'jquery
       fl = @fileLists[backend]
       return true if not fl?
       return not fl[fileName]
+
+    prepareFileReader: ->
+      dragClass: "drop"
+      on:
+        beforestart: (file) ->
+          return (file.name.match /\.atab$/)?
+        loadend: (e, file) =>
+          name = (file.name.match /^(.*?)(\.atab)?$/)[1]
+          while not @filenameAvailable name, LocalBackend
+            name = name + ' duplicate'
+          be = new LocalBackend(name)
+          be.save e.target.result, =>
+            @addItem name, LocalBackend
+        groupend: =>
+          @resetAdd()
 
