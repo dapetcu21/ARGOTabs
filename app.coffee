@@ -6,6 +6,7 @@
 
 exports.ignore_files = ['_*', '.*.swp', '.*.swo', 'readme*', '.gitignore', '.DS_Store']
 exports.ignore_folders = ['.git']
+exports.watcher_ignore_files = ['.*.swp', '.*.swo']
 
 # Layout file config
 # `default` applies to all views. Overrides for specific

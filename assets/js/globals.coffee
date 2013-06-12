@@ -1,0 +1,2 @@
+define ->
+  window.ARGOTabs = {}

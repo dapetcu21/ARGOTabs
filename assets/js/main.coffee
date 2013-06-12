@@ -3,15 +3,12 @@ require.config
   baseUrl: '/js'
   paths:
     jquery: '/components/jquery/jquery'
-    "jquery.bootstrap": '/components/bootstrap/js/bootstrap'
+    'jquery.bootstrap': '/components/bootstrap/js/bootstrap'
+    'jquery.transit': '/components/jquery.transit/jquery.transit'
   shim:
-    "jquery.bootstrap": ['jquery']
+    'jquery.bootstrap': ['jquery']
+    'jquery.transit': ['jquery']
 
-require ['jquery', 'jquery.bootstrap', 'tournament', 'localbackend'], ($, NULL, Tournament, LocalBackend) ->
-  tournament = document.tournament = new Tournament(new LocalBackend("ocompetitie"))
-  tournament.load -> console.log 'tournament loaded ' + tournament.name
-  window.setInterval ->
-    tournament.save ->
-      console.log 'tournament saved ' + tournament.name
-  , 5000
+require ['uicontroller', 'globals'], (UIController, globals) ->
+  globals.uiController = new UIController()
 

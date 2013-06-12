@@ -1,0 +1,2 @@
+define ['localbackend'], (LocalBackend) ->
+  [LocalBackend]
