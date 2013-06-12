@@ -25,6 +25,16 @@ define ['backend'], (Backend) ->
       fn()
       return
 
+    delete: ->
+      localStorage.removeItem(@fileName + '.atab')
+      localStorage.removeItem(@fileName + '.mdate')
+
+    rename: (newName) ->
+      @load (obj) =>
+        @delete()
+        @fileName = newName
+        @save obj, (->), true
+
     @listFiles: (fn)->
       result = []
       for i in [0...localStorage.length]

@@ -40,12 +40,17 @@ define ['jquery', 'tournament', 'backends', 'localbackend', 'templates', 'jquery
           @resetAdd()
 
         textBox = newNode.find('.omodal-text')
+        textBox.focus()
         textBox.keypress (e) =>
           if e.which == 13 and not textBox[0].readOnly
-            textBox[0].readOnly = true
-            @newItem textBox[0].value, LocalBackend
-            @resetAdd()
-            return false
+            newName = textBox[0].value
+            if @filenameAvailable newName, backend
+              textBox[0].readOnly = true
+              @newItem newName, LocalBackend
+              @resetAdd()
+              return false
+          return true
+        
 
         openModal.find('.omodal-add-div').transition
           x: '-66.66%'
@@ -53,7 +58,6 @@ define ['jquery', 'tournament', 'backends', 'localbackend', 'templates', 'jquery
       @fileLists = {}
       for backend in backends
         backend.listFiles (fileNames) =>
-          console.log fileNames
           for name in fileNames
             @addItem name, backend
 
@@ -62,10 +66,52 @@ define ['jquery', 'tournament', 'backends', 'localbackend', 'templates', 'jquery
       div.transition {x : 0}, =>
         div.find('#omodal-add-page3').html ""
 
-    addItem: (item, backend) ->
-      itemNode = @openModal.find("#open-modal-add-tr").before templates.openModalAddItem
-        item: item
+    addItem: (itemName, backend) ->
+      item =
+        name: itemName
         backend: backend
+
+      fl = @fileLists[backend]
+      fl = @fileLists[backend] = {} if not fl?
+      fl[itemName] = true
+
+      itemNode = @openModal.find("#open-modal-add-tr").before templates.openModalAddItem item
+      itemNode = itemNode.prev()
+
+      animDiv = itemNode.find('.omodal-edit-div')
+      textBox = itemNode.find('.omodal-text')
+
+      textBox.keypress (e) =>
+        if e.which == 13 and not textBox[0].readOnly
+          newName = textBox[0].value
+          if @filenameAvailable newName, backend
+            be = new backend(itemName)
+            be.rename(newName)
+            textBox[0].readOnly = true
+            fl[itemName] = false
+            fl[newName] = true
+            itemNode.find('.omodal-label').html(newName)
+            itemName = newName
+            animDiv.transition
+              x: 0
+            return false
+        return true
+
+      itemNode.find('.omodal-btn-close').click =>
+        textBox[0].readOnly = true
+        animDiv.transition
+          x: 0
+
+      itemNode.find('.omodal-btn-edit').click =>
+        textBox[0].value = itemName
+        textBox[0].readOnly = false
+        animDiv.transition
+          x: "-50%"
+
+      itemNode.find('.omodal-btn-delete').click ->
+        new backend(itemName).delete()
+        fl[itemName] = false
+        itemNode.remove()
 
     newItem: (item, backend) ->
       be = new backend(item)
@@ -73,3 +119,8 @@ define ['jquery', 'tournament', 'backends', 'localbackend', 'templates', 'jquery
         name: item), =>
         @addItem item, backend
       
+    filenameAvailable: (fileName, backend) ->
+      fl = @fileLists[backend]
+      return true if not fl?
+      return not fl[fileName]
+

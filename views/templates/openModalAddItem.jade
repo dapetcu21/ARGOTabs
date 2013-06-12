@@ -1,10 +1,19 @@
 - if (backend.name == "LocalBackend")
--   var icon = "<i class='icon-desktop'/>"
+-   var icon = "<i class='icon-file'/>"
 tr
-  td
-    a(href="#")
-      != icon + " " + item
-    button.close.pull-right.omodal-file-btn.omodal-btn-delete
-      i.icon-remove
-    button.close.pull-right.omodal-file-btn.omodal-btn-edit
-      i.icon-edit
+  td.omodal-edit-td
+    .omodal-edit-div
+      .omodal-edit-page
+        .omodal-add-padding
+          a(href="#")
+            != icon + " "
+            span.omodal-label= name
+          button.close.pull-right.omodal-file-btn.omodal-btn-delete
+            i.icon-remove
+          button.close.pull-right.omodal-file-btn.omodal-btn-edit
+            i.icon-edit
+      .omodal-edit-page
+        input(type='text', placeholder='File name').omodal-text
+        button.close.pull-right.omodal-btn-close
+          i.icon-remove
+
