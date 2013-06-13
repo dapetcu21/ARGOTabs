@@ -34,11 +34,14 @@
       };
 
       LocalBackend.prototype.save = function(obj, fn, force) {
+        var e;
         if (force == null) {
           force = false;
         }
         if (!force && this.modifiedDate().getTime() > this.loadDate.getTime()) {
-          throw new Error("This tournament was modified by an external program since we opened it. Make sure that you don't open the same tournament in another ARGO Tabs window");
+          e = new Error("This tournament was modified by an external program since we opened it. Make sure it's not open in another ARGO Tabs window");
+          e.canForce = "Save anyway";
+          throw e;
         }
         this.loadDate = new Date();
         localStorage.setItem(this.fName + '.atab', obj);

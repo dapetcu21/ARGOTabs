@@ -22,8 +22,11 @@
           $('.action-download').click(function() {
             return _this.download();
           });
-          return $('.action-saveaslocal').click(function() {
+          $('.action-saveaslocal').click(function() {
             return _this.saveaslocal();
+          });
+          return $('.action-save').click(function() {
+            return _this.save();
           });
         });
       }
@@ -36,8 +39,66 @@
       };
 
       UIController.prototype.save = function(fn) {
+        var btn, btns, e,
+          _this = this;
+        if (fn == null) {
+          fn = function() {};
+        }
         if (this.tournament) {
-          return this.tournament.save(fn);
+          btn = $('.action-save');
+          btns = $('.view-save');
+          btn.button('loading');
+          this._isSaving = true;
+          try {
+            return this.tournament.save(function() {
+              _this._isSaving = false;
+              btn.button('saved');
+              btns.addClass('btn-success');
+              btns.removeClass('btn-info');
+              setTimeout(function() {
+                btn.button('reset');
+                btns.addClass('btn-info');
+                return btns.removeClass('btn-success');
+              }, 1000);
+              return fn();
+            });
+          } catch (_error) {
+            e = _error;
+            this._isSaving = false;
+            return new AlertController({
+              title: "Saving error",
+              message: e.message,
+              buttons: e.canForce ? [e.canForce, 'OK'] : ['OK'],
+              cancelButtonIndex: e.canForce ? 1 : 0,
+              onClick: function(alert, idx) {
+                var button, text;
+                if (e.canForce && idx === 0) {
+                  button = alert.find('.modal-footer').children().first();
+                  button[0].dataset.loading - (text = "Saving...");
+                  button.button('loading');
+                  try {
+                    return _this.tournament.save((function() {
+                      alert.modal('hide');
+                      return fn();
+                    }), true);
+                  } catch (_error) {
+                    e = _error;
+                    if (e.canForce) {
+                      button.show();
+                      button.html(e.canForce);
+                    } else {
+                      button.hide();
+                    }
+                    button.button('reset');
+                    return alert.find('.modal-body').html('<p>' + e.message + '</p>');
+                  }
+                }
+              },
+              onDismissed: function() {
+                return btn.button('reset');
+              }
+            });
+          }
         } else {
           return fn();
         }
@@ -103,20 +164,43 @@
             textBox = alert.find('.saveas-text');
             return textBox.focus();
           },
-          onClick: function(alert, index) {
-            var be, data, e, newName;
+          onClick: function(alert, index, buttonName, force) {
+            var be, btnDanger, data, e, newName, text, thisFunction;
+            if (force == null) {
+              force = false;
+            }
             if (index === 1) {
+              if (!force) {
+                alert.find('.btn-primary').button('loading');
+              }
+              thisFunction = arguments.callee;
               newName = alert.find('.saveas-text')[0].value;
               if (!invalid[newName]) {
                 try {
                   be = new LocalBackend(newName);
                   data = _this.tournament.toFile;
-                  return be.save(data, function() {
+                  return be.save(data, (function() {
                     return alert.modal('hide');
-                  });
+                  }), force);
                 } catch (_error) {
                   e = _error;
-                  return console.log(e.message);
+                  alert.find('.btn-primary').button('reset');
+                  alert.find('.saveas-error').remove();
+                  alert.find('.modal-body').append(templates.alert({
+                    classes: 'saveas-error alert-error' + (e.canForce ? ' alert-block' : void 0),
+                    title: "Error while saving file:",
+                    message: e.message,
+                    button: e.canForce,
+                    buttonClass: "btn-danger"
+                  }));
+                  if (e.canForce) {
+                    btnDanger = alert.find('.btn-danger');
+                    btnDanger[0].dataset.loading - (text = "Saving...");
+                    return btnDanger.click(function() {
+                      btnDanger.button('loading');
+                      return thisFunction(alert, index, null, true);
+                    });
+                  }
                 }
               }
             }

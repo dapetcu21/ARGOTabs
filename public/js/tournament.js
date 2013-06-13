@@ -34,12 +34,11 @@
         return JSON.stringify(model);
       };
 
-      Tournament.prototype.save = function(fn) {
-        var model;
-        model = {
-          name: this.name
-        };
-        return this.backend.save(this.toFile(), fn);
+      Tournament.prototype.save = function(fn, force) {
+        if (force == null) {
+          force = false;
+        }
+        return this.backend.save(this.toFile(), fn, force);
       };
 
       return Tournament;
