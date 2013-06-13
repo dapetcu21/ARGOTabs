@@ -48,14 +48,13 @@
           btn = $('.action-save');
           btns = $('.view-save');
           btn.button('loading');
-          this._isSaving = true;
+          clearTimeout(this._saveTimer);
           try {
             return this.tournament.save(function() {
-              _this._isSaving = false;
               btn.button('saved');
               btns.addClass('btn-success');
               btns.removeClass('btn-info');
-              setTimeout(function() {
+              _this._saveTimer = setTimeout(function() {
                 btn.button('reset');
                 btns.addClass('btn-info');
                 return btns.removeClass('btn-success');
@@ -64,7 +63,6 @@
             });
           } catch (_error) {
             e = _error;
-            this._isSaving = false;
             return new AlertController({
               title: "Saving error",
               message: e.message,
