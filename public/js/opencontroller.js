@@ -49,7 +49,6 @@
             return _this.resetAdd();
           });
           textBox = newNode.find('.omodal-text');
-          textBox.focus();
           textBox.keypress(function(e) {
             var newName;
             if (e.which === 13 && !textBox[0].readOnly) {
@@ -75,6 +74,8 @@
           });
           return openModal.find('.omodal-add-div').transition({
             x: '-66.66%'
+          }, function() {
+            return textBox.focus();
           });
         });
         this.fileLists = {};
@@ -193,10 +194,11 @@
           textBox[0].value = itemName;
           textBox[0].readOnly = false;
           textBox[0].ongoingDeletion = false;
-          textBox.focus();
           validateEntry();
           return animDiv.transition({
-            x: "-50%"
+            x: '-50%'
+          }, function() {
+            return textBox.focus();
           });
         });
         itemNode.find('.omodal-btn-delete').click(function() {
@@ -204,10 +206,11 @@
           textBox[0].value = '';
           textBox[0].readOnly = false;
           textBox[0].ongoingDeletion = true;
-          textBox.focus();
           validateEntry();
           return animDiv.transition({
-            x: "-50%"
+            x: '-50%'
+          }, function() {
+            return textBox.focus();
           });
         });
         return itemNode.find('.omodal-a').click(function() {
