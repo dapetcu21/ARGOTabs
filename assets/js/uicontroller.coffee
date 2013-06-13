@@ -36,22 +36,20 @@ define ['jquery', 'opencontroller', 'alertcontroller', 'localbackend', 'B64', 'j
         btn = $('.action-save')
         btns = $('.view-save')
         btn.button 'loading'
-        @_isSaving = true
+        clearTimeout @_saveTimer
         try
           @tournament.save =>
-            @_isSaving = false
             btn.button 'saved'
             btns.addClass 'btn-success'
             btns.removeClass 'btn-info'
             #btns.switchClass 'btn-success', 'btn-info', 1000
-            setTimeout ->
+            @_saveTimer = setTimeout ->
               btn.button 'reset'
               btns.addClass 'btn-info'
               btns.removeClass 'btn-success'
             , 1000
             fn()
         catch e
-          @_isSaving = false
           new AlertController
             title: "Saving error"
             message: e.message
