@@ -40,7 +40,6 @@ define ['jquery', 'filereader', 'tournament', 'backends', 'localbackend', 'templ
           @resetAdd()
 
         textBox = newNode.find('.omodal-text')
-        textBox.focus()
         textBox.keypress (e) =>
           if e.which == 13 and not textBox[0].readOnly
             newName = textBox[0].value
@@ -59,8 +58,8 @@ define ['jquery', 'filereader', 'tournament', 'backends', 'localbackend', 'templ
           else
             controlGroup.addClass 'error'
 
-        openModal.find('.omodal-add-div').transition
-          x: '-66.66%'
+        openModal.find('.omodal-add-div').transition {x: '-66.66%'}, ->
+          textBox.focus()
 
       @fileLists = {}
       for backend in backends
@@ -156,20 +155,18 @@ define ['jquery', 'filereader', 'tournament', 'backends', 'localbackend', 'templ
         textBox[0].value = itemName
         textBox[0].readOnly = false
         textBox[0].ongoingDeletion = false
-        textBox.focus()
         validateEntry()
-        animDiv.transition
-          x: "-50%"
+        animDiv.transition {x: '-50%'}, ->
+          textBox.focus()
 
       itemNode.find('.omodal-btn-delete').click =>
         textBox[0].placeholder = 'Type "confirm deletion of file"'
         textBox[0].value = ''
         textBox[0].readOnly = false
         textBox[0].ongoingDeletion = true
-        textBox.focus()
         validateEntry()
-        animDiv.transition
-          x: "-50%"
+        animDiv.transition {x: '-50%'}, ->
+          textBox.focus()
 
       itemNode.find('.omodal-a').click =>
         to = new Tournament(new backend(itemName))

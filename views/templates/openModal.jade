@@ -13,15 +13,18 @@
                 i.icon-plus
                 |  Add tournament
             #omodal-add-page2.omodal-add-page
-              .omodal-btn-padding
-                button(type='button')#omodal-btn-new.btn
-                  i.icon-file
-                  |  New file
-              .omodal-btn-padding
-                input(type='file').omodal-file
-                button(type='file')#omodal-btn-upload.btn
-                  i.icon-upload-alt
-                  |  Upload
+              table.center-table
+                td
+                  .omodal-btn-padding
+                    button(type='button')#omodal-btn-new.btn
+                      i.icon-file
+                      |  New file
+                td
+                  .omodal-btn-padding
+                    button(type='file')#omodal-btn-upload.btn
+                      i.icon-upload-alt
+                      |  Upload
+              input(type='file').omodal-file
               button.close.pull-right.omodal-btn-close
                 i.icon-remove
             #omodal-add-page3.omodal-add-page
@@ -43,47 +46,32 @@
     border-top: 0px
     padding: 0px !important
 
-  .omodal-add-td
-    width: 100%
-    height: 100%
-    overflow: hidden
-
-  .omodal-add-div
-    width: 300%
-
-  .omodal-add-page
-    width: 33.33%
-    display: inline-block
-    position: relative
-  
   .omodal-add-padding
     padding: 10px
 
   .omodal-btn-padding
-    padding: 2px 0px 0px 10px
+    padding: 0px 0px 0px 10px
     display: inline-block
 
   .omodal-btn-close
-    margin: 8px 13px 12px 3px
+    position: absolute
+    right: 13px
+    top: 13px
+    margin: 0px
+    line-height: 0
     font-size: 110%
 
   .omodal-text
     position: relative
-    top: 4px
+    margin: 0px !important
     left: 5px
     width: 260px
 
-  #omodal-local div .omodal-text
-    top: 6px
-
-  #omodal-local button
-    position: relative
-    top: 2px
-
   .omodal-control-group
     display: inline-block
-    width: 0
-    height: 0
+    margin: 0px
+    width: auto
+    height: auto
 
   .omodal-file-btn
     display: none
@@ -98,10 +86,6 @@
   .omodal-btn-remove
     font-size: 110%
 
-  #omodal-add-page2 .omodal-btn-close
-    position: relative
-    top: -2px
-
   td:hover .omodal-file-btn
     display: inline-block
 
@@ -110,17 +94,44 @@
     height: 100%
     overflow: hidden
 
+  .omodal-add-td
+    width: 100%
+    height: 100%
+    overflow: hidden
+
   .omodal-edit-div
     width: 200%
+    height: 42px
+
+  .omodal-add-div
+    width: 300%
+    height: 42px
 
   .omodal-edit-page
     width: 50%
+    height: 100%
     display: inline-block
+    vertical-align: middle
     position: relative
 
+  .omodal-add-page
+    width: 33.33%
+    height: 100%
+    display: inline-block
+    vertical-align: middle
+    position: relative
+  
   .omodal-file
     visibility: hidden
     position: absolute
     top: -50
     left: -50
+
+  table.center-table
+    height: 100%
+  table.center-table td
+    vertical-align: middle
+
+  #omodal-local
+    height: 100%
 

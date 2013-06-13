@@ -10,6 +10,7 @@ require.config
   shim:
     'jquery.bootstrap': ['jquery']
     'jquery.transit': ['jquery']
+    filereader: ['jquery']
 
 require ['uicontroller', 'globals'], (UIController, globals) ->
   globals.uiController = new UIController()
