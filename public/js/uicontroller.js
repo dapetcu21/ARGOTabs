@@ -215,12 +215,10 @@
         this.tournament = tournament;
         if (this.tournament) {
           return this.tournament.load(function() {
-            var name;
-            name = _this.tournament.name;
-            return $('.view-title').html('ARGO Tabs' + (name ? ' - ' + name : ''));
+            return $('.view-title').html(_this.tournament.name);
           });
         } else {
-          return $('.view-title').html('ARGO Tabs');
+          return $('.view-title').html('');
         }
       };
 
