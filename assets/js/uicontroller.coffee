@@ -153,8 +153,7 @@ define ['jquery', 'opencontroller', 'alertcontroller', 'localbackend', 'B64', 'j
     setTournament: (@tournament) ->
       if @tournament
         @tournament.load =>
-          name = @tournament.name
-          $('.view-title').html 'ARGO Tabs' + if name then ' - ' + name else ''
+          $('.view-title').html @tournament.name
       else
-        $('.view-title').html 'ARGO Tabs'
+        $('.view-title').html ''
 
