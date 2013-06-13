@@ -8,7 +8,7 @@ body {
   padding-top: 60px;
   padding-bottom: 40px;
 }
-@media max-width: 980px {
+@media (max-width: 980px) {
   body {
     padding-top: 0px;
     padding-bottom: 0px;
