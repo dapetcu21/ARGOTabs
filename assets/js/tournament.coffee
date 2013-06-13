@@ -11,8 +11,13 @@ define ->
         fn()
         return
 
+    toFile: ->
+      model =
+        name: @name
+      JSON.stringify model
+
     save: (fn) ->
       model =
         name: @name
-      @backend.save JSON.stringify(model), fn
+      @backend.save @toFile(), fn
 

@@ -1,38 +1,38 @@
 define ['backend'], (Backend) ->
   class LocalBackend extends Backend
-    constructor: (@fileName) ->
+    constructor: (@fName) ->
       @loadDate = new Date()
       @date = this.modifiedDate()
 
     modifiedDate: ->
-      date = localStorage.getItem(@fileName + '.mdate')
+      date = localStorage.getItem(@fName + '.mdate')
       if date? then new Date(parseInt(date.match(/\d+/)[0])) else @loadDate
 
     load: (fn) ->
-      obj = localStorage.getItem(@fileName + ".atab")
+      obj = localStorage.getItem(@fName + ".atab")
       obj ?= ""
       @loadDate = new Date()
-      @date = this.modifiedDate()
       fn(obj)
       return
 
     save: (obj, fn, force=false) ->
-      if not force and @modifiedDate().getTime() > @date.getTime()
+      if not force and @modifiedDate().getTime() > @loadDate.getTime()
         throw new Error("This tournament was modified by an external program since we opened it. Make sure that you don't open the same tournament in another ARGO Tabs window")
+      @loadDate = new Date()
       
-      localStorage.setItem(@fileName + '.atab', obj)
-      localStorage.setItem(@fileName + '.mdate', new Date().getTime())
+      localStorage.setItem(@fName + '.atab', obj)
+      localStorage.setItem(@fName + '.mdate', new Date().getTime())
       fn()
       return
 
     delete: ->
-      localStorage.removeItem(@fileName + '.atab')
-      localStorage.removeItem(@fileName + '.mdate')
+      localStorage.removeItem(@fName + '.atab')
+      localStorage.removeItem(@fName + '.mdate')
 
     rename: (newName) ->
       @load (obj) =>
         @delete()
-        @fileName = newName
+        @fName = newName
         @save obj, (->), true
 
     @listFiles: (fn)->
@@ -44,3 +44,5 @@ define ['backend'], (Backend) ->
       fn(result)
       return
 
+    fileName: ->
+      @fName

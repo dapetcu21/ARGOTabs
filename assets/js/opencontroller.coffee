@@ -20,7 +20,7 @@ define ['jquery', 'filereader', 'tournament', 'backends', 'localbackend', 'templ
         backdrop: 'static'
 
       openModal.css
-        'width': '300px'
+        'width': '350px'
         'margin-left': ->
           -$(this).width() / 2
 
@@ -54,7 +54,6 @@ define ['jquery', 'filereader', 'tournament', 'backends', 'localbackend', 'templ
         controlGroup = textBox.parent()
         textBox.bind 'input propertychange', =>
           newName = textBox[0].value
-          console.log "plm "
           if @filenameAvailable newName, LocalBackend
             controlGroup.removeClass 'error'
           else
@@ -102,7 +101,7 @@ define ['jquery', 'filereader', 'tournament', 'backends', 'localbackend', 'templ
           if textBox[0].ongoingDeletion
             if newName == "confirm deletion of file"
               new backend(itemName).delete()
-              fl[itemName] = false
+              fl[itemName] = undefined
               itemNode.remove()
 
               textBox[0].readOnly = true
@@ -119,7 +118,7 @@ define ['jquery', 'filereader', 'tournament', 'backends', 'localbackend', 'templ
               be = new backend(itemName)
               be.rename(newName)
               textBox[0].readOnly = true
-              fl[itemName] = false
+              fl[itemName] = undefined
               fl[newName] = true
               itemNode.find('.omodal-label').html(newName)
               itemName = newName
@@ -162,7 +161,7 @@ define ['jquery', 'filereader', 'tournament', 'backends', 'localbackend', 'templ
         animDiv.transition
           x: "-50%"
 
-      itemNode.find('.omodal-btn-delete').click ->
+      itemNode.find('.omodal-btn-delete').click =>
         textBox[0].placeholder = 'Type "confirm deletion of file"'
         textBox[0].value = ''
         textBox[0].readOnly = false
@@ -171,6 +170,11 @@ define ['jquery', 'filereader', 'tournament', 'backends', 'localbackend', 'templ
         validateEntry()
         animDiv.transition
           x: "-50%"
+
+      itemNode.find('.omodal-a').click =>
+        to = new Tournament(new backend(itemName))
+        @openModal.modal 'hide'
+        @uiController.setTournament to
 
     newItem: (item, backend) ->
       be = new backend(item)
@@ -192,7 +196,7 @@ define ['jquery', 'filereader', 'tournament', 'backends', 'localbackend', 'templ
         loadend: (e, file) =>
           name = (file.name.match /^(.*?)(\.atab)?$/)[1]
           while not @filenameAvailable name, LocalBackend
-            name = name + ' duplicate'
+            name = name + ' (2)'
           be = new LocalBackend(name)
           be.save e.target.result, =>
             @addItem name, LocalBackend

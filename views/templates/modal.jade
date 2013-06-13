@@ -1,0 +1,11 @@
+div(id=id).modal.hide.fade
+  .modal-header
+    if o.closeable
+      button(type="button", data-dismiss="modal", aria-hidden="true").close.modal-cancel &times;
+    h3= o.title
+  .modal-body
+    != contents        
+  if o.buttons.length
+    .modal-footer
+      each button, i in o.buttons
+        a(class="#{(i == o.cancelButtonIndex)?'modal-cancel ':''}#{(i == o.primaryButtonIndex)?'btn-primary ':''}", data-count="#{i}").btn.modal-button #{button}

@@ -1,13 +1,21 @@
-.navbar.navbar.navbar-fixed-top
+.navbar.navbar-fixed-top
   .navbar-inner
     .container-fluid
-      a(href="#").brand ARGO Tabs — Primu' Turneu ARGO 2013
+      a(href="#").brand.view-title ARGO Tabs
       .btn-group.pull-right
         button.btn.btn-info Save
         button(data-toggle="dropdown").btn.btn-info.dropdown-toggle
           span.caret
         ul.dropdown-menu
-          li: a(href="#") Save As
+          li.action-open
+            a(href="#", tabindex='-1') Open
+          li.fixed-menu.dropdown-submenu
+            a(href="#", tabindex='-1') Save as
+            ul.dropdown-menu
+              li.action-saveas-local
+                a(href="#", tabindex='-1').action-saveaslocal New tournament file
+              li.action-saveas-download
+                a(href="#", tabindex='-1').action-download Download
   
 .container-fluid
   .row-fluid
