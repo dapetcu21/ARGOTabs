@@ -17,11 +17,14 @@ define ['backend'], (Backend) ->
 
     save: (obj, fn, force=false) ->
       if not force and @modifiedDate().getTime() > @loadDate.getTime()
-        throw new Error("This tournament was modified by an external program since we opened it. Make sure that you don't open the same tournament in another ARGO Tabs window")
+        e = new Error("This tournament was modified by an external program since we opened it. Make sure it's not open in another ARGO Tabs window")
+        e.canForce = "Save anyway"
+        throw e
       @loadDate = new Date()
       
       localStorage.setItem(@fName + '.atab', obj)
       localStorage.setItem(@fName + '.mdate', new Date().getTime())
+
       fn()
       return
 

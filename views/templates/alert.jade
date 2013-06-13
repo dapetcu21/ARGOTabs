@@ -1,0 +1,8 @@
+div(class='#{classes}').alert.fade.in
+  p
+    strong!= title
+    != ' ' + message
+  if button
+    p
+      button(type='button', class='#{buttonClass}').btn.alert-button= button
+

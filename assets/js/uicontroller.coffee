@@ -22,14 +22,61 @@ define ['jquery', 'opencontroller', 'alertcontroller', 'localbackend', 'B64', 'j
         $('.action-saveaslocal').click =>
           @saveaslocal()
 
+        $('.action-save').click =>
+          @save()
+
 
     open: ->
       @save =>
         new OpenController(this)
 
     save: (fn) ->
+      fn ?= ->
       if @tournament
-        @tournament.save fn
+        btn = $('.action-save')
+        btns = $('.view-save')
+        btn.button 'loading'
+        @_isSaving = true
+        try
+          @tournament.save =>
+            @_isSaving = false
+            btn.button 'saved'
+            btns.addClass 'btn-success'
+            btns.removeClass 'btn-info'
+            #btns.switchClass 'btn-success', 'btn-info', 1000
+            setTimeout ->
+              btn.button 'reset'
+              btns.addClass 'btn-info'
+              btns.removeClass 'btn-success'
+            , 1000
+            fn()
+        catch e
+          @_isSaving = false
+          new AlertController
+            title: "Saving error"
+            message: e.message
+            buttons: if e.canForce then [e.canForce, 'OK'] else ['OK']
+            cancelButtonIndex: if e.canForce then 1 else 0
+            onClick: (alert, idx) =>
+              if (e.canForce and idx == 0)
+                button = alert.find('.modal-footer').children().first()
+                button[0].dataset.loading-text = "Saving..."
+                button.button('loading')
+                try
+                  @tournament.save (->
+                    alert.modal('hide')
+                    fn()), true
+                catch e
+                  if e.canForce
+                    button.show()
+                    button.html e.canForce
+                  else
+                    button.hide()
+                  button.button('reset')
+                  alert.find('.modal-body').html '<p>' + e.message + '</p>'
+            onDismissed: ->
+              btn.button 'reset'
+
       else
         fn()
 
@@ -76,17 +123,33 @@ define ['jquery', 'opencontroller', 'alertcontroller', 'localbackend', 'B64', 'j
           textBox = alert.find('.saveas-text')
           textBox.focus()
 
-        onClick: (alert, index) =>
+        onClick: (alert, index, buttonName, force = false) =>
           if index == 1
+            if not force
+              alert.find('.btn-primary').button('loading')
+            thisFunction = arguments.callee
             newName = alert.find('.saveas-text')[0].value
             if not invalid[newName]
               try
                 be = new LocalBackend(newName)
                 data = @tournament.toFile
-                be.save data, =>
-                  alert.modal('hide')
+                be.save data, (=>
+                  alert.modal('hide')), force
               catch e
-                console.log e.message
+                alert.find('.btn-primary').button('reset')
+                alert.find('.saveas-error').remove()
+                alert.find('.modal-body').append templates.alert
+                  classes: 'saveas-error alert-error' + (' alert-block' if e.canForce)
+                  title: "Error while saving file:"
+                  message: e.message
+                  button: e.canForce
+                  buttonClass: "btn-danger"
+                if e.canForce
+                  btnDanger = alert.find('.btn-danger')
+                  btnDanger[0].dataset.loading-text = "Saving..."
+                  btnDanger.click =>
+                    btnDanger.button('loading')
+                    thisFunction(alert, index, null, true)
 
     getTournament: -> @tournament
     setTournament: (@tournament) ->

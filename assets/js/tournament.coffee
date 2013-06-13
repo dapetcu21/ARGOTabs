@@ -16,8 +16,6 @@ define ->
         name: @name
       JSON.stringify model
 
-    save: (fn) ->
-      model =
-        name: @name
-      @backend.save @toFile(), fn
+    save: (fn, force = false) ->
+      @backend.save @toFile(), fn, force
 

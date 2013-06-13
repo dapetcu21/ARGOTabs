@@ -3,8 +3,8 @@
     .container-fluid
       a(href="#").brand.view-title ARGO Tabs
       .btn-group.pull-right
-        button.btn.btn-info Save
-        button(data-toggle="dropdown").btn.btn-info.dropdown-toggle
+        button(data-loading-text="Saving...", data-saved-text="Saved").btn.btn-info.action-save.view-save Save
+        button(data-toggle="dropdown").btn.btn-info.dropdown-toggle.view-save
           span.caret
         ul.dropdown-menu
           li.action-open
