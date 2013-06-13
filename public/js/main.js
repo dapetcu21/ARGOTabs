@@ -5,7 +5,8 @@
       jquery: '/components/jquery/jquery',
       'jquery.bootstrap': '/components/bootstrap/js/bootstrap',
       'jquery.transit': '/components/jquery.transit/jquery.transit',
-      filereader: '/components/filereader/filereader'
+      filereader: '/components/filereader/filereader',
+      B64: '/components/B64/base64'
     },
     shim: {
       'jquery.bootstrap': ['jquery'],

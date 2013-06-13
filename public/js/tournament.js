@@ -26,12 +26,20 @@
         });
       };
 
+      Tournament.prototype.toFile = function() {
+        var model;
+        model = {
+          name: this.name
+        };
+        return JSON.stringify(model);
+      };
+
       Tournament.prototype.save = function(fn) {
         var model;
         model = {
           name: this.name
         };
-        return this.backend.save(JSON.stringify(model), fn);
+        return this.backend.save(this.toFile(), fn);
       };
 
       return Tournament;

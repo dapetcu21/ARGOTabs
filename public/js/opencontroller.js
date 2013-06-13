@@ -26,7 +26,7 @@
           backdrop: 'static'
         });
         openModal.css({
-          'width': '300px',
+          'width': '350px',
           'margin-left': function() {
             return -$(this).width() / 2;
           }
@@ -67,7 +67,6 @@
           textBox.bind('input propertychange', function() {
             var newName;
             newName = textBox[0].value;
-            console.log("plm ");
             if (_this.filenameAvailable(newName, LocalBackend)) {
               return controlGroup.removeClass('error');
             } else {
@@ -133,7 +132,7 @@
             if (textBox[0].ongoingDeletion) {
               if (newName === "confirm deletion of file") {
                 new backend(itemName)["delete"]();
-                fl[itemName] = false;
+                fl[itemName] = void 0;
                 itemNode.remove();
                 textBox[0].readOnly = true;
                 animDiv.transition({
@@ -153,7 +152,7 @@
                 be = new backend(itemName);
                 be.rename(newName);
                 textBox[0].readOnly = true;
-                fl[itemName] = false;
+                fl[itemName] = void 0;
                 fl[newName] = true;
                 itemNode.find('.omodal-label').html(newName);
                 itemName = newName;
@@ -200,7 +199,7 @@
             x: "-50%"
           });
         });
-        return itemNode.find('.omodal-btn-delete').click(function() {
+        itemNode.find('.omodal-btn-delete').click(function() {
           textBox[0].placeholder = 'Type "confirm deletion of file"';
           textBox[0].value = '';
           textBox[0].readOnly = false;
@@ -210,6 +209,12 @@
           return animDiv.transition({
             x: "-50%"
           });
+        });
+        return itemNode.find('.omodal-a').click(function() {
+          var to;
+          to = new Tournament(new backend(itemName));
+          _this.openModal.modal('hide');
+          return _this.uiController.setTournament(to);
         });
       };
 
@@ -248,7 +253,7 @@
               var be, name;
               name = (file.name.match(/^(.*?)(\.atab)?$/))[1];
               while (!_this.filenameAvailable(name, LocalBackend)) {
-                name = name + ' duplicate';
+                name = name + ' (2)';
               }
               be = new LocalBackend(name);
               return be.save(e.target.result, function() {

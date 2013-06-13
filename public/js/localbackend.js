@@ -7,15 +7,15 @@
     return LocalBackend = (function(_super) {
       __extends(LocalBackend, _super);
 
-      function LocalBackend(fileName) {
-        this.fileName = fileName;
+      function LocalBackend(fName) {
+        this.fName = fName;
         this.loadDate = new Date();
         this.date = this.modifiedDate();
       }
 
       LocalBackend.prototype.modifiedDate = function() {
         var date;
-        date = localStorage.getItem(this.fileName + '.mdate');
+        date = localStorage.getItem(this.fName + '.mdate');
         if (date != null) {
           return new Date(parseInt(date.match(/\d+/)[0]));
         } else {
@@ -25,12 +25,11 @@
 
       LocalBackend.prototype.load = function(fn) {
         var obj;
-        obj = localStorage.getItem(this.fileName + ".atab");
+        obj = localStorage.getItem(this.fName + ".atab");
         if (obj == null) {
           obj = "";
         }
         this.loadDate = new Date();
-        this.date = this.modifiedDate();
         fn(obj);
       };
 
@@ -38,24 +37,25 @@
         if (force == null) {
           force = false;
         }
-        if (!force && this.modifiedDate().getTime() > this.date.getTime()) {
+        if (!force && this.modifiedDate().getTime() > this.loadDate.getTime()) {
           throw new Error("This tournament was modified by an external program since we opened it. Make sure that you don't open the same tournament in another ARGO Tabs window");
         }
-        localStorage.setItem(this.fileName + '.atab', obj);
-        localStorage.setItem(this.fileName + '.mdate', new Date().getTime());
+        this.loadDate = new Date();
+        localStorage.setItem(this.fName + '.atab', obj);
+        localStorage.setItem(this.fName + '.mdate', new Date().getTime());
         fn();
       };
 
       LocalBackend.prototype["delete"] = function() {
-        localStorage.removeItem(this.fileName + '.atab');
-        return localStorage.removeItem(this.fileName + '.mdate');
+        localStorage.removeItem(this.fName + '.atab');
+        return localStorage.removeItem(this.fName + '.mdate');
       };
 
       LocalBackend.prototype.rename = function(newName) {
         var _this = this;
         return this.load(function(obj) {
           _this["delete"]();
-          _this.fileName = newName;
+          _this.fName = newName;
           return _this.save(obj, (function() {}), true);
         });
       };
@@ -70,6 +70,10 @@
           }
         }
         fn(result);
+      };
+
+      LocalBackend.prototype.fileName = function() {
+        return this.fName;
       };
 
       return LocalBackend;

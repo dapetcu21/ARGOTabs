@@ -10,14 +10,20 @@
     <link rel="stylesheet" href="css/master.css">
   </head>
   <body>
-<div class="navbar navbar navbar-fixed-top">
+<div class="navbar navbar-fixed-top">
   <div class="navbar-inner">
-    <div class="container-fluid"><a href="#" class="brand">ARGO Tabs — Primu' Turneu ARGO 2013</a>
+    <div class="container-fluid"><a href="#" class="brand view-title">ARGO Tabs</a>
       <div class="btn-group pull-right">
         <button class="btn btn-info">Save</button>
         <button data-toggle="dropdown" class="btn btn-info dropdown-toggle"><span class="caret"></span></button>
         <ul class="dropdown-menu">
-          <li><a href="#">Save As</a></li>
+          <li class="action-open"><a href="#" tabindex="-1">Open</a></li>
+          <li class="fixed-menu dropdown-submenu"><a href="#" tabindex="-1">Save as</a>
+            <ul class="dropdown-menu">
+              <li class="action-saveas-local"><a href="#" tabindex="-1" class="action-saveaslocal">New tournament file</a></li>
+              <li class="action-saveas-download"><a href="#" tabindex="-1" class="action-download">Download</a></li>
+            </ul>
+          </li>
         </ul>
       </div>
     </div>
