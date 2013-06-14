@@ -10,15 +10,14 @@
     <link rel="stylesheet" href="css/master.css">
   </head>
   <body>
-<div class="navbar navbar-fixed-top">
+<div ng-controller="MainCtrl" class="navbar navbar-fixed-top">
   <div class="navbar-inner">
     <div class="container-fluid">
       <ul class="nav">
-        <li class="arrow-nav"><a href="#" class="action-open brand"><i class="icon-arrow-left"></i></a></li>
-        <li class="divider-vertical"></li>
-        <li><a href="#" class="brand app-title">ARGO Tabs</a></li>
-        <li class="divider-vertical"></li>
-        <li><a href="#" class="brand view-title"></a></li>
+        <li class="arrow-nav"><a href="#" class="action-open brand"><i class="icon-arrow-left view-arrow"></i>ARGO Tabs</a></li>
+        <li class="divider-vertical">
+          <li><a href="#" class="brand view-title">{{ui.tournament.name}}</a></li>
+        </li>
       </ul>
       <div class="btn-group pull-right">
         <button data-loading-text="Saving..." data-saved-text="Saved" class="btn btn-info action-save view-save">Save</button>
@@ -34,7 +33,7 @@
 <div class="container-fluid">
   <div class="row-fluid">
     <div class="span2">
-      <div class="well sidebar-nav">
+      <div ng-controller="MainCtrl" class="well sidebar-nav">
         <ul class="nav nav-list">
           <li class="nav-header">Tournament</li>
           <li><a href="#">Dashboard</a></li>
@@ -42,18 +41,30 @@
           <li><a href="#teams">Teams</a></li>
           <li><a href="#clubs">Clubs</a></li>
           <li><a href="#judges">Judges</a></li>
+          <li><a href="#rooms">Rooms</a></li>
+          <li class="nav-header">Statistics</li>
+          <li><a href="#general-stats">General</a></li>
+          <li><a href="#team-rank">Team rank</a></li>
+          <li><a href="#speaker-rank">Speaker rank</a></li>
+          <li><a href="#judge-avg">Judge averages</a></li>
+          <li class="nav-header">Rounds</li>
+          <li><a href="#">{{ui.tournament.name}}</a></li>
         </ul>
       </div>
     </div>
     <div class="span10">
-      <div>Content</div>
+      <div ng-view="ng-view"></div>
     </div>
   </div>
 </div><style type="text/css">.view-title,
 .app-title {
   margin-left: -10px !important;
 }
+.view-arrow {
+  margin-right: 15px;
+}
 </style>
   </body>
+  <script src="components/angular/angular.js"></script>
   <script data-main="js/main" src="js/require.js"></script>
 </html>

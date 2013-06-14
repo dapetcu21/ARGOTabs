@@ -1,9 +1,18 @@
 (function() {
-  define(['jquery', 'opencontroller', 'alertcontroller', 'localbackend', 'B64', 'jquery.bootstrap'], function($, OpenController, AlertController, LocalBackend, B64) {
+  define(['jquery', 'opencontroller', 'alertcontroller', 'localbackend', 'B64', 'routes', 'jquery.bootstrap'], function($, OpenController, AlertController, LocalBackend, B64, Routes) {
     var UIController;
     return UIController = (function() {
       function UIController() {
-        var _this = this;
+        var app,
+          _this = this;
+        this.app = app = angular.module('argotabs', []);
+        app.controller('MainCtrl', [
+          '$scope', function($scope) {
+            return $scope.ui = _this;
+          }
+        ]);
+        Routes(this);
+        this.injector = angular.bootstrap($('body').get(), ['argotabs']);
         $(document).ready(function() {
           _this.open();
           $(".fixed-menu").mouseover(function() {
@@ -168,12 +177,12 @@
               force = false;
             }
             if (index === 1) {
-              if (!force) {
-                alert.find('.btn-primary').button('loading');
-              }
               thisFunction = arguments.callee;
               newName = alert.find('.saveas-text')[0].value;
               if (!invalid[newName]) {
+                if (!force) {
+                  alert.find('.btn-primary').button('loading');
+                }
                 try {
                   be = new LocalBackend(newName);
                   data = _this.tournament.toFile;
@@ -206,6 +215,14 @@
         });
       };
 
+      UIController.prototype.updateAngular = function() {
+        return this.injector.invoke([
+          '$rootScope', function($rootScope) {
+            return $rootScope.$digest();
+          }
+        ]);
+      };
+
       UIController.prototype.getTournament = function() {
         return this.tournament;
       };
@@ -213,13 +230,9 @@
       UIController.prototype.setTournament = function(tournament) {
         var _this = this;
         this.tournament = tournament;
-        if (this.tournament) {
-          return this.tournament.load(function() {
-            return $('.view-title').html(_this.tournament.name);
-          });
-        } else {
-          return $('.view-title').html('');
-        }
+        return tournament.load(function() {
+          return _this.updateAngular();
+        });
       };
 
       return UIController;
