@@ -6,6 +6,7 @@ require.config
     'jquery.bootstrap': '/components/bootstrap/js/bootstrap'
     'jquery.transit': '/components/jquery.transit/jquery.transit'
     filereader: '/components/filereader/filereader'
+    angular: '/components/angular/angular'
     B64: '/components/B64/base64'
   shim:
     'jquery.bootstrap': ['jquery']

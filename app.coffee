@@ -14,8 +14,7 @@ exports.watcher_ignore_files = ['.*.swp', '.*.swo']
 # layout is the key, and the path to the layout is the value.
 
 exports.layouts =
-  default: 'layout.jade'
-  # 'special.jade': 'layout2.jade'
+  'index.jade': 'layout.jade'
 
 # Locals will be made available on every page. They can be
 # variables or (coffeescript) functions.

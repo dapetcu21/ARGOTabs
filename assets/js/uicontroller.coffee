@@ -1,6 +1,16 @@
-define ['jquery', 'opencontroller', 'alertcontroller', 'localbackend', 'B64', 'jquery.bootstrap'], ($, OpenController, AlertController, LocalBackend, B64) ->
+define ['jquery', 'opencontroller', 'alertcontroller', 'localbackend', 'B64', 'routes', 'jquery.bootstrap'], ($, OpenController, AlertController, LocalBackend, B64, Routes) ->
   class UIController
     constructor: ->
+      @app = app = angular.module 'argotabs', []
+
+      app.controller 'MainCtrl', ['$scope', ($scope) =>
+        $scope.ui = this
+      ]
+
+      Routes(this)
+
+      @injector = angular.bootstrap $('body').get(), ['argotabs']
+
       $(document).ready =>
         @open()
 
@@ -123,11 +133,11 @@ define ['jquery', 'opencontroller', 'alertcontroller', 'localbackend', 'B64', 'j
 
         onClick: (alert, index, buttonName, force = false) =>
           if index == 1
-            if not force
-              alert.find('.btn-primary').button('loading')
             thisFunction = arguments.callee
             newName = alert.find('.saveas-text')[0].value
             if not invalid[newName]
+              if not force
+                alert.find('.btn-primary').button('loading')
               try
                 be = new LocalBackend(newName)
                 data = @tournament.toFile
@@ -149,11 +159,13 @@ define ['jquery', 'opencontroller', 'alertcontroller', 'localbackend', 'B64', 'j
                     btnDanger.button('loading')
                     thisFunction(alert, index, null, true)
 
-    getTournament: -> @tournament
-    setTournament: (@tournament) ->
-      if @tournament
-        @tournament.load =>
-          $('.view-title').html @tournament.name
-      else
-        $('.view-title').html ''
+    updateAngular: ->
+      @injector.invoke ['$rootScope', ($rootScope)->
+        $rootScope.$digest()
+      ]
 
+    getTournament: -> @tournament
+    setTournament: (tournament) ->
+      @tournament = tournament
+      tournament.load =>
+        @updateAngular()

@@ -1,13 +1,12 @@
-.navbar.navbar-fixed-top
+div(ng-controller='MainCtrl').navbar.navbar-fixed-top
   .navbar-inner
     .container-fluid
       ul.nav
         li.arrow-nav: a(href="#").action-open.brand
-          i.icon-arrow-left
+          i.icon-arrow-left.view-arrow
+          | ARGO Tabs
         li.divider-vertical
-        li: a(href="#").brand.app-title ARGO Tabs
-        li.divider-vertical
-        li: a(href="#").brand.view-title
+          li: a(href="#").brand.view-title {{ui.tournament.name}}
 
       .btn-group.pull-right
         button(data-loading-text="Saving...", data-saved-text="Saved").btn.btn-info.action-save.view-save Save
@@ -22,7 +21,7 @@
 .container-fluid
   .row-fluid
     .span2
-      .well.sidebar-nav
+      div(ng-controller='MainCtrl').well.sidebar-nav
         ul.nav.nav-list
           li.nav-header Tournament
           li: a(href="#") Dashboard
@@ -30,9 +29,20 @@
           li: a(href="#teams") Teams
           li: a(href="#clubs") Clubs
           li: a(href="#judges") Judges
+          li: a(href="#rooms") Rooms
+          li.nav-header Statistics
+          li: a(href="#general-stats") General
+          li: a(href="#team-rank") Team rank
+          li: a(href="#speaker-rank") Speaker rank
+          li: a(href="#judge-avg") Judge averages
+          li.nav-header Rounds
+          li: a(href="#") {{ui.tournament.name}}
     .span10
-      div Content
+      div(ng-view)
 
 :stylus
   .view-title, .app-title
     margin-left: -10px !important
+  
+  .view-arrow
+    margin-right: 15px
