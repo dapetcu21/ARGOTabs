@@ -10,11 +10,14 @@
     <link rel="stylesheet" href="css/master.css">
   </head>
   <body>
+<div ng-controller="LoadingCtrl" class="{{loaded}} loading-screen">
+  <h3><i class="icon-spinner icon-spin icon-large"></i>&nbsp; Loading...</h3>
+</div>
 <div ng-controller="MainCtrl" class="navbar navbar-fixed-top">
   <div class="navbar-inner">
     <div class="container-fluid">
       <ul class="nav">
-        <li class="arrow-nav"><a href="#" class="action-open brand"><i class="icon-arrow-left view-arrow"></i>ARGO Tabs</a></li>
+        <li class="arrow-nav"><a class="action-open brand"><i class="icon-arrow-left view-arrow"></i>ARGO Tabs</a></li>
         <li class="divider-vertical">
           <li><a href="#" class="brand view-title">{{ui.tournament.name}}</a></li>
         </li>
@@ -23,8 +26,8 @@
         <button data-loading-text="Saving..." data-saved-text="Saved" class="btn btn-info action-save view-save">Save</button>
         <button data-toggle="dropdown" class="btn btn-info dropdown-toggle view-save"><span class="caret"></span></button>
         <ul class="dropdown-menu">
-          <li class="action-saveas-local"><a href="#" tabindex="-1" class="action-saveaslocal">Save a copy</a></li>
-          <li class="action-saveas-download"><a href="#" tabindex="-1" class="action-download">Download</a></li>
+          <li class="action-saveas-local"><a tabindex="-1" class="action-saveaslocal">Save a copy</a></li>
+          <li class="action-saveas-download"><a tabindex="-1" class="action-download">Download</a></li>
         </ul>
       </div>
     </div>
@@ -36,19 +39,19 @@
       <div ng-controller="MainCtrl" class="well sidebar-nav">
         <ul class="nav nav-list">
           <li class="nav-header">Tournament</li>
-          <li><a href="#">Dashboard</a></li>
+          <nav-li href="/">Dashboard</nav-li>
           <li class="nav-header">Participants</li>
-          <li><a href="#teams">Teams</a></li>
-          <li><a href="#clubs">Clubs</a></li>
-          <li><a href="#judges">Judges</a></li>
-          <li><a href="#rooms">Rooms</a></li>
+          <nav-li href="/teams">Teams</nav-li>
+          <nav-li href="/clubs">Clubs</nav-li>
+          <nav-li href="/judges">Judges</nav-li>
+          <nav-li href="/rooms">Rooms</nav-li>
           <li class="nav-header">Statistics</li>
-          <li><a href="#general-stats">General</a></li>
-          <li><a href="#team-rank">Team rank</a></li>
-          <li><a href="#speaker-rank">Speaker rank</a></li>
-          <li><a href="#judge-avg">Judge averages</a></li>
+          <nav-li href="/general-stats">General</nav-li>
+          <nav-li href="/team-rank">Team rank</nav-li>
+          <nav-li href="/speaker-rank">Speaker rank</nav-li>
+          <nav-li href="/judge-avg">Judge averages</nav-li>
           <li class="nav-header">Rounds</li>
-          <li><a href="#">{{ui.tournament.name}}</a></li>
+          <nav-li href="/">{{ui.tournament.name}}</nav-li>
         </ul>
       </div>
     </div>

@@ -6,13 +6,38 @@
         var app,
           _this = this;
         this.app = app = angular.module('argotabs', []);
+        app.directive('navLi', function() {
+          return {
+            restrict: 'E',
+            scope: {
+              href: '@'
+            },
+            transclude: true,
+            replace: true,
+            controller: [
+              '$scope', '$location', function($scope, $location) {
+                return $scope.$watch(function() {
+                  return $location.path();
+                }, function(newValue, oldValue) {
+                  return $scope["class"] = newValue === $scope.href ? 'active' : '';
+                });
+              }
+            ],
+            template: "<li class='{{class}}'><a href=\"{{'#' + href}}\" ng-transclude></a></li>"
+          };
+        });
         app.controller('MainCtrl', [
           '$scope', function($scope) {
             return $scope.ui = _this;
           }
         ]);
+        app.controller('LoadingCtrl', [
+          '$scope', function($scope) {
+            return $scope.loaded = true;
+          }
+        ]);
         Routes(this);
-        this.injector = angular.bootstrap($('body').get(), ['argotabs']);
+        this.injector = angular.bootstrap(document, ['argotabs']);
         $(document).ready(function() {
           _this.open();
           $(".fixed-menu").mouseover(function() {
