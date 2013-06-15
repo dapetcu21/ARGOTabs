@@ -1,8 +1,13 @@
+div(ng-controller='LoadingCtrl', class="{{loaded}}").loading-screen
+    h3
+      i.icon-spinner.icon-spin.icon-large
+      | &nbsp; Loading...
+
 div(ng-controller='MainCtrl').navbar.navbar-fixed-top
   .navbar-inner
     .container-fluid
       ul.nav
-        li.arrow-nav: a(href="#").action-open.brand
+        li.arrow-nav: a.action-open.brand
           i.icon-arrow-left.view-arrow
           | ARGO Tabs
         li.divider-vertical
@@ -14,9 +19,9 @@ div(ng-controller='MainCtrl').navbar.navbar-fixed-top
           span.caret
         ul.dropdown-menu
           li.action-saveas-local
-            a(href="#", tabindex='-1').action-saveaslocal Save a copy
+            a(tabindex='-1').action-saveaslocal Save a copy
           li.action-saveas-download
-            a(href="#", tabindex='-1').action-download Download
+            a(tabindex='-1').action-download Download
   
 .container-fluid
   .row-fluid
@@ -24,19 +29,19 @@ div(ng-controller='MainCtrl').navbar.navbar-fixed-top
       div(ng-controller='MainCtrl').well.sidebar-nav
         ul.nav.nav-list
           li.nav-header Tournament
-          li: a(href="#") Dashboard
+          nav-li(href="/") Dashboard
           li.nav-header Participants
-          li: a(href="#teams") Teams
-          li: a(href="#clubs") Clubs
-          li: a(href="#judges") Judges
-          li: a(href="#rooms") Rooms
+          nav-li(href="/teams") Teams
+          nav-li(href="/clubs") Clubs
+          nav-li(href="/judges") Judges
+          nav-li(href="/rooms") Rooms
           li.nav-header Statistics
-          li: a(href="#general-stats") General
-          li: a(href="#team-rank") Team rank
-          li: a(href="#speaker-rank") Speaker rank
-          li: a(href="#judge-avg") Judge averages
+          nav-li(href="/general-stats") General
+          nav-li(href="/team-rank") Team rank
+          nav-li(href="/speaker-rank") Speaker rank
+          nav-li(href="/judge-avg") Judge averages
           li.nav-header Rounds
-          li: a(href="#") {{ui.tournament.name}}
+          nav-li(href="/") {{ui.tournament.name}}
     .span10
       div(ng-view)
 

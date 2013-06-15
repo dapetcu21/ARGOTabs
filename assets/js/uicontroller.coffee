@@ -3,13 +3,31 @@ define ['jquery', 'opencontroller', 'alertcontroller', 'localbackend', 'B64', 'r
     constructor: ->
       @app = app = angular.module 'argotabs', []
 
+      app.directive 'navLi', ->
+        restrict: 'E'
+        scope:
+          href: '@'
+        transclude: true
+        replace: true
+        controller: ['$scope', '$location', ($scope, $location) ->
+          $scope.$watch ->
+            $location.path()
+          , (newValue, oldValue) ->
+            $scope.class = if (newValue == $scope.href) then 'active' else ''
+        ]
+        template: "<li class='{{class}}'><a href=\"{{'#' + href}}\" ng-transclude></a></li>"
+
       app.controller 'MainCtrl', ['$scope', ($scope) =>
         $scope.ui = this
       ]
 
+      app.controller 'LoadingCtrl', ['$scope', ($scope) =>
+        $scope.loaded = true
+      ]
+
       Routes(this)
 
-      @injector = angular.bootstrap $('body').get(), ['argotabs']
+      @injector = angular.bootstrap document, ['argotabs']
 
       $(document).ready =>
         @open()

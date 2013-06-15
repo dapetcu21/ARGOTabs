@@ -1,4 +1,4 @@
-#open-modal.modal.hide.fade.animated
+#open-modal(class="#{closeable ? 'fade' : ''}").modal.hide.animated
   .modal-header
     if closeable
       button(type="button", data-dismiss="modal", aria-hidden="true").close &times;
