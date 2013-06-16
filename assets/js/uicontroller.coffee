@@ -1,4 +1,4 @@
-define ['jquery', 'opencontroller', 'alertcontroller', 'localbackend', 'B64', 'routes', 'jquery.bootstrap'], ($, OpenController, AlertController, LocalBackend, B64, Routes) ->
+define ['jquery', 'opencontroller', 'alertcontroller', 'localbackend', 'B64', 'routes/routes', 'jquery.bootstrap'], ($, OpenController, AlertController, LocalBackend, B64, Routes) ->
   class UIController
     constructor: ->
       @app = app = angular.module 'argotabs', []

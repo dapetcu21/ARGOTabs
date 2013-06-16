@@ -1,40 +1,28 @@
-#open-modal(class="#{closeable ? 'fade' : ''}").modal.hide.animated
-  .modal-header
-    if closeable
-      button(type="button", data-dismiss="modal", aria-hidden="true").close &times;
-    h3 Open tournament file
-  .modal-body
-    table#open-modal-table.table.table-hover
-      tr#open-modal-add-tr
-        td.omodal-add-td
-          .omodal-add-div
-            #omodal-add-page1.omodal-add-page
-              .omodal-add-padding: a(href='#')#omodal-add-a1 
-                i.icon-plus
-                |  Add tournament
-            #omodal-add-page2.omodal-add-page
-              table.center-table
-                td
-                  .omodal-btn-padding
-                    button(type='button')#omodal-btn-new.btn
-                      i.icon-file
-                      |  New file
-                td
-                  .omodal-btn-padding
-                    button(type='file')#omodal-btn-upload.btn
-                      i.icon-upload-alt
-                      |  Upload
-              input(type='file').omodal-file
-              button.close.pull-right.omodal-btn-close
-                i.icon-remove
-            #omodal-add-page3.omodal-add-page
+table#open-modal-table.table.table-hover
+  tr#open-modal-add-tr
+    td.omodal-add-td
+      .omodal-add-div
+        #omodal-add-page1.omodal-add-page
+          .omodal-add-padding: a#omodal-add-a1 
+            i.icon-plus
+            |  Add tournament
+        #omodal-add-page2.omodal-add-page
+          table.center-table
+            td
+              .omodal-btn-padding
+                button(type='button')#omodal-btn-new.btn
+                  i.icon-file
+                  |  New file
+            td
+              .omodal-btn-padding
+                button(type='file')#omodal-btn-upload.btn
+                  i.icon-upload-alt
+                  |  Upload
+          input(type='file').omodal-file
+          button.close.pull-right.omodal-btn-close
+            i.icon-remove
+        #omodal-add-page3.omodal-add-page
             
-  if closeable
-    .modal-footer
-      a(data-dismiss="modal").btn Cancel
-
-
-
 :stylus
   #open-modal
     transition: transform 0.3s

@@ -1,4 +1,4 @@
-div(id=id).modal.hide.fade
+div(id=o.id, class=o.cssClass).modal.hide
   .modal-header
     if o.closeable
       button(type="button", data-dismiss="modal", aria-hidden="true").close.modal-cancel &times;
@@ -9,3 +9,18 @@ div(id=id).modal.hide.fade
     .modal-footer
       each button, i in o.buttons
         a(class="#{(i == o.cancelButtonIndex)?'modal-cancel ':''}#{(i == o.primaryButtonIndex)?'btn-primary ':''}", data-count="#{i}").btn.modal-button #{button}
+
+  if o.width 
+    style
+      @media (min-width: 767px) {
+        ##{o.id} {
+          width: #{o.width}px;
+          margin-left: #{-o.width / 2}px;
+        }
+      }
+  style
+    @media (min-width: 767px) {
+      .modal.fade {
+        top: 20px;
+      }
+

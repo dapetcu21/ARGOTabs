@@ -1,4 +1,4 @@
-define ['jquery', 'filereader', 'tournament', 'backends', 'localbackend', 'templates', 'jquery.transit'], ($, FileReaderJS, Tournament, backends, LocalBackend) ->
+define ['jquery', 'filereader', 'alertcontroller', 'tournament', 'backends', 'localbackend', 'templates', 'jquery.transit'], ($, FileReaderJS, AlertController, Tournament, backends, LocalBackend) ->
   getObjectClass = (obj) ->
     if obj and obj.constructor and obj.constructor.toString
       arr = obj.constructor.toString().match /function\s*(\w+)/
@@ -10,22 +10,18 @@ define ['jquery', 'filereader', 'tournament', 'backends', 'localbackend', 'templ
     constructor: (@uiController) ->
       @closeable = @uiController.getTournament()?
 
-
-      $('body').append templates.openModal
+      new AlertController
+        title: "Open tournament file"
+        id: "open-modal"
         closeable: @closeable
+        animated: @closeable
+        buttons: if @closeable then ["Cancel"] else []
+        primaryButtonIndex: -1
+        cancelButtonIndex: 0
+        width: 350
+        htmlMessage: templates.openModal()
 
       @openModal = openModal = $('#open-modal')
-      openModal.modal if @closeable then null else
-        keyboard: false
-        backdrop: 'static'
-
-      openModal.css
-        'width': '350px'
-        'margin-left': ->
-          -$(this).width() / 2
-
-      openModal.on 'hidden', ->
-        openModal.remove()
 
       openModal.find('#omodal-add-a1').click =>
         openModal.find('.omodal-add-div').transition

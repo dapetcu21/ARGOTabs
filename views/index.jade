@@ -9,7 +9,7 @@ div(ng-controller='MainCtrl').navbar.navbar-fixed-top
       ul.nav
         li.arrow-nav: a.action-open.brand
           i.icon-arrow-left.view-arrow
-          | ARGO Tabs
+          span.view-brand ARGO Tabs
         li.divider-vertical
           li: a(href="#").brand.view-title {{ui.tournament.name}}
 
@@ -41,7 +41,7 @@ div(ng-controller='MainCtrl').navbar.navbar-fixed-top
           nav-li(href="/speaker-rank") Speaker rank
           nav-li(href="/judge-avg") Judge averages
           li.nav-header Rounds
-          nav-li(href="/") {{ui.tournament.name}}
+          nav-li(href="/rounds/1") {{ui.tournament.name}}
     .span10
       div(ng-view)
 
@@ -51,3 +51,9 @@ div(ng-controller='MainCtrl').navbar.navbar-fixed-top
   
   .view-arrow
     margin-right: 15px
+
+  @media (max-width: 767px)
+    .view-brand
+      display: none
+    li.arrow-nav a
+      padding-right: 0px !important
