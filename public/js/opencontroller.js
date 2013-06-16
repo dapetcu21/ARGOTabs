@@ -1,5 +1,5 @@
 (function() {
-  define(['jquery', 'filereader', 'alertcontroller', 'tournament', 'backends', 'localbackend', 'templates', 'jquery.transit'], function($, FileReaderJS, AlertController, Tournament, backends, LocalBackend) {
+  define(['jquery', 'filereader', 'alertcontroller', 'tournament', 'backends', 'localbackend', 'templates', 'jquery.transit'], function($, FileReaderJS, AlertController, Tournament, Backends, LocalBackend) {
     var OpenController, getObjectClass;
     getObjectClass = function(obj) {
       var arr;
@@ -74,8 +74,8 @@
           });
         });
         this.fileLists = {};
-        for (_i = 0, _len = backends.length; _i < _len; _i++) {
-          backend = backends[_i];
+        for (_i = 0, _len = Backends.length; _i < _len; _i++) {
+          backend = Backends[_i];
           backend.listFiles(function(fileNames) {
             var name, _j, _len1, _results;
             _results = [];

@@ -7,7 +7,8 @@
       'jquery.transit': '/components/jquery.transit/jquery.transit',
       filereader: '/components/filereader/filereader',
       angular: '/components/angular/angular',
-      B64: '/components/B64/base64'
+      B64: '/components/B64/base64',
+      cookies: '/components/cookies/cookies'
     },
     shim: {
       'jquery.bootstrap': ['jquery'],

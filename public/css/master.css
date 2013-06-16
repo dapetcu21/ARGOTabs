@@ -35,6 +35,24 @@ body {
   color: #fff;
   text-shadow: 0px 2px 3px #000;
 }
-.loading-screen.true {
-  display: none;
+#open-modal.modal {
+  -webkit-transition: transform 0.3s, opacity 0.3s linear, top 0.3s ease-out;
+  -moz-transition: transform 0.3s, opacity 0.3s linear, top 0.3s ease-out;
+  -o-transition: transform 0.3s, opacity 0.3s linear, top 0.3s ease-out;
+  -ms-transition: transform 0.3s, opacity 0.3s linear, top 0.3s ease-out;
+  transition: transform 0.3s, opacity 0.3s linear, top 0.3s ease-out;
+  -webkit-transition: -webkit-transform 0.3s, opacity 0.3s linear, top 0.3s ease-out;
+}
+#open-modal.dropbox {
+  -webkit-transform: scale(1.2);
+  -moz-transform: scale(1.2);
+  -o-transform: scale(1.2);
+  -ms-transform: scale(1.2);
+  transform: scale(1.2);
+}
+.hidden-true {
+  display: none !important;
+}
+.textedit-input {
+  margin: 0px !important;
 }

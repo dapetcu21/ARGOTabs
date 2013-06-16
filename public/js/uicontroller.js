@@ -1,31 +1,31 @@
 (function() {
-  define(['jquery', 'opencontroller', 'alertcontroller', 'localbackend', 'B64', 'routes/routes', 'jquery.bootstrap'], function($, OpenController, AlertController, LocalBackend, B64, Routes) {
-    var UIController;
+  define(['jquery', 'B64', 'cookies', 'opencontroller', 'alertcontroller', 'tournament', 'backends', 'localbackend', 'routes/routes', 'components', 'jquery.bootstrap'], function($, B64, Cookies, OpenController, AlertController, Tournament, Backends, LocalBackend, Routes) {
+    var UIController, getClass, getObjectClass;
+    getObjectClass = function(obj) {
+      var arr;
+      if (obj && obj.constructor && obj.constructor.toString) {
+        arr = obj.constructor.toString().match(/function\s*(\w+)/);
+        if (arr && arr.length === 2) {
+          return arr[1];
+        }
+      }
+      return void 0;
+    };
+    getClass = function(constructor) {
+      var arr;
+      if (constructor && constructor.toString) {
+        arr = constructor.toString().match(/function\s*(\w+)/);
+        if (arr && arr.length === 2) {
+          return arr[1];
+        }
+      }
+      return void 0;
+    };
     return UIController = (function() {
       function UIController() {
         var app,
           _this = this;
-        this.app = app = angular.module('argotabs', []);
-        app.directive('navLi', function() {
-          return {
-            restrict: 'E',
-            scope: {
-              href: '@'
-            },
-            transclude: true,
-            replace: true,
-            controller: [
-              '$scope', '$location', function($scope, $location) {
-                return $scope.$watch(function() {
-                  return $location.path();
-                }, function(newValue, oldValue) {
-                  return $scope["class"] = newValue === $scope.href ? 'active' : '';
-                });
-              }
-            ],
-            template: "<li class='{{class}}'><a href=\"{{'#' + href}}\" ng-transclude></a></li>"
-          };
-        });
+        this.app = app = angular.module('argotabs', ['components']);
         app.controller('MainCtrl', [
           '$scope', function($scope) {
             return $scope.ui = _this;
@@ -39,7 +39,9 @@
         Routes(this);
         this.injector = angular.bootstrap(document, ['argotabs']);
         $(document).ready(function() {
-          _this.open();
+          _this.loadSession(function() {
+            return new OpenController(_this);
+          });
           $(".fixed-menu").mouseover(function() {
             var newPos, oldPos, submenuPos, windowPos;
             submenuPos = $(this).offset().left + 325;
@@ -72,9 +74,40 @@
         });
       };
 
+      UIController.prototype.loadSession = function(onFail) {
+        var backend, e, found, lastBackend, lastFileName, _i, _len,
+          _this = this;
+        lastBackend = Cookies.get('lastBackend');
+        lastFileName = Cookies.get('lastFileName');
+        found = false;
+        if (lastBackend && lastFileName) {
+          for (_i = 0, _len = Backends.length; _i < _len; _i++) {
+            backend = Backends[_i];
+            if (getClass(backend) === lastBackend) {
+              try {
+                backend.listFiles(function(fileList) {
+                  if (fileList.indexOf(lastFileName) !== -1) {
+                    _this.setTournament(new Tournament(new backend(lastFileName)));
+                    return found = true;
+                  }
+                });
+              } catch (_error) {
+                e = _error;
+                console.log(e.message);
+              }
+              break;
+            }
+          }
+        }
+        if (!found) {
+          return onFail();
+        }
+      };
+
       UIController.prototype.save = function(fn) {
         var btn, btns, e,
           _this = this;
+        console.trace();
         if (fn == null) {
           fn = function() {};
         }
@@ -256,6 +289,8 @@
         var _this = this;
         this.tournament = tournament;
         return tournament.load(function() {
+          Cookies.set('lastBackend', getObjectClass(tournament.backend));
+          Cookies.set('lastFileName', tournament.backend.fileName());
           return _this.updateAngular();
         });
       };

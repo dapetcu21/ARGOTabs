@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="css/master.css">
   </head>
   <body>
-<div ng-controller="LoadingCtrl" class="{{loaded}} loading-screen">
+<div ng-controller="LoadingCtrl" class="hidden-{{loaded}} loading-screen">
   <h3><i class="icon-spinner icon-spin icon-large"></i>&nbsp; Loading...</h3>
 </div>
 <div ng-controller="MainCtrl" class="navbar navbar-fixed-top">
@@ -55,9 +55,7 @@
         </ul>
       </div>
     </div>
-    <div class="span10">
-      <div ng-view="ng-view"></div>
-    </div>
+    <div ng-view="ng-view" class="span10"></div>
   </div>
 </div><style type="text/css">.view-title,
 .app-title {
