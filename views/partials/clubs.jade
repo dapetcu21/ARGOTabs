@@ -11,7 +11,7 @@ table#clubs-table.table.table-striped.table-bordered
       td(class="hover-{{hover}}").controls 
         i(ng-click="removeClub($index)").close.icon-remove
 
-    tr: td(colspan=3): a(ng-click="addClub()")
+    tr: td(colspan=3): a(tabindex=0, href="", ng-click="addClub()")
       i.icon-plus
       |  Add club
 

@@ -20,6 +20,12 @@ define ['jquery'], ($) ->
       value: '=textEditBind'
     link: (scope, element) ->
       scope.editing = false
+
+      label = $(element).find('.textedit-label')
+      label.focus ->
+        scope.$apply ->
+          scope.beginEdit()
+
       scope.beginEdit = ->
         scope.editing = true
         input = $(element).find('input')
