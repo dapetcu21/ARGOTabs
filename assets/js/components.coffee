@@ -21,12 +21,17 @@ define ['jquery'], ($) ->
     link: (scope, element) ->
       scope.editing = false
 
-      label = $(element).find('.textedit-label')
-      label.focus ->
+      el = $(element)
+      callback = ->
         scope.$apply ->
           scope.beginEdit()
+      el.find('.textedit-label').focus callback
+
+      if el.parent()[0].tagName == 'TD'
+        el.parent().click callback
 
       scope.beginEdit = ->
+        return if scope.editing
         scope.editing = true
         input = $(element).find('input')
         input.blur -> #because angular doesn't know focusout
