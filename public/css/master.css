@@ -16,9 +16,10 @@ body {
   }
 }
 .loading-screen {
-  width: 100%;
+  width: 200%;
   height: 200%;
   top: -50%;
+  left: -50%;
   background: #333;
   position: fixed;
   overflow: hidden;

@@ -1,5 +1,5 @@
 (function() {
-  define(['jquery', 'filereader', 'tournament', 'backends', 'localbackend', 'templates', 'jquery.transit'], function($, FileReaderJS, Tournament, backends, LocalBackend) {
+  define(['jquery', 'filereader', 'alertcontroller', 'tournament', 'backends', 'localbackend', 'templates', 'jquery.transit'], function($, FileReaderJS, AlertController, Tournament, backends, LocalBackend) {
     var OpenController, getObjectClass;
     getObjectClass = function(obj) {
       var arr;
@@ -17,23 +17,18 @@
           _this = this;
         this.uiController = uiController;
         this.closeable = this.uiController.getTournament() != null;
-        $('body').append(templates.openModal({
-          closeable: this.closeable
-        }));
+        new AlertController({
+          title: "Open tournament file",
+          id: "open-modal",
+          closeable: this.closeable,
+          animated: this.closeable,
+          buttons: this.closeable ? ["Cancel"] : [],
+          primaryButtonIndex: -1,
+          cancelButtonIndex: 0,
+          width: 350,
+          htmlMessage: templates.openModal()
+        });
         this.openModal = openModal = $('#open-modal');
-        openModal.modal(this.closeable ? null : {
-          keyboard: false,
-          backdrop: 'static'
-        });
-        openModal.css({
-          'width': '350px',
-          'margin-left': function() {
-            return -$(this).width() / 2;
-          }
-        });
-        openModal.on('hidden', function() {
-          return openModal.remove();
-        });
         openModal.find('#omodal-add-a1').click(function() {
           return openModal.find('.omodal-add-div').transition({
             x: '-33.33%'

@@ -1,5 +1,5 @@
 (function() {
-  define(['jquery', 'opencontroller', 'alertcontroller', 'localbackend', 'B64', 'routes', 'jquery.bootstrap'], function($, OpenController, AlertController, LocalBackend, B64, Routes) {
+  define(['jquery', 'opencontroller', 'alertcontroller', 'localbackend', 'B64', 'routes/routes', 'jquery.bootstrap'], function($, OpenController, AlertController, LocalBackend, B64, Routes) {
     var UIController;
     return UIController = (function() {
       function UIController() {
