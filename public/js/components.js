@@ -29,7 +29,14 @@
           value: '=textEditBind'
         },
         link: function(scope, element) {
+          var label;
           scope.editing = false;
+          label = $(element).find('.textedit-label');
+          label.focus(function() {
+            return scope.$apply(function() {
+              return scope.beginEdit();
+            });
+          });
           scope.beginEdit = function() {
             var input;
             scope.editing = true;
