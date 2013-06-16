@@ -1,21 +1,22 @@
-define ['jquery', 'opencontroller', 'alertcontroller', 'localbackend', 'B64', 'routes/routes', 'jquery.bootstrap'], ($, OpenController, AlertController, LocalBackend, B64, Routes) ->
+define ['jquery', 'B64', 'cookies', 'opencontroller', 'alertcontroller', 'tournament', 'backends', 'localbackend', 'routes/routes', 'components', 'jquery.bootstrap'], ($, B64, Cookies, OpenController, AlertController, Tournament, Backends, LocalBackend, Routes) ->
+  getObjectClass = (obj) ->
+    if obj and obj.constructor and obj.constructor.toString
+      arr = obj.constructor.toString().match /function\s*(\w+)/
+      if arr and arr.length == 2
+        return arr[1]
+    undefined
+
+  getClass = (constructor) ->
+    if constructor and constructor.toString
+      arr = constructor.toString().match /function\s*(\w+)/
+      if arr and arr.length == 2
+        return arr[1]
+    undefined
+
   class UIController
     constructor: ->
-      @app = app = angular.module 'argotabs', []
+      @app = app = angular.module 'argotabs', ['components']
 
-      app.directive 'navLi', ->
-        restrict: 'E'
-        scope:
-          href: '@'
-        transclude: true
-        replace: true
-        controller: ['$scope', '$location', ($scope, $location) ->
-          $scope.$watch ->
-            $location.path()
-          , (newValue, oldValue) ->
-            $scope.class = if (newValue == $scope.href) then 'active' else ''
-        ]
-        template: "<li class='{{class}}'><a href=\"{{'#' + href}}\" ng-transclude></a></li>"
 
       app.controller 'MainCtrl', ['$scope', ($scope) =>
         $scope.ui = this
@@ -30,7 +31,8 @@ define ['jquery', 'opencontroller', 'alertcontroller', 'localbackend', 'B64', 'r
       @injector = angular.bootstrap document, ['argotabs']
 
       $(document).ready =>
-        @open()
+        @loadSession =>
+          new OpenController this
 
         $(".fixed-menu").mouseover ->
           submenuPos = $(this).offset().left + 325
@@ -58,7 +60,26 @@ define ['jquery', 'opencontroller', 'alertcontroller', 'localbackend', 'B64', 'r
       @save =>
         new OpenController(this)
 
+    loadSession: (onFail) ->
+      lastBackend = Cookies.get 'lastBackend'
+      lastFileName = Cookies.get 'lastFileName'
+      found = false
+      if lastBackend and lastFileName
+        for backend in Backends
+          if getClass(backend) == lastBackend
+            try
+              backend.listFiles (fileList) =>
+                if fileList.indexOf(lastFileName) != -1
+                  @setTournament new Tournament(new backend(lastFileName))
+                  found = true
+            catch e
+              console.log e.message
+            break
+      if not found
+        onFail()
+
     save: (fn) ->
+      console.trace()
       fn ?= ->
       if @tournament
         btn = $('.action-save')
@@ -186,4 +207,6 @@ define ['jquery', 'opencontroller', 'alertcontroller', 'localbackend', 'B64', 'r
     setTournament: (tournament) ->
       @tournament = tournament
       tournament.load =>
+        Cookies.set 'lastBackend', getObjectClass tournament.backend
+        Cookies.set 'lastFileName', tournament.backend.fileName()
         @updateAngular()

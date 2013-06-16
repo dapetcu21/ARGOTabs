@@ -1,2 +1,29 @@
-h1 Clubs
-h2 {{ui.tournament.name}}
+table#clubs-table.table.table-striped.table-bordered
+  thead
+    tr
+      th #
+      th Name
+  tbody
+    tr(ng-repeat="club in ui.tournament.clubs", ng-init="hover = false", ng-mouseenter="hover = true", ng-mouseleave="hover = false")
+      td {{$index}} 
+      td(colspan="{{noColumns(hover)}}")
+        div(text-edit-cell, text-edit-bind="club.name")
+      td(class="hover-{{hover}}").controls 
+        i(ng-click="removeClub($index)").close.icon-remove
+
+    tr: td(colspan=3): a(ng-click="addClub()")
+      i.icon-plus
+      |  Add club
+
+
+:stylus
+  #clubs-table th:first-child
+    width: 35px
+  #clubs-table td.controls
+    width: 10px
+  #clubs-table td.hover-false
+    display: none
+  #clubs-table td.controls i
+    font-size: 130%
+  #clubs-table td
+    vertical-align: middle

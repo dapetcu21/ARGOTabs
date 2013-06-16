@@ -1,4 +1,4 @@
-define ['jquery', 'filereader', 'alertcontroller', 'tournament', 'backends', 'localbackend', 'templates', 'jquery.transit'], ($, FileReaderJS, AlertController, Tournament, backends, LocalBackend) ->
+define ['jquery', 'filereader', 'alertcontroller', 'tournament', 'backends', 'localbackend', 'templates', 'jquery.transit'], ($, FileReaderJS, AlertController, Tournament, Backends, LocalBackend) ->
   getObjectClass = (obj) ->
     if obj and obj.constructor and obj.constructor.toString
       arr = obj.constructor.toString().match /function\s*(\w+)/
@@ -58,7 +58,7 @@ define ['jquery', 'filereader', 'alertcontroller', 'tournament', 'backends', 'lo
           textBox.focus()
 
       @fileLists = {}
-      for backend in backends
+      for backend in Backends
         backend.listFiles (fileNames) =>
           for name in fileNames
             @addItem name, backend

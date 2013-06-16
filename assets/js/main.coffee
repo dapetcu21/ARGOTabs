@@ -8,6 +8,7 @@ require.config
     filereader: '/components/filereader/filereader'
     angular: '/components/angular/angular'
     B64: '/components/B64/base64'
+    cookies: '/components/cookies/cookies'
   shim:
     'jquery.bootstrap': ['jquery']
     'jquery.transit': ['jquery']

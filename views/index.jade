@@ -1,4 +1,4 @@
-div(ng-controller='LoadingCtrl', class="{{loaded}}").loading-screen
+div(ng-controller='LoadingCtrl', class="hidden-{{loaded}}").loading-screen
     h3
       i.icon-spinner.icon-spin.icon-large
       | &nbsp; Loading...
@@ -42,8 +42,7 @@ div(ng-controller='MainCtrl').navbar.navbar-fixed-top
           nav-li(href="/judge-avg") Judge averages
           li.nav-header Rounds
           nav-li(href="/rounds/1") {{ui.tournament.name}}
-    .span10
-      div(ng-view)
+    div(ng-view).span10
 
 :stylus
   .view-title, .app-title
