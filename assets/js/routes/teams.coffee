@@ -26,10 +26,8 @@ define ['team'], (Team) ->
             return if newValue == oldValue
             team = iScope.team
             if oldValue
-              console.log 'old: ', oldValue.name
               oldValue.removeTeam(team)
             if newValue
-              console.log 'new: ', newValue.name
               newValue.addTeam(team)
         $scope.eliminateNil = (a) ->
           if not a?

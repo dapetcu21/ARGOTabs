@@ -176,6 +176,8 @@ define ['jquery', 'filereader', 'alertcontroller', 'tournament', 'backends', 'lo
 
     prepareFileReader: ->
       dragClass: "dropbox"
+      readAsDefault: "Text"
+      readAsMap: {}
       on:
         beforestart: (file) ->
           return (file.name.match /\.atab$/)?
