@@ -1,4 +1,4 @@
-define ['club'], (Club) ->
+define ['club', 'team', 'util'], (Club, Team, Util) ->
   class Tournament
     constructor: (@backend) ->
       @clubs = []
@@ -8,24 +8,30 @@ define ['club'], (Club) ->
         try model = JSON.parse(loadedString) catch
         model ?= {}
         @clubs = []
+        @teams = []
+
         for key, value of model
           this[key] = value
+
+        for club, i in @clubs
+          @clubs[i] = new Club(this, club)
+        for team, i in @teams
+          @teams[i] = new Team(this, team)
+
         for club in @clubs
-          newClub = new Club(this, club)
+          club.unpackCycles()
+        for team in @teams
+          team.unpackCycles()
 
         @lastData = @toFile()
         fn()
         return
 
-    toFile: ->
-      model = {}
-      for key, value of this
-        model[key] = value
-      privates = ['backend', 'lastData']
-      for key in privates
-        model[key] = undefined
+    toJSON: ->
+      Util.copyObject this, ['backend', 'lastData']
 
-      JSON.stringify model
+    toFile: ->
+      JSON.stringify this
 
     save: (fn, force = false) ->
       @saveData @toFile(), fn, force

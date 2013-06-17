@@ -1,18 +1,21 @@
-define ->
+define ['util'], (Util)->
   class Club
     constructor: (@tournament, other) ->
       if other
-        for key, value in other
+        for key, value of other
           this[key] = value
       @name ?= ""
-      #TODO: fromJSON here if it's the case
+      @teams ?= []
+
+    unpackCycles: ->
+      Util.unpackCycles @teams, @tournament.teams
 
     toJSON: ->
-        model = {}
-        for key, value of this
-          model[key] = value
-        privates = ['tournament']
-        for key in privates
-          model[key] = undefined
-        return model
+      model = Util.copyObject this, ['tournament']
+      model.teams = Util.packCycles @teams, @tournament.teams
+      return model
 
+    removeTeam: (team) ->
+      @teams.splice(@teams.indexOf team, 1)
+    addTeam: (team) ->
+      @teams.push team

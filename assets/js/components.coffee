@@ -56,6 +56,7 @@ define ['jquery', 'templates', 'underscore'], ($, Templates) ->
       sortBy: '&'
       compareFunction: '&'
     replace: true
+    transclude: true
     link: (scope, element) ->
       scope.ascending = false
 

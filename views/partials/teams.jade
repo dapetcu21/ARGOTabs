@@ -1,0 +1,35 @@
+table#teams-table.table.table-striped.table-bordered
+  thead
+    tr
+      th #
+      th
+        sort-arrow(model='ui.tournament.teams', sort-by='o.name') Team name
+      th
+        sort-arrow(model='ui.tournament.teams', sort-by='o.club.name') Club
+  tbody
+    tr(ng-repeat="team in ui.tournament.teams", ng-init="hover = false", ng-mouseenter="hover = true", ng-mouseleave="hover = false")
+      td {{$index}} 
+      td
+        div(text-edit-cell, text-edit-bind="team.name")
+      td(colspan="{{noColumns(hover)}}")
+        //div(text-edit-cell, text-edit-bind="team.name")
+        {{team.club.name}}
+      td(class="hidden-{{!hover}}").controls 
+        i(ng-click="removeTeam($index)").close.icon-remove
+
+    tr: td(colspan=5): a(tabindex=0, href="", ng-click="addTeam()")
+      i.icon-plus
+      |  Add team
+
+
+:stylus
+  #teams-table th:first-child
+    width: 35px
+  #teams-table th:nth-child(2)
+    width: 30%
+  #teams-table td.controls
+    width: 10px
+  #teams-table td.controls i
+    font-size: 130%
+  #teams-table td
+    vertical-align: middle

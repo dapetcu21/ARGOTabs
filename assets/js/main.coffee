@@ -15,6 +15,6 @@ require.config
     'jquery.transit': ['jquery']
     filereader: ['jquery']
 
-require ['uicontroller', 'globals'], (UIController, globals) ->
+require ['jquery.bootstrap', 'uicontroller', 'globals'], (bs, UIController, globals) ->
   globals.uiController = new UIController()
 

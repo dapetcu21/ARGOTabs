@@ -10,7 +10,7 @@ table#clubs-table.table.table-striped.table-bordered
       td {{$index}} 
       td(colspan="{{noColumns(hover)}}")
         div(text-edit-cell, text-edit-bind="club.name")
-      td(class="hover-{{hover}}").controls 
+      td(class="hidden-{{!hover}}").controls 
         i(ng-click="removeClub($index)").close.icon-remove
 
     tr: td(colspan=3): a(tabindex=0, href="", ng-click="addClub()")
@@ -23,8 +23,6 @@ table#clubs-table.table.table-striped.table-bordered
     width: 35px
   #clubs-table td.controls
     width: 10px
-  #clubs-table td.hover-false
-    display: none
   #clubs-table td.controls i
     font-size: 130%
   #clubs-table td

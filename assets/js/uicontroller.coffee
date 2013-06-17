@@ -1,18 +1,4 @@
-define ['jquery', 'B64', 'cookies', 'opencontroller', 'alertcontroller', 'tournament', 'backends', 'localbackend', 'routes/routes', 'components', 'jquery.bootstrap'], ($, B64, Cookies, OpenController, AlertController, Tournament, Backends, LocalBackend, Routes) ->
-  getObjectClass = (obj) ->
-    if obj and obj.constructor and obj.constructor.toString
-      arr = obj.constructor.toString().match /function\s*(\w+)/
-      if arr and arr.length == 2
-        return arr[1]
-    undefined
-
-  getClass = (constructor) ->
-    if constructor and constructor.toString
-      arr = constructor.toString().match /function\s*(\w+)/
-      if arr and arr.length == 2
-        return arr[1]
-    undefined
-
+define ['jquery', 'B64', 'cookies', 'opencontroller', 'alertcontroller', 'tournament', 'backends', 'localbackend', 'routes/routes', 'util', 'components'], ($, B64, Cookies, OpenController, AlertController, Tournament, Backends, LocalBackend, Routes, Util) ->
   class UIController
     constructor: ->
       @app = app = angular.module 'argotabs', ['components']
@@ -71,7 +57,7 @@ define ['jquery', 'B64', 'cookies', 'opencontroller', 'alertcontroller', 'tourna
       found = false
       if lastBackend and lastFileName
         for backend in Backends
-          if getClass(backend) == lastBackend
+          if Util.getClass(backend) == lastBackend
             try
               backend.listFiles (fileList) =>
                 if fileList.indexOf(lastFileName) != -1
@@ -219,6 +205,6 @@ define ['jquery', 'B64', 'cookies', 'opencontroller', 'alertcontroller', 'tourna
     setTournament: (tournament) ->
       @tournament = tournament
       tournament.load =>
-        Cookies.set 'lastBackend', getObjectClass tournament.backend
+        Cookies.set 'lastBackend', Util.getObjectClass tournament.backend
         Cookies.set 'lastFileName', tournament.backend.fileName()
         @updateAngular()

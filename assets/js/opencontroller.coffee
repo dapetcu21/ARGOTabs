@@ -1,11 +1,4 @@
 define ['jquery', 'filereader', 'alertcontroller', 'tournament', 'backends', 'localbackend', 'templates', 'jquery.transit'], ($, FileReaderJS, AlertController, Tournament, Backends, LocalBackend) ->
-  getObjectClass = (obj) ->
-    if obj and obj.constructor and obj.constructor.toString
-      arr = obj.constructor.toString().match /function\s*(\w+)/
-      if arr and arr.length == 2
-        return arr[1]
-    undefined
-
   class OpenController
     constructor: (@uiController) ->
       @closeable = @uiController.getTournament()?

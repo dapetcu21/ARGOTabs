@@ -10,7 +10,7 @@ define ['club'], (Club) ->
           tournament.clubs.push club
           setTimeout ->
             $('#clubs-table').find('.textedit-label').last().click()
-          , 0
+          , 1
         $scope.noColumns = (hover) ->
           if hover then 1 else 2
         $scope.removeClub = (index) ->

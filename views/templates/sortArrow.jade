@@ -1,3 +1,5 @@
-span.sortarrow
+span(ng-click='toggleSort()').sortarrow
+  span(ng-transclude)
+  span &nbsp;
   i(class='hidden-{{!ascending}}', ng-click='toggleSort()').icon-sort-up
   i(class='hidden-{{ascending}}', ng-click='toggleSort()').icon-sort-down
