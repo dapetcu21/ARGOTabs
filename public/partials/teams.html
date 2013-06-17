@@ -1,0 +1,44 @@
+
+<table id="teams-table" class="table table-striped table-bordered">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>
+        <sort-arrow model="ui.tournament.teams" sort-by="o.name">Team name</sort-arrow>
+      </th>
+      <th>
+        <sort-arrow model="ui.tournament.teams" sort-by="o.club.name">Club</sort-arrow>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="team in ui.tournament.teams" ng-init="hover = false" ng-mouseenter="hover = true" ng-mouseleave="hover = false">
+      <td>{{$index}} </td>
+      <td>
+        <div text-edit-cell="text-edit-cell" text-edit-bind="team.name"></div>
+      </td>
+      <td colspan="{{noColumns(hover)}}">
+        <!--div(text-edit-cell, text-edit-bind="team.name")-->{{team.club.name}}
+      </td>
+      <td class="hidden-{{!hover}} controls"> <i ng-click="removeTeam($index)" class="close icon-remove"></i></td>
+    </tr>
+    <tr>
+      <td colspan="5"><a tabindex="0" href="" ng-click="addTeam()"><i class="icon-plus"></i> Add team</a></td>
+    </tr>
+  </tbody>
+</table><style type="text/css">#teams-table th:first-child {
+  width: 35px;
+}
+#teams-table th:nth-child(2) {
+  width: 30%;
+}
+#teams-table td.controls {
+  width: 10px;
+}
+#teams-table td.controls i {
+  font-size: 130%;
+}
+#teams-table td {
+  vertical-align: middle;
+}
+</style>

@@ -1,16 +1,6 @@
 (function() {
   define(['jquery', 'filereader', 'alertcontroller', 'tournament', 'backends', 'localbackend', 'templates', 'jquery.transit'], function($, FileReaderJS, AlertController, Tournament, Backends, LocalBackend) {
-    var OpenController, getObjectClass;
-    getObjectClass = function(obj) {
-      var arr;
-      if (obj && obj.constructor && obj.constructor.toString) {
-        arr = obj.constructor.toString().match(/function\s*(\w+)/);
-        if (arr && arr.length === 2) {
-          return arr[1];
-        }
-      }
-      return void 0;
-    };
+    var OpenController;
     return OpenController = (function() {
       function OpenController(uiController) {
         var backend, openModal, _i, _len,

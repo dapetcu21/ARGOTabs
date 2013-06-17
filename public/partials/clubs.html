@@ -3,7 +3,11 @@
   <thead>
     <tr>
       <th>#</th>
-      <th>Name</th>
+      <th>
+        Name
+        &nbsp;
+        <sort-arrow model="ui.tournament.clubs" sort-by="o.name"></sort-arrow>
+      </th>
     </tr>
   </thead>
   <tbody>
@@ -12,7 +16,7 @@
       <td colspan="{{noColumns(hover)}}">
         <div text-edit-cell="text-edit-cell" text-edit-bind="club.name"></div>
       </td>
-      <td class="hover-{{hover}} controls"> <i ng-click="removeClub($index)" class="close icon-remove"></i></td>
+      <td class="hidden-{{!hover}} controls"> <i ng-click="removeClub($index)" class="close icon-remove"></i></td>
     </tr>
     <tr>
       <td colspan="3"><a tabindex="0" href="" ng-click="addClub()"><i class="icon-plus"></i> Add club</a></td>
@@ -23,9 +27,6 @@
 }
 #clubs-table td.controls {
   width: 10px;
-}
-#clubs-table td.hover-false {
-  display: none;
 }
 #clubs-table td.controls i {
   font-size: 130%;

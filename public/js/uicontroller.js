@@ -1,26 +1,6 @@
 (function() {
-  define(['jquery', 'B64', 'cookies', 'opencontroller', 'alertcontroller', 'tournament', 'backends', 'localbackend', 'routes/routes', 'components', 'jquery.bootstrap'], function($, B64, Cookies, OpenController, AlertController, Tournament, Backends, LocalBackend, Routes) {
-    var UIController, getClass, getObjectClass;
-    getObjectClass = function(obj) {
-      var arr;
-      if (obj && obj.constructor && obj.constructor.toString) {
-        arr = obj.constructor.toString().match(/function\s*(\w+)/);
-        if (arr && arr.length === 2) {
-          return arr[1];
-        }
-      }
-      return void 0;
-    };
-    getClass = function(constructor) {
-      var arr;
-      if (constructor && constructor.toString) {
-        arr = constructor.toString().match(/function\s*(\w+)/);
-        if (arr && arr.length === 2) {
-          return arr[1];
-        }
-      }
-      return void 0;
-    };
+  define(['jquery', 'B64', 'cookies', 'opencontroller', 'alertcontroller', 'tournament', 'backends', 'localbackend', 'routes/routes', 'util', 'components'], function($, B64, Cookies, OpenController, AlertController, Tournament, Backends, LocalBackend, Routes, Util) {
+    var UIController;
     return UIController = (function() {
       function UIController() {
         var app,
@@ -65,6 +45,12 @@
             return _this.save();
           });
         });
+        this.autosaveStopped = 0;
+        setInterval(function() {
+          if (!_this.autosaveStopped) {
+            return _this.save((function() {}), true);
+          }
+        }, 5000);
       }
 
       UIController.prototype.open = function() {
@@ -83,7 +69,7 @@
         if (lastBackend && lastFileName) {
           for (_i = 0, _len = Backends.length; _i < _len; _i++) {
             backend = Backends[_i];
-            if (getClass(backend) === lastBackend) {
+            if (Util.getClass(backend) === lastBackend) {
               try {
                 backend.listFiles(function(fileList) {
                   if (fileList.indexOf(lastFileName) !== -1) {
@@ -104,10 +90,12 @@
         }
       };
 
-      UIController.prototype.save = function(fn) {
-        var btn, btns, e,
+      UIController.prototype.save = function(fn, autosave) {
+        var btn, btns, callback, e,
           _this = this;
-        console.trace();
+        if (autosave == null) {
+          autosave = false;
+        }
         if (fn == null) {
           fn = function() {};
         }
@@ -116,8 +104,10 @@
           btns = $('.view-save');
           btn.button('loading');
           clearTimeout(this._saveTimer);
+          this.autosaveStopped++;
           try {
-            return this.tournament.save(function() {
+            callback = function() {
+              _this.autosaveStopped--;
               btn.button('saved');
               btns.addClass('btn-success');
               btns.removeClass('btn-info');
@@ -127,7 +117,15 @@
                 return btns.removeClass('btn-success');
               }, 1000);
               return fn();
-            });
+            };
+            if (autosave) {
+              if (!this.tournament.saveIfRequired(callback)) {
+                this.autosaveStopped--;
+                return btn.button('reset');
+              }
+            } else {
+              return this.tournament.save(callback);
+            }
           } catch (_error) {
             e = _error;
             return new AlertController({
@@ -160,7 +158,8 @@
                 }
               },
               onDismissed: function() {
-                return btn.button('reset');
+                btn.button('reset');
+                return _this.autosaveStopped--;
               }
             });
           }
@@ -289,7 +288,7 @@
         var _this = this;
         this.tournament = tournament;
         return tournament.load(function() {
-          Cookies.set('lastBackend', getObjectClass(tournament.backend));
+          Cookies.set('lastBackend', Util.getObjectClass(tournament.backend));
           Cookies.set('lastFileName', tournament.backend.fileName());
           return _this.updateAngular();
         });

@@ -8,7 +8,8 @@
       filereader: '/components/filereader/filereader',
       angular: '/components/angular/angular',
       B64: '/components/B64/base64',
-      cookies: '/components/cookies/cookies'
+      cookies: '/components/cookies/cookies',
+      underscore: '/components/underscore/underscore'
     },
     shim: {
       'jquery.bootstrap': ['jquery'],
@@ -17,7 +18,7 @@
     }
   });
 
-  require(['uicontroller', 'globals'], function(UIController, globals) {
+  require(['jquery.bootstrap', 'uicontroller', 'globals'], function(bs, UIController, globals) {
     return globals.uiController = new UIController();
   });
 

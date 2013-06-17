@@ -56,3 +56,20 @@ body {
 .textedit-input {
   margin: 0px !important;
 }
+.sortarrow i {
+  -webkit-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
+  -moz-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
+  -o-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
+  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
+  opacity: 0;
+}
+th:hover .sortarrow i,
+.sortarrow:hover i {
+  -webkit-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
+  -moz-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
+  -o-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
+  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
+  opacity: 0.5;
+}

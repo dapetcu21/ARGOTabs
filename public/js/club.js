@@ -1,34 +1,41 @@
 (function() {
-  define(function() {
+  define(['util'], function(Util) {
     var Club;
     return Club = (function() {
       function Club(tournament, other) {
-        var key, value, _i, _len;
+        var key, value;
         this.tournament = tournament;
         if (other) {
-          for (value = _i = 0, _len = other.length; _i < _len; value = ++_i) {
-            key = other[value];
+          for (key in other) {
+            value = other[key];
             this[key] = value;
           }
         }
         if (this.name == null) {
           this.name = "";
         }
+        if (this.teams == null) {
+          this.teams = [];
+        }
       }
 
+      Club.prototype.unpackCycles = function() {
+        return Util.unpackCycles(this.teams, this.tournament.teams);
+      };
+
       Club.prototype.toJSON = function() {
-        var key, model, privates, value, _i, _len;
-        model = {};
-        for (key in this) {
-          value = this[key];
-          model[key] = value;
-        }
-        privates = ['tournament'];
-        for (_i = 0, _len = privates.length; _i < _len; _i++) {
-          key = privates[_i];
-          model[key] = void 0;
-        }
+        var model;
+        model = Util.copyObject(this, ['tournament']);
+        model.teams = Util.packCycles(this.teams, this.tournament.teams);
         return model;
+      };
+
+      Club.prototype.removeTeam = function(team) {
+        return this.teams.splice(this.teams.indexOf(team, 1));
+      };
+
+      Club.prototype.addTeam = function(team) {
+        return this.teams.push(team);
       };
 
       return Club;

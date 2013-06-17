@@ -45,7 +45,7 @@
         }
         this.loadDate = new Date();
         localStorage.setItem(this.fName + '.atab', obj);
-        localStorage.setItem(this.fName + '.mdate', new Date().getTime());
+        localStorage.setItem(this.fName + '.mdate', this.loadDate.getTime());
         fn();
       };
 

@@ -13,7 +13,7 @@
               tournament.clubs.push(club);
               return setTimeout(function() {
                 return $('#clubs-table').find('.textedit-label').last().click();
-              }, 0);
+              }, 1);
             };
             $scope.noColumns = function(hover) {
               if (hover) {
