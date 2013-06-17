@@ -23,7 +23,7 @@ define ['backend'], (Backend) ->
       @loadDate = new Date()
       
       localStorage.setItem(@fName + '.atab', obj)
-      localStorage.setItem(@fName + '.mdate', new Date().getTime())
+      localStorage.setItem(@fName + '.mdate', @loadDate.getTime())
 
       fn()
       return

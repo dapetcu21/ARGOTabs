@@ -1,4 +1,4 @@
-define ['jquery'], ($) ->
+define ['jquery', 'templates', 'underscore'], ($, Templates) ->
   mod = angular.module "components", []
   mod.directive 'navLi', ->
     restrict: 'E'
@@ -12,10 +12,10 @@ define ['jquery'], ($) ->
       , (newValue, oldValue) ->
         $scope.class = if (newValue == $scope.href) then 'active' else ''
     ]
-    template: "<li class='{{class}}'><a href=\"{{'#' + href}}\" ng-transclude></a></li>"
+    template: templates.navLi()
 
   mod.directive "textEditCell", ->
-    templateUrl: 'partials/texteditcell.html'
+    template: templates.textEditCell()
     scope:
       value: '=textEditBind'
     link: (scope, element) ->
@@ -47,5 +47,34 @@ define ['jquery'], ($) ->
         , 0
       scope.endEdit = ->
         scope.editing = false
+
+  mod.directive "sortArrow", ->
+    template: templates.sortArrow()
+    restrict: 'E'
+    scope:
+      model: '='
+      sortBy: '&'
+      compareFunction: '&'
+    replace: true
+    link: (scope, element) ->
+      scope.ascending = false
+
+      scope.sort = ->
+        if scope.sortBy
+          scope.model = _.sortBy scope.model, (o)->
+            scope.sortBy
+              o: o
+        else if scope.compareFunction
+          scope.model.sort (a, b)->
+            scope.compareFunction
+              a: a
+              b: b
+        if not scope.ascending
+          scope.model.reverse()
+
+
+      scope.toggleSort = ->
+        scope.ascending = not scope.ascending
+        scope.sort()
 
   return

@@ -12,6 +12,8 @@ define ['club'], (Club) ->
           this[key] = value
         for club in @clubs
           newClub = new Club(this, club)
+
+        @lastData = @toFile()
         fn()
         return
 
@@ -19,12 +21,24 @@ define ['club'], (Club) ->
       model = {}
       for key, value of this
         model[key] = value
-      privates = ['backend']
+      privates = ['backend', 'lastData']
       for key in privates
         model[key] = undefined
 
       JSON.stringify model
 
     save: (fn, force = false) ->
-      @backend.save @toFile(), fn, force
+      @saveData @toFile(), fn, force
+
+    saveIfRequired: (fn, force = false) ->
+      data = @toFile()
+      return false if @lastData == data
+      @saveData data, fn, force
+      return true
+    
+    saveData: (data, fn, force = false) ->
+      @backend.save data, =>
+        @lastData = data
+        fn()
+      , force
 

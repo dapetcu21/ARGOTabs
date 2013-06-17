@@ -3,6 +3,8 @@ table#clubs-table.table.table-striped.table-bordered
     tr
       th #
       th Name
+        | &nbsp;
+        sort-arrow(model='ui.tournament.clubs', sort-by='o.name')
   tbody
     tr(ng-repeat="club in ui.tournament.clubs", ng-init="hover = false", ng-mouseenter="hover = true", ng-mouseleave="hover = false")
       td {{$index}} 

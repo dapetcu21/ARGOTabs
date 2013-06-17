@@ -9,6 +9,7 @@ require.config
     angular: '/components/angular/angular'
     B64: '/components/B64/base64'
     cookies: '/components/cookies/cookies'
+    underscore: '/components/underscore/underscore'
   shim:
     'jquery.bootstrap': ['jquery']
     'jquery.transit': ['jquery']

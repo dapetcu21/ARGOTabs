@@ -54,7 +54,12 @@ define ['jquery', 'B64', 'cookies', 'opencontroller', 'alertcontroller', 'tourna
 
         $('.action-save').click =>
           @save()
-
+      
+      @autosaveStopped = 0
+      setInterval =>
+        if not @autosaveStopped
+          @save (->), true
+      , 5000
 
     open: ->
       @save =>
@@ -78,16 +83,17 @@ define ['jquery', 'B64', 'cookies', 'opencontroller', 'alertcontroller', 'tourna
       if not found
         onFail()
 
-    save: (fn) ->
-      console.trace()
+    save: (fn, autosave = false) ->
       fn ?= ->
       if @tournament
         btn = $('.action-save')
         btns = $('.view-save')
         btn.button 'loading'
         clearTimeout @_saveTimer
+        @autosaveStopped++
         try
-          @tournament.save =>
+          callback = =>
+            @autosaveStopped--
             btn.button 'saved'
             btns.addClass 'btn-success'
             btns.removeClass 'btn-info'
@@ -98,6 +104,12 @@ define ['jquery', 'B64', 'cookies', 'opencontroller', 'alertcontroller', 'tourna
               btns.removeClass 'btn-success'
             , 1000
             fn()
+          if autosave
+            if not @tournament.saveIfRequired callback
+              @autosaveStopped--
+              btn.button 'reset'
+          else
+            @tournament.save callback
         catch e
           new AlertController
             title: "Saving error"
@@ -121,9 +133,9 @@ define ['jquery', 'B64', 'cookies', 'opencontroller', 'alertcontroller', 'tourna
                     button.hide()
                   button.button('reset')
                   alert.find('.modal-body').html '<p>' + e.message + '</p>'
-            onDismissed: ->
+            onDismissed: =>
               btn.button 'reset'
-
+              @autosaveStopped--
       else
         fn()
 
