@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="css/master.css">
   </head>
   <body>
-<div ng-controller="LoadingCtrl" class="hidden-{{loaded}} loading-screen">
+<div ng-controller="LoadingCtrl" ng-show="!loaded" class="loading-screen">
   <h3><i class="icon-spinner icon-spin icon-large"></i>&nbsp; Loading...</h3>
 </div>
 <div ng-controller="MainCtrl" class="navbar navbar-fixed-top">

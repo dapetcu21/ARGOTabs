@@ -49,7 +49,9 @@
             scope.editing = true;
             input = $(element).find('input');
             input.blur(function() {
-              return scope.endEdit();
+              return scope.$apply(function() {
+                return scope.endEdit();
+              });
             });
             input.keypress(function(e) {
               if (e.which === 13) {
@@ -66,6 +68,58 @@
           };
           return scope.endEdit = function() {
             return scope.editing = false;
+          };
+        }
+      };
+    });
+    mod.directive("multiCell", function() {
+      return {
+        template: templates.multiCell(),
+        scope: {
+          value: '=multiBind',
+          choiceName: '&multiChoiceName',
+          choices: '=multiChoices'
+        },
+        link: function(scope, element, attrs) {
+          var callback, el;
+          attrs.$observe('multiAllowNil', function(value) {
+            return scope.allowNil = !!value;
+          });
+          scope.editing = false;
+          el = $(element);
+          callback = function() {
+            return scope.$apply(function() {
+              return scope.beginEdit();
+            });
+          };
+          el.find('.multi-label').focus(callback);
+          if (el.parent()[0].tagName === 'TD') {
+            el.parent().click(callback);
+          }
+          scope.beginEdit = function() {
+            var select;
+            if (scope.editing) {
+              return;
+            }
+            scope.editing = true;
+            select = $(element).find('select');
+            select.blur(function() {
+              return scope.$apply(function() {
+                return scope.endEdit();
+              });
+            });
+            return setTimeout(function() {
+              return select.focus();
+            }, 0);
+          };
+          scope.endEdit = function() {
+            return scope.editing = false;
+          };
+          return scope.getChoices = function(choices, allowNil) {
+            if (allowNil) {
+              return choices.concat([null]);
+            }
+            return choices;
           };
         }
       };

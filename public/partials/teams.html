@@ -7,20 +7,20 @@
         <sort-arrow model="ui.tournament.teams" sort-by="o.name">Team name</sort-arrow>
       </th>
       <th>
-        <sort-arrow model="ui.tournament.teams" sort-by="o.club.name">Club</sort-arrow>
+        <sort-arrow model="ui.tournament.teams" sort-by="eliminateNil(o.club.name)">Club</sort-arrow>
       </th>
     </tr>
   </thead>
   <tbody>
-    <tr ng-repeat="team in ui.tournament.teams" ng-init="hover = false" ng-mouseenter="hover = true" ng-mouseleave="hover = false">
-      <td>{{$index}} </td>
+    <tr ng-repeat="team in ui.tournament.teams" ng-init="hover = false; initRepeat(this)" ng-mouseenter="hover = true" ng-mouseleave="hover = false">
+      <td>{{$index + 1}} </td>
       <td>
         <div text-edit-cell="text-edit-cell" text-edit-bind="team.name"></div>
       </td>
       <td colspan="{{noColumns(hover)}}">
-        <!--div(text-edit-cell, text-edit-bind="team.name")-->{{team.club.name}}
+        <div multi-cell="multi-cell" multi-bind="team.club" multi-choices="ui.tournament.clubs" multi-allow-nil="true" multi-choice-name="o.name"></div>
       </td>
-      <td class="hidden-{{!hover}} controls"> <i ng-click="removeTeam($index)" class="close icon-remove"></i></td>
+      <td ng-show="hover" class="controls"> <i ng-click="removeTeam($index)" class="close icon-remove"></i></td>
     </tr>
     <tr>
       <td colspan="5"><a tabindex="0" href="" ng-click="addTeam()"><i class="icon-plus"></i> Add team</a></td>

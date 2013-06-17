@@ -31,7 +31,11 @@
       };
 
       Club.prototype.removeTeam = function(team) {
-        return this.teams.splice(this.teams.indexOf(team, 1));
+        var index;
+        index = this.teams.indexOf(team);
+        if (index !== -1) {
+          return this.teams.splice(index, 1);
+        }
       };
 
       Club.prototype.addTeam = function(team) {

@@ -233,6 +233,8 @@
         var _this = this;
         return {
           dragClass: "dropbox",
+          readAsDefault: "Text",
+          readAsMap: {},
           on: {
             beforestart: function(file) {
               return (file.name.match(/\.atab$/)) != null;

@@ -56,6 +56,9 @@ body {
 .textedit-input {
   margin: 0px !important;
 }
+.multi-input {
+  margin: 0px !important;
+}
 .sortarrow i {
   -webkit-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
   -moz-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);

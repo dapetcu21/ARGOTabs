@@ -24,12 +24,35 @@
                 return team.club.removeTeam(team);
               }
             };
-            return $scope.noColumns = function(hover) {
+            $scope.noColumns = function(hover) {
               if (hover) {
                 return 2;
               } else {
                 return 3;
               }
+            };
+            $scope.initRepeat = function(iScope) {
+              return iScope.$watch(function() {
+                return iScope.team.club;
+              }, function(newValue, oldValue) {
+                var team;
+                if (newValue === oldValue) {
+                  return;
+                }
+                team = iScope.team;
+                if (oldValue) {
+                  oldValue.removeTeam(team);
+                }
+                if (newValue) {
+                  return newValue.addTeam(team);
+                }
+              });
+            };
+            return $scope.eliminateNil = function(a) {
+              if (a == null) {
+                return '';
+              }
+              return a;
             };
           }
         ]
