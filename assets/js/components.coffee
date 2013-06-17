@@ -35,7 +35,8 @@ define ['jquery', 'templates', 'underscore'], ($, Templates) ->
         scope.editing = true
         input = $(element).find('input')
         input.blur -> #because angular doesn't know focusout
-          scope.endEdit()
+          scope.$apply ->
+            scope.endEdit()
         input.keypress (e) ->
           if e.which == 13
             scope.$apply ->
@@ -47,6 +48,47 @@ define ['jquery', 'templates', 'underscore'], ($, Templates) ->
         , 0
       scope.endEdit = ->
         scope.editing = false
+
+  mod.directive "multiCell", ->
+    template: templates.multiCell()
+    scope:
+      value: '=multiBind'
+      choiceName: '&multiChoiceName'
+      choices: '=multiChoices'
+    link: (scope, element, attrs) ->
+      attrs.$observe 'multiAllowNil', (value)->
+        scope.allowNil = not not value
+
+      scope.editing = false
+
+      el = $(element)
+      callback = ->
+        scope.$apply ->
+          scope.beginEdit()
+      el.find('.multi-label').focus callback
+
+      if el.parent()[0].tagName == 'TD'
+        el.parent().click callback
+      
+      scope.beginEdit = ->
+        return if scope.editing
+        scope.editing = true
+        select = $(element).find('select')
+        select.blur ->
+          scope.$apply ->
+            scope.endEdit()
+
+        setTimeout ->
+          select.focus()
+        , 0
+
+      scope.endEdit = ->
+        scope.editing = false
+
+      scope.getChoices = (choices, allowNil) ->
+        if allowNil
+          return choices.concat([null])
+        return choices
 
   mod.directive "sortArrow", ->
     template: templates.sortArrow()
@@ -77,5 +119,5 @@ define ['jquery', 'templates', 'underscore'], ($, Templates) ->
       scope.toggleSort = ->
         scope.ascending = not scope.ascending
         scope.sort()
-
+      
   return

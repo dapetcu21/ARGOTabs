@@ -19,6 +19,21 @@ define ['team'], (Team) ->
             team.club.removeTeam(team)
         $scope.noColumns = (hover) ->
           if hover then 2 else 3
-
+        $scope.initRepeat = (iScope) ->
+          iScope.$watch ->
+            iScope.team.club
+          , (newValue, oldValue) ->
+            return if newValue == oldValue
+            team = iScope.team
+            if oldValue
+              console.log 'old: ', oldValue.name
+              oldValue.removeTeam(team)
+            if newValue
+              console.log 'new: ', newValue.name
+              newValue.addTeam(team)
+        $scope.eliminateNil = (a) ->
+          if not a?
+            return ''
+          return a
       ]
         

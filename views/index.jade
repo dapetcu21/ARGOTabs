@@ -1,4 +1,4 @@
-div(ng-controller='LoadingCtrl', class="hidden-{{loaded}}").loading-screen
+div(ng-controller='LoadingCtrl', ng-show="!loaded").loading-screen
     h3
       i.icon-spinner.icon-spin.icon-large
       | &nbsp; Loading...

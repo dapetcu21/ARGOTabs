@@ -1,0 +1,3 @@
+span(ng-show='!editing', ng-click="beginEdit()", tabindex=0).multi-label {{choiceName({o: value})}}
+select(ng-show='editing', ng-model='value', ng-options="choiceName({o: o}) for o in getChoices(choices, allowNil)").multi-input
+

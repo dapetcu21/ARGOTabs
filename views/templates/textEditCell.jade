@@ -1,2 +1,2 @@
-span(class='hidden-{{editing}}', ng-click="beginEdit()", tabindex=0).textedit-label {{value}}
-input(type='text', class='hidden-{{!editing}}', ng-model='value').textedit-input
+span(ng-show='!editing', ng-click="beginEdit()", tabindex=0).textedit-label {{value}}
+input(type='text', ng-show='editing', ng-model='value').textedit-input

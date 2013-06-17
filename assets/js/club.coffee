@@ -16,6 +16,8 @@ define ['util'], (Util)->
       return model
 
     removeTeam: (team) ->
-      @teams.splice(@teams.indexOf team, 1)
+      index = @teams.indexOf team
+      if index != -1
+        @teams.splice(index, 1)
     addTeam: (team) ->
       @teams.push team
