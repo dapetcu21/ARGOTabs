@@ -8,23 +8,18 @@ define ['team'], (Team) ->
           tournament = ui.tournament
           team = new Team tournament
           tournament.teams.push team
-          setTimeout ->
-            $('#teams-table tr:nth-last-child(2) td:nth-child(2)').click()
-          , 1
         $scope.removeTeam = (index) ->
           array = ui.tournament.teams
           team = array[index]
           array.splice(index, 1)
           if team.club
             team.club.removeTeam(team)
-        $scope.noColumns = (hover) ->
-          if hover then 2 else 3
         $scope.initRepeat = (iScope) ->
           iScope.$watch ->
-            iScope.team.club
+            iScope.o.club
           , (newValue, oldValue) ->
             return if newValue == oldValue
-            team = iScope.team
+            team = iScope.o
             if oldValue
               oldValue.removeTeam(team)
             if newValue
@@ -34,4 +29,3 @@ define ['team'], (Team) ->
             return ''
           return a
       ]
-        

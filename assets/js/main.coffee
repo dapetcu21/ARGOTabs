@@ -14,6 +14,7 @@ require.config
     'jquery.bootstrap': ['jquery']
     'jquery.transit': ['jquery']
     filereader: ['jquery']
+    angular: ['jquery']
 
 require ['jquery.bootstrap', 'uicontroller', 'globals'], (bs, UIController, globals) ->
   globals.uiController = new UIController()

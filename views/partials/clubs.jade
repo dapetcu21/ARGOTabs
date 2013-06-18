@@ -1,5 +1,5 @@
 h3.print-only.text-center {{ui.tournament.name}} - Clubs
-table#clubs-table.table.table-striped.table-bordered
+table(editable-table, model='ui.tournament.clubs', add-item='addClub()', removeItem='removeClub(index)')#clubs-table
   thead
     tr
       th #
@@ -7,29 +7,16 @@ table#clubs-table.table.table-striped.table-bordered
         sort-arrow(model='ui.tournament.clubs', sort-by='o.name') Name
       th
         sort-arrow(model='ui.tournament.clubs', sort-by='o.teams.length') # Teams
-  tbody
-    tr(ng-repeat="club in ui.tournament.clubs", ng-init="hover = false", ng-mouseenter="hover = true", ng-mouseleave="hover = false")
+  tbody(editable-tbody, add-item-label='Add club')
+    script(type='text/html')
       td {{$index + 1}} 
       td 
-        div(text-edit-cell, text-edit-bind="club.name")
-      td(colspan="{{noColumns(hover)}}")
-        | {{club.teams.length}}
-      td(ng-show="hover").controls.dont-print
-        i(ng-click="removeClub($index)").close.icon-remove
-
-    tr.dont-print: td(colspan=4): a(tabindex=0, href="", ng-click="addClub()")
-      i.icon-plus
-      |  Add club
-
+        div(text-edit-cell, text-edit-bind="o.name")
+      td
+        | {{o.teams.length}}
 
 :stylus
   #clubs-table th:first-child
     width: 35px
   #clubs-table th:nth-child(2)
     width: 70%
-  #clubs-table td.controls
-    width: 10px
-  #clubs-table td.controls i
-    font-size: 130%
-  #clubs-table td
-    vertical-align: middle

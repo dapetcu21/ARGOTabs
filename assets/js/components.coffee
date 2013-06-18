@@ -1,4 +1,4 @@
-define ['jquery', 'templates', 'underscore'], ($, Templates) ->
+define ['jquery', 'underscore', 'templates', 'angular'], ($) ->
   mod = angular.module "components", []
   mod.directive 'navLi', ->
     restrict: 'E'
@@ -21,19 +21,18 @@ define ['jquery', 'templates', 'underscore'], ($, Templates) ->
     link: (scope, element) ->
       scope.editing = false
 
-      el = $(element)
       callback = ->
         scope.$apply ->
           scope.beginEdit()
-      el.find('.textedit-label').focus callback
+      element.find('.textedit-label').focus callback
 
-      if el.parent()[0].tagName == 'TD'
-        el.parent().click callback
+      if element.parent()[0].tagName == 'TD'
+        element.parent().click callback
 
       scope.beginEdit = ->
         return if scope.editing
         scope.editing = true
-        input = $(element).find('input')
+        input = element.find('input')
         input.blur -> #because angular doesn't know focusout
           scope.$apply ->
             scope.endEdit()
@@ -59,19 +58,18 @@ define ['jquery', 'templates', 'underscore'], ($, Templates) ->
     link: (scope, element, attrs) ->
       scope.editing = false
 
-      el = $(element)
       callback = ->
         scope.$apply ->
           scope.beginEdit()
-      el.find('.multi-label').focus callback
+      element.find('.multi-label').focus callback
 
-      if el.parent()[0].tagName == 'TD'
-        el.parent().click callback
+      if element.parent()[0].tagName == 'TD'
+        element.parent().click callback
       
       scope.beginEdit = ->
         return if scope.editing
         scope.editing = true
-        select = $(element).find('select')
+        select = element.find('select')
         select.blur ->
           scope.$apply ->
             scope.endEdit()
@@ -118,5 +116,78 @@ define ['jquery', 'templates', 'underscore'], ($, Templates) ->
       scope.toggleSort = ->
         scope.ascending = not scope.ascending
         scope.sort()
-      
-  return
+  
+  mod.directive 'editableTable', ->
+    template: templates.editableTable()
+    restrict: 'AE'
+    replace: true
+    transclude: true
+    scope:
+      model: '='
+      addItem_: '&addItem'
+      removeItem_: '&removeItem'
+    controller: [ '$scope' , ($scope) ->
+      this.scope = $scope
+      return
+    ]
+
+  mod.directive 'editableTbody', ->
+    template: templates.editableTbody()
+    transclude: true
+    restrict: 'AE'
+    require: '^editableTable'
+    link: (scope, element, attr, controller) ->
+      scope.getScope = ->
+        controller.scope
+      scope.noColumns = (hover) ->
+        if hover then 1 else 2
+      scope.removeItem = (index) ->
+        fcn = controller.scope.removeItem_
+        if fcn
+          fcn
+            index: index
+        else
+          controller.scope.model.splice(index, 1)
+
+      scope.$watch ->
+        attr.addItemLabel
+      , ->
+        scope.addLabel = attr.addItemLabel
+
+      scope.addItem = ->
+        controller.scope.addItem_()
+
+        #select the first selectable item
+        setTimeout ->
+          minItem = null
+          minIndex = 1000001
+          traverse = (index, el) ->
+            return if $(el).css('display') == 'none' or $(el).css('visibility') == 'hidden'
+            tabIndex = parseInt(el.getAttribute('tabindex'))
+            if isNaN(tabIndex)
+              focusable = _.contains ['INPUT', 'TEXTAREA', 'OBJECT', 'BUTTON'], el.tagName
+              focusable = focusable or (_.contains(['A', 'AREA'], el.tagName) and el[0].getAttribute('href'))
+              tabIndex = if focusable then 0 else -1
+            if tabIndex <= 0
+              tabIndex = 1000000 - tabIndex
+            if tabIndex < minIndex
+              minIndex = tabIndex
+              minItem = el
+            $(el).children().each traverse
+          traverse 0, element.find("tr:nth-last-child(2)")[0]
+
+          console.log minItem
+          if minItem
+            minItem.focus()
+        , 1
+
+  mod.directive 'editableScriptTransclude', ->
+    compile: (elem, attrs, transcludeFn) ->
+      transcludeFn elem, (clone) ->
+        $content = $(clone).filter('script').text()
+          .replace(/&lt;/gi, '<')
+          .replace(/&gt;/gi, '>')
+        $content += templates.editableTr()
+        elem.append $content
+        elem.find('td:nth-last-child(2)')[0].setAttribute 'colspan', '{{noColumns(hover)}}'
+      return
