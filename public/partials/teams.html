@@ -18,7 +18,7 @@
         <div text-edit-cell="text-edit-cell" text-edit-bind="team.name"></div>
       </td>
       <td colspan="{{noColumns(hover)}}">
-        <div multi-cell="multi-cell" multi-bind="team.club" multi-choices="ui.tournament.clubs" multi-allow-nil="true" multi-choice-name="o.name"></div>
+        <div multi-cell="multi-cell" multi-bind="team.club" multi-choices="ui.tournament.clubs" multi-allow-nil="unaffiliated" multi-choice-name="o.name"></div>
       </td>
       <td ng-show="hover" class="controls"> <i ng-click="removeTeam($index)" class="close icon-remove"></i></td>
     </tr>

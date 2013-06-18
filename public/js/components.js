@@ -78,13 +78,11 @@
         scope: {
           value: '=multiBind',
           choiceName: '&multiChoiceName',
-          choices: '=multiChoices'
+          choices: '=multiChoices',
+          allowNil: '@multiAllowNil'
         },
         link: function(scope, element, attrs) {
           var callback, el;
-          attrs.$observe('multiAllowNil', function(value) {
-            return scope.allowNil = !!value;
-          });
           scope.editing = false;
           el = $(element);
           callback = function() {
@@ -115,11 +113,27 @@
           scope.endEdit = function() {
             return scope.editing = false;
           };
-          return scope.getChoices = function(choices, allowNil) {
-            if (allowNil) {
+          scope.getChoices = function(choices, allowNil) {
+            console.log(choices);
+            if (scope.allowNil) {
               return choices.concat([null]);
             }
             return choices;
+          };
+          scope.getChoiceName = function(o) {
+            if (o != null) {
+              return scope.choiceName({
+                o: o
+              });
+            }
+            return scope.allowNil;
+          };
+          return scope.nullableClass = function(allowNil) {
+            if (allowNil) {
+              return 'nullable';
+            } else {
+              return '';
+            }
           };
         }
       };

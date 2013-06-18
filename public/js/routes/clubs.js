@@ -23,7 +23,15 @@
               }
             };
             return $scope.removeClub = function(index) {
-              return ui.tournament.clubs.splice(index, 1);
+              var array, club, team, _i, _len, _ref;
+              array = ui.tournament.clubs;
+              club = array[index];
+              _ref = club.teams;
+              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                team = _ref[_i];
+                team.club = null;
+              }
+              return array.splice(index, 1);
             };
           }
         ]

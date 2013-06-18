@@ -6,22 +6,29 @@
       <th>
         <sort-arrow model="ui.tournament.clubs" sort-by="o.name">Name</sort-arrow>
       </th>
+      <th>
+        <sort-arrow model="ui.tournament.clubs" sort-by="o.teams.length"># Teams</sort-arrow>
+      </th>
     </tr>
   </thead>
   <tbody>
     <tr ng-repeat="club in ui.tournament.clubs" ng-init="hover = false" ng-mouseenter="hover = true" ng-mouseleave="hover = false">
       <td>{{$index + 1}} </td>
-      <td colspan="{{noColumns(hover)}}">
+      <td> 
         <div text-edit-cell="text-edit-cell" text-edit-bind="club.name"></div>
       </td>
+      <td colspan="{{noColumns(hover)}}">{{club.teams.length}}</td>
       <td ng-show="hover" class="controls"> <i ng-click="removeClub($index)" class="close icon-remove"></i></td>
     </tr>
     <tr>
-      <td colspan="3"><a tabindex="0" href="" ng-click="addClub()"><i class="icon-plus"></i> Add club</a></td>
+      <td colspan="4"><a tabindex="0" href="" ng-click="addClub()"><i class="icon-plus"></i> Add club</a></td>
     </tr>
   </tbody>
 </table><style type="text/css">#clubs-table th:first-child {
   width: 35px;
+}
+#clubs-table th:nth-child(2) {
+  width: 70%;
 }
 #clubs-table td.controls {
   width: 10px;
