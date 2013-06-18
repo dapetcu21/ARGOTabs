@@ -3,7 +3,7 @@ div(ng-controller='LoadingCtrl', ng-show="!loaded").loading-screen
       i.icon-spinner.icon-spin.icon-large
       | &nbsp; Loading...
 
-div(ng-controller='MainCtrl').navbar.navbar-fixed-top
+div(ng-controller='MainCtrl').navbar.navbar-fixed-top.dont-print
   .navbar-inner
     .container-fluid
       ul.nav
@@ -25,7 +25,7 @@ div(ng-controller='MainCtrl').navbar.navbar-fixed-top
   
 .container-fluid
   .row-fluid
-    .span2
+    .span2.dont-print
       div(ng-controller='MainCtrl').well.sidebar-nav
         ul.nav.nav-list
           li.nav-header Tournament
@@ -42,7 +42,7 @@ div(ng-controller='MainCtrl').navbar.navbar-fixed-top
           nav-li(href="/judge-avg") Judge averages
           li.nav-header Rounds
           nav-li(href="/rounds/1") {{ui.tournament.name}}
-    div(ng-view).span10
+    div(ng-view).span10.print-full-width
 
 :stylus
   .view-title, .app-title

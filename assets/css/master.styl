@@ -14,6 +14,17 @@ body
   .loading-screen
     top: 0px
 
+@media screen
+  .print-only
+    display: none !important
+
+@media print
+  .dont-print
+    display: none !important
+  .print-full-width
+    width: 100% !important
+    margin: auto !important
+
 .loading-screen
   width: 200%
   height: 200%
@@ -58,3 +69,6 @@ th:hover .sortarrow i, .sortarrow:hover i
 
 .multi-label.null-true
   opacity: 0.5
+
+.text-center
+  text-align: center

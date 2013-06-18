@@ -83,20 +83,11 @@ define ['jquery', 'templates', 'underscore'], ($, Templates) ->
       scope.endEdit = ->
         scope.editing = false
 
-      scope.getChoices = (choices, allowNil) ->
-        console.log choices
-        if scope.allowNil
-          return choices.concat([null])
-        return choices
-
       scope.getChoiceName = (o) ->
         if o?
           return scope.choiceName
             o: o
         return scope.allowNil
-
-      scope.nullableClass = (allowNil) ->
-        if allowNil then 'nullable' else ''
 
   mod.directive "sortArrow", ->
     template: templates.sortArrow()

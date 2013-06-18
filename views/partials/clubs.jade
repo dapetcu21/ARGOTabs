@@ -1,3 +1,4 @@
+h3.print-only.text-center {{ui.tournament.name}} - Clubs
 table#clubs-table.table.table-striped.table-bordered
   thead
     tr
@@ -13,10 +14,10 @@ table#clubs-table.table.table-striped.table-bordered
         div(text-edit-cell, text-edit-bind="club.name")
       td(colspan="{{noColumns(hover)}}")
         | {{club.teams.length}}
-      td(ng-show="hover").controls 
+      td(ng-show="hover").controls.dont-print
         i(ng-click="removeClub($index)").close.icon-remove
 
-    tr: td(colspan=4): a(tabindex=0, href="", ng-click="addClub()")
+    tr.dont-print: td(colspan=4): a(tabindex=0, href="", ng-click="addClub()")
       i.icon-plus
       |  Add club
 
