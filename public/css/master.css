@@ -15,6 +15,20 @@ body {
     top: 0px;
   }
 }
+@media screen {
+  .print-only {
+    display: none !important;
+  }
+}
+@media print {
+  .dont-print {
+    display: none !important;
+  }
+  .print-full-width {
+    width: 100% !important;
+    margin: auto !important;
+  }
+}
 .loading-screen {
   width: 200%;
   height: 200%;
@@ -83,4 +97,19 @@ th:hover .sortarrow i,
   -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
   opacity: 0.5;
+}
+.text-center {
+  text-align: center;
+}
+.editable-table th:first-child {
+  width: 35px;
+}
+.editable-table td.controls {
+  width: 10px;
+}
+.editable-table td.controls i {
+  font-size: 130%;
+}
+.editable-table td {
+  vertical-align: middle;
 }

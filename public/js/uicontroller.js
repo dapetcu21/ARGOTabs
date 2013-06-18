@@ -1,5 +1,5 @@
 (function() {
-  define(['jquery', 'B64', 'cookies', 'opencontroller', 'alertcontroller', 'tournament', 'backends', 'localbackend', 'routes/routes', 'util', 'components'], function($, B64, Cookies, OpenController, AlertController, Tournament, Backends, LocalBackend, Routes, Util) {
+  define(['jquery', 'B64', 'cookies', 'opencontroller', 'alertcontroller', 'tournament', 'backends', 'localbackend', 'routes/routes', 'util', 'components', 'angular'], function($, B64, Cookies, OpenController, AlertController, Tournament, Backends, LocalBackend, Routes, Util) {
     var UIController;
     return UIController = (function() {
       function UIController() {

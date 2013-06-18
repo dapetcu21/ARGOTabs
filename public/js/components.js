@@ -1,5 +1,5 @@
 (function() {
-  define(['jquery', 'templates', 'underscore'], function($, Templates) {
+  define(['jquery', 'underscore', 'templates', 'angular'], function($) {
     var mod;
     mod = angular.module("components", []);
     mod.directive('navLi', function() {
@@ -29,17 +29,16 @@
           value: '=textEditBind'
         },
         link: function(scope, element) {
-          var callback, el;
+          var callback;
           scope.editing = false;
-          el = $(element);
           callback = function() {
             return scope.$apply(function() {
               return scope.beginEdit();
             });
           };
-          el.find('.textedit-label').focus(callback);
-          if (el.parent()[0].tagName === 'TD') {
-            el.parent().click(callback);
+          element.find('.textedit-label').focus(callback);
+          if (element.parent()[0].tagName === 'TD') {
+            element.parent().click(callback);
           }
           scope.beginEdit = function() {
             var input;
@@ -47,7 +46,7 @@
               return;
             }
             scope.editing = true;
-            input = $(element).find('input');
+            input = element.find('input');
             input.blur(function() {
               return scope.$apply(function() {
                 return scope.endEdit();
@@ -82,17 +81,16 @@
           allowNil: '@multiAllowNil'
         },
         link: function(scope, element, attrs) {
-          var callback, el;
+          var callback;
           scope.editing = false;
-          el = $(element);
           callback = function() {
             return scope.$apply(function() {
               return scope.beginEdit();
             });
           };
-          el.find('.multi-label').focus(callback);
-          if (el.parent()[0].tagName === 'TD') {
-            el.parent().click(callback);
+          element.find('.multi-label').focus(callback);
+          if (element.parent()[0].tagName === 'TD') {
+            element.parent().click(callback);
           }
           scope.beginEdit = function() {
             var select;
@@ -100,7 +98,7 @@
               return;
             }
             scope.editing = true;
-            select = $(element).find('select');
+            select = element.find('select');
             select.blur(function() {
               return scope.$apply(function() {
                 return scope.endEdit();
@@ -113,27 +111,13 @@
           scope.endEdit = function() {
             return scope.editing = false;
           };
-          scope.getChoices = function(choices, allowNil) {
-            console.log(choices);
-            if (scope.allowNil) {
-              return choices.concat([null]);
-            }
-            return choices;
-          };
-          scope.getChoiceName = function(o) {
+          return scope.getChoiceName = function(o) {
             if (o != null) {
               return scope.choiceName({
                 o: o
               });
             }
             return scope.allowNil;
-          };
-          return scope.nullableClass = function(allowNil) {
-            if (allowNil) {
-              return 'nullable';
-            } else {
-              return '';
-            }
           };
         }
       };
@@ -174,6 +158,106 @@
             scope.ascending = !scope.ascending;
             return scope.sort();
           };
+        }
+      };
+    });
+    mod.directive('editableTable', function() {
+      return {
+        template: templates.editableTable(),
+        restrict: 'AE',
+        replace: true,
+        transclude: true,
+        scope: {
+          model: '=',
+          addItem_: '&addItem',
+          removeItem_: '&removeItem'
+        },
+        controller: [
+          '$scope', function($scope) {
+            this.scope = $scope;
+          }
+        ]
+      };
+    });
+    mod.directive('editableTbody', function() {
+      return {
+        template: templates.editableTbody(),
+        transclude: true,
+        restrict: 'AE',
+        require: '^editableTable',
+        link: function(scope, element, attr, controller) {
+          scope.getScope = function() {
+            return controller.scope;
+          };
+          scope.noColumns = function(hover) {
+            if (hover) {
+              return 1;
+            } else {
+              return 2;
+            }
+          };
+          scope.removeItem = function(index) {
+            var fcn;
+            fcn = controller.scope.removeItem_;
+            if (fcn) {
+              return fcn({
+                index: index
+              });
+            } else {
+              return controller.scope.model.splice(index, 1);
+            }
+          };
+          scope.$watch(function() {
+            return attr.addItemLabel;
+          }, function() {
+            return scope.addLabel = attr.addItemLabel;
+          });
+          return scope.addItem = function() {
+            controller.scope.addItem_();
+            return setTimeout(function() {
+              var minIndex, minItem, traverse;
+              minItem = null;
+              minIndex = 1000001;
+              traverse = function(index, el) {
+                var focusable, tabIndex;
+                if ($(el).css('display') === 'none' || $(el).css('visibility') === 'hidden') {
+                  return;
+                }
+                tabIndex = parseInt(el.getAttribute('tabindex'));
+                if (isNaN(tabIndex)) {
+                  focusable = _.contains(['INPUT', 'TEXTAREA', 'OBJECT', 'BUTTON'], el.tagName);
+                  focusable = focusable || (_.contains(['A', 'AREA'], el.tagName) && el[0].getAttribute('href'));
+                  tabIndex = focusable ? 0 : -1;
+                }
+                if (tabIndex <= 0) {
+                  tabIndex = 1000000 - tabIndex;
+                }
+                if (tabIndex < minIndex) {
+                  minIndex = tabIndex;
+                  minItem = el;
+                }
+                return $(el).children().each(traverse);
+              };
+              traverse(0, element.find("tr:nth-last-child(2)")[0]);
+              console.log(minItem);
+              if (minItem) {
+                return minItem.focus();
+              }
+            }, 1);
+          };
+        }
+      };
+    });
+    return mod.directive('editableScriptTransclude', function() {
+      return {
+        compile: function(elem, attrs, transcludeFn) {
+          transcludeFn(elem, function(clone) {
+            var $content;
+            $content = $(clone).filter('script').text().replace(/&lt;/gi, '<').replace(/&gt;/gi, '>');
+            $content += templates.editableTr();
+            elem.append($content);
+            return elem.find('td:nth-last-child(2)')[0].setAttribute('colspan', '{{noColumns(hover)}}');
+          });
         }
       };
     });

@@ -14,7 +14,8 @@
     shim: {
       'jquery.bootstrap': ['jquery'],
       'jquery.transit': ['jquery'],
-      filereader: ['jquery']
+      filereader: ['jquery'],
+      angular: ['jquery']
     }
   });
 

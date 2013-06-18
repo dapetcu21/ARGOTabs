@@ -13,7 +13,7 @@
 <div ng-controller="LoadingCtrl" ng-show="!loaded" class="loading-screen">
   <h3><i class="icon-spinner icon-spin icon-large"></i>&nbsp; Loading...</h3>
 </div>
-<div ng-controller="MainCtrl" class="navbar navbar-fixed-top">
+<div ng-controller="MainCtrl" class="navbar navbar-fixed-top dont-print">
   <div class="navbar-inner">
     <div class="container-fluid">
       <ul class="nav">
@@ -35,7 +35,7 @@
 </div>
 <div class="container-fluid">
   <div class="row-fluid">
-    <div class="span2">
+    <div class="span2 dont-print">
       <div ng-controller="MainCtrl" class="well sidebar-nav">
         <ul class="nav nav-list">
           <li class="nav-header">Tournament</li>
@@ -55,7 +55,7 @@
         </ul>
       </div>
     </div>
-    <div ng-view="ng-view" class="span10"></div>
+    <div ng-view="ng-view" class="span10 print-full-width"></div>
   </div>
 </div><style type="text/css">.view-title,
 .app-title {
@@ -74,6 +74,5 @@
 }
 </style>
   </body>
-  <script src="components/angular/angular.js"></script>
   <script data-main="js/main" src="js/require.js"></script>
 </html>
