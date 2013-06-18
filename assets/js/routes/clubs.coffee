@@ -14,6 +14,10 @@ define ['club'], (Club) ->
         $scope.noColumns = (hover) ->
           if hover then 1 else 2
         $scope.removeClub = (index) ->
-          ui.tournament.clubs.splice(index, 1)
+          array =  ui.tournament.clubs
+          club = array[index]
+          for team in club.teams
+            team.club = null
+          array.splice index, 1
       ]
         

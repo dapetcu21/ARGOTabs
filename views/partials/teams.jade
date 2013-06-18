@@ -12,7 +12,7 @@ table#teams-table.table.table-striped.table-bordered
       td
         div(text-edit-cell, text-edit-bind="team.name")
       td(colspan="{{noColumns(hover)}}")
-        div(multi-cell, multi-bind="team.club", multi-choices="ui.tournament.clubs", multi-allow-nil='true', multi-choice-name="o.name")
+        div(multi-cell, multi-bind="team.club", multi-choices="ui.tournament.clubs", multi-allow-nil='unaffiliated', multi-choice-name="o.name")
       td(ng-show="hover").controls 
         i(ng-click="removeTeam($index)").close.icon-remove
 

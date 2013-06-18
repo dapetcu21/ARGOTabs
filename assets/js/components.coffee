@@ -55,10 +55,8 @@ define ['jquery', 'templates', 'underscore'], ($, Templates) ->
       value: '=multiBind'
       choiceName: '&multiChoiceName'
       choices: '=multiChoices'
+      allowNil: '@multiAllowNil'
     link: (scope, element, attrs) ->
-      attrs.$observe 'multiAllowNil', (value)->
-        scope.allowNil = not not value
-
       scope.editing = false
 
       el = $(element)
@@ -86,9 +84,19 @@ define ['jquery', 'templates', 'underscore'], ($, Templates) ->
         scope.editing = false
 
       scope.getChoices = (choices, allowNil) ->
-        if allowNil
+        console.log choices
+        if scope.allowNil
           return choices.concat([null])
         return choices
+
+      scope.getChoiceName = (o) ->
+        if o?
+          return scope.choiceName
+            o: o
+        return scope.allowNil
+
+      scope.nullableClass = (allowNil) ->
+        if allowNil then 'nullable' else ''
 
   mod.directive "sortArrow", ->
     template: templates.sortArrow()
