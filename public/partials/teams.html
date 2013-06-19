@@ -1,14 +1,14 @@
 
-<h3 class="print-only text-center">{{ui.tournament.name}} - Teams</h3>
-<table editable-table="editable-table" model="ui.tournament.teams" add-item="addTeam()" remove-item="removeTeam(index)" id="teams-table">
+<h3 class="print-only text-center">{{tournament.name}} - Teams</h3>
+<table editable-table="editable-table" model="tournament.teams" add-item="addTeam()" remove-item="removeTeam(index)" id="teams-table">
   <thead>
     <tr>
       <th>#</th>
       <th>
-        <sort-arrow model="ui.tournament.teams" sort-by="o.name">Team name</sort-arrow>
+        <sort-arrow model="tournament.teams" sort-by="o.name">Team name</sort-arrow>
       </th>
       <th>
-        <sort-arrow model="ui.tournament.teams" sort-by="eliminateNil(o.club.name)">Club</sort-arrow>
+        <sort-arrow model="tournament.teams" sort-by="eliminateNil(o.club.name)">Club</sort-arrow>
       </th>
     </tr>
   </thead>
@@ -19,7 +19,7 @@
         <div text-edit-cell="text-edit-cell" text-edit-bind="o.name"></div>
       </td>
       <td ng-init="initRepeat(this)">
-        <div multi-cell="multi-cell" multi-bind="o.club" multi-choices="ui.tournament.clubs" multi-allow-nil="unaffiliated" multi-choice-name="o.name"></div>
+        <div multi-cell="multi-cell" multi-bind="o.club" multi-choices="tournament.clubs" multi-allow-nil="unaffiliated" multi-choice-name="o.name"></div>
       </td>
     </script>
   </tbody>

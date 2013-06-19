@@ -1,0 +1,29 @@
+
+<h3 class="print-only text-center">{{tournament.name}} - Rooms</h3>
+<table editable-table="editable-table" model="tournament.rooms" add-item="addRoom()" remove-item="removeRoom(index)" id="rooms-table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>
+        <sort-arrow model="tournament.rooms" sort-by="o.name">Name</sort-arrow>
+      </th>
+      <th>
+        <sort-arrow model="tournament.rooms" sort-by="o.floor">Floor</sort-arrow>
+      </th>
+    </tr>
+  </thead>
+  <tbody editable-tbody="editable-tbody" add-item-label="Add room">
+    <script type="text/html">
+      <td>{{$index + 1}}</td>
+      <td>
+        <div text-edit-cell="text-edit-cell" text-edit-bind="o.name"></div>
+      </td>
+      <td>
+        <div text-edit-cell="text-edit-cell" text-edit-bind="o.floor"></div>
+      </td>
+    </script>
+  </tbody>
+</table><style type="text/css">#rooms-table th:nth-child(2) {
+  width: 70%;
+}
+</style>

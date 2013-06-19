@@ -1,0 +1,29 @@
+
+<h3 class="print-only text-center">{{tournament.name}} - Judges</h3>
+<table editable-table="editable-table" model="tournament.judges" add-item="addJudge()" remove-item="removeJudge(index)" id="judges-table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>
+        <sort-arrow model="tournament.judges" sort-by="o.name">Name</sort-arrow>
+      </th>
+      <th>
+        <sort-arrow model="tournament.judges" sort-by="eliminateNil(o.club.name)">Club</sort-arrow>
+      </th>
+    </tr>
+  </thead>
+  <tbody editable-tbody="editable-tbody" add-item-label="Add judge">
+    <script type="text/html">
+      <td>{{$index + 1}}</td>
+      <td>
+        <div text-edit-cell="text-edit-cell" text-edit-bind="o.name"></div>
+      </td>
+      <td ng-init="initRepeat(this)">
+        <div multi-cell="multi-cell" multi-bind="o.club" multi-choices="tournament.clubs" multi-allow-nil="unaffiliated" multi-choice-name="o.name"></div>
+      </td>
+    </script>
+  </tbody>
+</table><style type="text/css">#judges-table th:nth-child(2) {
+  width: 30%;
+}
+</style>

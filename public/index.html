@@ -13,13 +13,13 @@
 <div ng-controller="LoadingCtrl" ng-show="!loaded" class="loading-screen">
   <h3><i class="icon-spinner icon-spin icon-large"></i>&nbsp; Loading...</h3>
 </div>
-<div ng-controller="MainCtrl" class="navbar navbar-fixed-top dont-print">
+<div class="navbar navbar-fixed-top dont-print">
   <div class="navbar-inner">
     <div class="container-fluid">
       <ul class="nav">
         <li class="arrow-nav"><a class="action-open brand"><i class="icon-arrow-left view-arrow"></i><span class="view-brand">ARGO Tabs</span></a></li>
         <li class="divider-vertical">
-          <li><a href="#" class="brand view-title">{{ui.tournament.name}}</a></li>
+          <li><a href="#" class="brand view-title">{{tournament.name}}</a></li>
         </li>
       </ul>
       <div class="btn-group pull-right">
@@ -36,7 +36,7 @@
 <div class="container-fluid">
   <div class="row-fluid">
     <div class="span2 dont-print">
-      <div ng-controller="MainCtrl" class="well sidebar-nav">
+      <div class="well sidebar-nav">
         <ul class="nav nav-list">
           <li class="nav-header">Tournament</li>
           <nav-li href="/">Dashboard</nav-li>
@@ -51,7 +51,7 @@
           <nav-li href="/speaker-rank">Speaker rank</nav-li>
           <nav-li href="/judge-avg">Judge averages</nav-li>
           <li class="nav-header">Rounds</li>
-          <nav-li href="/rounds/1">{{ui.tournament.name}}</nav-li>
+          <nav-li href="/rounds/1">{{tournament.name}}</nav-li>
         </ul>
       </div>
     </div>

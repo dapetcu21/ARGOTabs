@@ -179,6 +179,22 @@
         ]
       };
     });
+    mod.directive('editableHeadTransclude', function() {
+      return {
+        controller: [
+          '$transclude', '$element', function($transclude, $element) {
+            return $transclude(function(clone) {
+              var lastHeader;
+              lastHeader = clone.find('th:last-child');
+              if (lastHeader.length) {
+                lastHeader[0].setAttribute('colspan', '2');
+              }
+              return $element.append(clone);
+            });
+          }
+        ]
+      };
+    });
     mod.directive('editableTbody', function() {
       return {
         template: templates.editableTbody(),
@@ -239,7 +255,6 @@
                 return $(el).children().each(traverse);
               };
               traverse(0, element.find("tr:nth-last-child(2)")[0]);
-              console.log(minItem);
               if (minItem) {
                 return minItem.focus();
               }

@@ -74,12 +74,7 @@ body {
   margin: 0px !important;
 }
 .sortarrow i {
-  -webkit-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
-  -moz-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
-  -o-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
-  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
-  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
-  opacity: 0;
+  display: none;
 }
 th:hover .sortarrow i,
 .sortarrow:hover i {
@@ -89,6 +84,7 @@ th:hover .sortarrow i,
   -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
   opacity: 0.5;
+  display: inline-block;
 }
 .multi-label.null-true {
   -webkit-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);

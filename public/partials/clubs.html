@@ -1,14 +1,17 @@
 
-<h3 class="print-only text-center">{{ui.tournament.name}} - Clubs</h3>
-<table editable-table="editable-table" model="ui.tournament.clubs" add-item="addClub()" removeItem="removeClub(index)" id="clubs-table">
+<h3 class="print-only text-center">{{tournament.name}} - Clubs</h3>
+<table editable-table="editable-table" model="tournament.clubs" add-item="addClub()" remove-item="removeClub(index)" id="clubs-table">
   <thead>
     <tr>
       <th>#</th>
       <th>
-        <sort-arrow model="ui.tournament.clubs" sort-by="o.name">Name</sort-arrow>
+        <sort-arrow model="tournament.clubs" sort-by="o.name">Name</sort-arrow>
       </th>
       <th>
-        <sort-arrow model="ui.tournament.clubs" sort-by="o.teams.length"># Teams</sort-arrow>
+        <sort-arrow model="tournament.clubs" sort-by="o.teams.length"># Teams</sort-arrow>
+      </th>
+      <th>
+        <sort-arrow model="tournament.clubs" sort-by="o.judges.length"># Judges</sort-arrow>
       </th>
     </tr>
   </thead>
@@ -19,12 +22,13 @@
         <div text-edit-cell="text-edit-cell" text-edit-bind="o.name"></div>
       </td>
       <td>{{o.teams.length}}</td>
+      <td>{{o.judges.length}}</td>
     </script>
   </tbody>
-</table><style type="text/css">#clubs-table th:first-child {
-  width: 35px;
-}
-#clubs-table th:nth-child(2) {
+</table><style type="text/css">#clubs-table th:nth-child(2) {
   width: 70%;
+}
+#clubs-table th:nth-child(3) {
+  width: 12%;
 }
 </style>

@@ -6,11 +6,6 @@
         var app,
           _this = this;
         this.app = app = angular.module('argotabs', ['components']);
-        app.controller('MainCtrl', [
-          '$scope', function($scope) {
-            return $scope.ui = _this;
-          }
-        ]);
         app.controller('LoadingCtrl', [
           '$scope', function($scope) {
             return $scope.loaded = true;
@@ -272,14 +267,6 @@
         });
       };
 
-      UIController.prototype.updateAngular = function() {
-        return this.injector.invoke([
-          '$rootScope', function($rootScope) {
-            return $rootScope.$digest();
-          }
-        ]);
-      };
-
       UIController.prototype.getTournament = function() {
         return this.tournament;
       };
@@ -287,11 +274,29 @@
       UIController.prototype.setTournament = function(tournament) {
         var _this = this;
         this.tournament = tournament;
-        return tournament.load(function() {
-          Cookies.set('lastBackend', Util.getObjectClass(tournament.backend));
-          Cookies.set('lastFileName', tournament.backend.fileName());
-          return _this.updateAngular();
-        });
+        if (tournament) {
+          return tournament.load(function() {
+            Cookies.set('lastBackend', Util.getObjectClass(tournament.backend));
+            Cookies.set('lastFileName', tournament.backend.fileName());
+            return _this.injector.invoke([
+              '$rootScope', function($rootScope) {
+                return $rootScope.$apply(function() {
+                  return $rootScope.tournament = tournament;
+                });
+              }
+            ]);
+          });
+        } else {
+          Cookies.expire('lastBackend');
+          Cookies.expire('lastFileName');
+          return this.injector.invoke([
+            '$rootScope', function($rootScope) {
+              return $rootScope.$apply(function() {
+                return $rootScope.tournament = nil;
+              });
+            }
+          ]);
+        }
       };
 
       return UIController;

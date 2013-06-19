@@ -1,8 +1,8 @@
 (function() {
   define(['util'], function(Util) {
-    var Team;
-    return Team = (function() {
-      function Team(tournament, other) {
+    var Judge;
+    return Judge = (function() {
+      function Judge(tournament, other) {
         var key, value;
         this.tournament = tournament;
         if (other) {
@@ -16,24 +16,24 @@
         }
       }
 
-      Team.prototype.unpackCycles = function() {
+      Judge.prototype.unpackCycles = function() {
         return this.club = Util.unpackCycle(this.club, this.tournament.clubs);
       };
 
-      Team.prototype.toJSON = function() {
+      Judge.prototype.toJSON = function() {
         var model;
         model = Util.copyObject(this, ['tournament']);
         model.club = Util.packCycle(this.club, this.tournament.clubs);
         return model;
       };
 
-      Team.prototype.destroy = function() {
+      Judge.prototype.destroy = function() {
         if (this.club) {
-          return this.club.removeTeam(this);
+          return this.club.removeJudge(this);
         }
       };
 
-      return Team;
+      return Judge;
 
     })();
   });

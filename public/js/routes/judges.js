@@ -1,19 +1,19 @@
 (function() {
-  define(['team'], function(Team) {
+  define(['judge'], function(Judge) {
     return function(ui, $routeProvider) {
-      return $routeProvider.when('/teams', {
-        templateUrl: 'partials/teams.html',
+      return $routeProvider.when('/judges', {
+        templateUrl: 'partials/judges.html',
         controller: [
           '$scope', function($scope) {
-            $scope.addTeam = function() {
-              var team, tournament;
+            $scope.addJudge = function() {
+              var judge, tournament;
               tournament = ui.tournament;
-              team = new Team(tournament);
-              return tournament.teams.push(team);
+              judge = new Judge(tournament);
+              return tournament.judges.push(judge);
             };
-            $scope.removeTeam = function(index) {
+            $scope.removeJudge = function(index) {
               var array;
-              array = ui.tournament.teams;
+              array = ui.tournament.judges;
               array[index].destroy();
               return array.splice(index, 1);
             };
@@ -21,16 +21,16 @@
               return iScope.$watch(function() {
                 return iScope.o.club;
               }, function(newValue, oldValue) {
-                var team;
+                var judge;
                 if (newValue === oldValue) {
                   return;
                 }
-                team = iScope.o;
+                judge = iScope.o;
                 if (oldValue) {
-                  oldValue.removeTeam(team);
+                  oldValue.removeJudge(judge);
                 }
                 if (newValue) {
-                  return newValue.addTeam(team);
+                  return newValue.addJudge(judge);
                 }
               });
             };
