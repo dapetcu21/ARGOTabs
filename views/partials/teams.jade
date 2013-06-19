@@ -1,19 +1,19 @@
-h3.print-only.text-center {{ui.tournament.name}} - Teams
-table(editable-table, model='ui.tournament.teams', add-item='addTeam()', remove-item='removeTeam(index)')#teams-table
+h3.print-only.text-center {{tournament.name}} - Teams
+table(editable-table, model='tournament.teams', add-item='addTeam()', remove-item='removeTeam(index)')#teams-table
   thead
     tr
       th #
       th
-        sort-arrow(model='ui.tournament.teams', sort-by='o.name') Team name
+        sort-arrow(model='tournament.teams', sort-by='o.name') Team name
       th
-        sort-arrow(model='ui.tournament.teams', sort-by='eliminateNil(o.club.name)') Club
+        sort-arrow(model='tournament.teams', sort-by='eliminateNil(o.club.name)') Club
   tbody(editable-tbody, add-item-label='Add team')
     script(type='text/html')
       td {{$index + 1}}
       td
         div(text-edit-cell, text-edit-bind="o.name")
       td(ng-init='initRepeat(this)')
-        div(multi-cell, multi-bind="o.club", multi-choices="ui.tournament.clubs", multi-allow-nil='unaffiliated', multi-choice-name="o.name")
+        div(multi-cell, multi-bind="o.club", multi-choices="tournament.clubs", multi-allow-nil='unaffiliated', multi-choice-name="o.name")
 
 :stylus
   #teams-table th:nth-child(2)

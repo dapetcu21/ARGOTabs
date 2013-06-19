@@ -1,19 +1,19 @@
-h3.print-only.text-center {{ui.tournament.name}} - Judges
-table(editable-table, model='ui.tournament.judges', add-item='addJudge()', remove-item='removeJudge(index)')#judges-table
+h3.print-only.text-center {{tournament.name}} - Judges
+table(editable-table, model='tournament.judges', add-item='addJudge()', remove-item='removeJudge(index)')#judges-table
   thead
     tr
       th #
       th
-        sort-arrow(model='ui.tournament.judges', sort-by='o.name') Name
+        sort-arrow(model='tournament.judges', sort-by='o.name') Name
       th
-        sort-arrow(model='ui.tournament.judges', sort-by='eliminateNil(o.club.name)') Club
+        sort-arrow(model='tournament.judges', sort-by='eliminateNil(o.club.name)') Club
   tbody(editable-tbody, add-item-label='Add judge')
     script(type='text/html')
       td {{$index + 1}}
       td
         div(text-edit-cell, text-edit-bind="o.name")
       td(ng-init='initRepeat(this)')
-        div(multi-cell, multi-bind="o.club", multi-choices="ui.tournament.clubs", multi-allow-nil='unaffiliated', multi-choice-name="o.name")
+        div(multi-cell, multi-bind="o.club", multi-choices="tournament.clubs", multi-allow-nil='unaffiliated', multi-choice-name="o.name")
 
 :stylus
   #judges-table th:nth-child(2)

@@ -3,8 +3,6 @@ define ['club'], (Club) ->
     $routeProvider.when '/clubs',
       templateUrl: 'partials/clubs.html'
       controller: [ '$scope', ($scope) ->
-        $scope.ui = ui
-
         $scope.addClub = ->
           console.log 'addClub'
           tournament = ui.tournament

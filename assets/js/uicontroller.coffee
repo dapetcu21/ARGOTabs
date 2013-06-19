@@ -3,11 +3,6 @@ define ['jquery', 'B64', 'cookies', 'opencontroller', 'alertcontroller', 'tourna
     constructor: ->
       @app = app = angular.module 'argotabs', ['components']
 
-
-      app.controller 'MainCtrl', ['$scope', ($scope) =>
-        $scope.ui = this
-      ]
-
       app.controller 'LoadingCtrl', ['$scope', ($scope) =>
         $scope.loaded = true
       ]
@@ -196,15 +191,21 @@ define ['jquery', 'B64', 'cookies', 'opencontroller', 'alertcontroller', 'tourna
                     btnDanger.button('loading')
                     thisFunction(alert, index, null, true)
 
-    updateAngular: ->
-      @injector.invoke ['$rootScope', ($rootScope)->
-        $rootScope.$digest()
-      ]
-
     getTournament: -> @tournament
     setTournament: (tournament) ->
       @tournament = tournament
-      tournament.load =>
-        Cookies.set 'lastBackend', Util.getObjectClass tournament.backend
-        Cookies.set 'lastFileName', tournament.backend.fileName()
-        @updateAngular()
+      if tournament
+        tournament.load =>
+          Cookies.set 'lastBackend', Util.getObjectClass tournament.backend
+          Cookies.set 'lastFileName', tournament.backend.fileName()
+          @injector.invoke ['$rootScope', ($rootScope)->
+            $rootScope.$apply ->
+              $rootScope.tournament = tournament
+          ]
+      else
+        Cookies.expire 'lastBackend'
+        Cookies.expire 'lastFileName'
+        @injector.invoke ['$rootScope', ($rootScope)->
+          $rootScope.$apply ->
+            $rootScope.tournament = nil
+        ]

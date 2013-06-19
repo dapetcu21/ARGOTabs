@@ -3,8 +3,6 @@ define ['room'], (Room) ->
     $routeProvider.when '/rooms',
       templateUrl: 'partials/rooms.html'
       controller: [ '$scope', ($scope) ->
-        $scope.ui = ui
-
         $scope.addRoom = ->
           tournament = ui.tournament
           room = new Room tournament

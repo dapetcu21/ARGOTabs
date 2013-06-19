@@ -1,12 +1,12 @@
-h3.print-only.text-center {{ui.tournament.name}} - Rooms
-table(editable-table, model='ui.tournament.rooms', add-item='addRoom()', remove-item='removeRoom(index)')#rooms-table
+h3.print-only.text-center {{tournament.name}} - Rooms
+table(editable-table, model='tournament.rooms', add-item='addRoom()', remove-item='removeRoom(index)')#rooms-table
   thead
     tr
       th #
       th
-        sort-arrow(model='ui.tournament.rooms', sort-by='o.name') Name
+        sort-arrow(model='tournament.rooms', sort-by='o.name') Name
       th
-        sort-arrow(model='ui.tournament.rooms', sort-by='o.floor') Floor
+        sort-arrow(model='tournament.rooms', sort-by='o.floor') Floor
   tbody(editable-tbody, add-item-label='Add room')
     script(type='text/html')
       td {{$index + 1}}
