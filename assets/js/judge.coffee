@@ -1,5 +1,5 @@
 define ['util'], (Util) ->
-  class Team
+  class Judge
     constructor: (@tournament, other) ->
       if other
         for key, value of other
@@ -16,4 +16,4 @@ define ['util'], (Util) ->
 
     destroy: ->
       if @club
-        @club.removeTeam(this)
+        @club.removeJudge(this)

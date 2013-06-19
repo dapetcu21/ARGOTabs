@@ -1,17 +1,17 @@
-define ['team'], (Team) ->
+define ['judge'], (Judge) ->
   (ui, $routeProvider) ->
-    $routeProvider.when '/teams',
-      templateUrl: 'partials/teams.html'
+    $routeProvider.when '/judges',
+      templateUrl: 'partials/judges.html'
       controller: [ '$scope', ($scope) ->
         $scope.ui = ui
 
-        $scope.addTeam = ->
+        $scope.addJudge = ->
           tournament = ui.tournament
-          team = new Team tournament
-          tournament.teams.push team
-
-        $scope.removeTeam = (index) ->
-          array = ui.tournament.teams
+          judge = new Judge tournament
+          tournament.judges.push judge
+          
+        $scope.removeJudge = (index) ->
+          array = ui.tournament.judges
           array[index].destroy()
           array.splice(index, 1)
 
@@ -20,11 +20,11 @@ define ['team'], (Team) ->
             iScope.o.club
           , (newValue, oldValue) ->
             return if newValue == oldValue
-            team = iScope.o
+            judge = iScope.o
             if oldValue
-              oldValue.removeTeam(team)
+              oldValue.removeJudge(judge)
             if newValue
-              newValue.addTeam(team)
+              newValue.addJudge(judge)
 
         $scope.eliminateNil = (a) ->
           if not a?

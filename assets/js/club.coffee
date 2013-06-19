@@ -6,13 +6,16 @@ define ['util'], (Util)->
           this[key] = value
       @name ?= ""
       @teams ?= []
+      @judges ?= []
 
     unpackCycles: ->
       Util.unpackCycles @teams, @tournament.teams
+      Util.unpackCycles @judges, @tournament.judges
 
     toJSON: ->
       model = Util.copyObject this, ['tournament']
       model.teams = Util.packCycles @teams, @tournament.teams
+      model.judges = Util.packCycles @judges, @tournament.judges
       return model
 
     removeTeam: (team) ->
@@ -21,3 +24,16 @@ define ['util'], (Util)->
         @teams.splice(index, 1)
     addTeam: (team) ->
       @teams.push team
+
+    removeJudge: (judge) ->
+      index = @judges.indexOf judge
+      if index != -1
+        @judges.splice(index, 1)
+    addJudge: (judge) ->
+      @judges.push judge
+
+    destroy: ->
+      for team in @teams
+        team.club = null
+      for judge in @judges
+        judge.club = null

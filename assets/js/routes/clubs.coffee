@@ -4,20 +4,20 @@ define ['club'], (Club) ->
       templateUrl: 'partials/clubs.html'
       controller: [ '$scope', ($scope) ->
         $scope.ui = ui
+
         $scope.addClub = ->
+          console.log 'addClub'
           tournament = ui.tournament
           club = new Club tournament
           tournament.clubs.push club
-          setTimeout ->
-            $('#clubs-table').find('.textedit-label').last().click()
-          , 1
-        $scope.noColumns = (hover) ->
-          if hover then 1 else 2
+
         $scope.removeClub = (index) ->
+          console.log 'removeClub(',index,')'
           array =  ui.tournament.clubs
           club = array[index]
-          for team in club.teams
-            team.club = null
+          club.destroy()
           array.splice index, 1
+
+        return
       ]
         

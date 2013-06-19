@@ -126,9 +126,18 @@ define ['jquery', 'underscore', 'templates', 'angular'], ($) ->
       model: '='
       addItem_: '&addItem'
       removeItem_: '&removeItem'
-    controller: [ '$scope' , ($scope) ->
+    controller: [ '$scope', ($scope) ->
       this.scope = $scope
       return
+    ]
+
+  mod.directive 'editableHeadTransclude', ->
+    controller: [ '$transclude', '$element', ($transclude, $element) ->
+      $transclude (clone) ->
+        lastHeader = clone.find('th:last-child')
+        if lastHeader.length
+          lastHeader[0].setAttribute('colspan', '2')
+        $element.append(clone)
     ]
 
   mod.directive 'editableTbody', ->
@@ -176,7 +185,6 @@ define ['jquery', 'underscore', 'templates', 'angular'], ($) ->
             $(el).children().each traverse
           traverse 0, element.find("tr:nth-last-child(2)")[0]
 
-          console.log minItem
           if minItem
             minItem.focus()
         , 1

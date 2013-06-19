@@ -1,0 +1,20 @@
+h3.print-only.text-center {{ui.tournament.name}} - Rooms
+table(editable-table, model='ui.tournament.rooms', add-item='addRoom()', remove-item='removeRoom(index)')#rooms-table
+  thead
+    tr
+      th #
+      th
+        sort-arrow(model='ui.tournament.rooms', sort-by='o.name') Name
+      th
+        sort-arrow(model='ui.tournament.rooms', sort-by='o.floor') Floor
+  tbody(editable-tbody, add-item-label='Add room')
+    script(type='text/html')
+      td {{$index + 1}}
+      td
+        div(text-edit-cell, text-edit-bind="o.name")
+      td
+        div(text-edit-cell, text-edit-bind="o.floor")
+
+:stylus
+  #rooms-table th:nth-child(2)
+    width: 70%

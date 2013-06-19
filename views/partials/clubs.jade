@@ -1,5 +1,5 @@
 h3.print-only.text-center {{ui.tournament.name}} - Clubs
-table(editable-table, model='ui.tournament.clubs', add-item='addClub()', removeItem='removeClub(index)')#clubs-table
+table(editable-table, model='ui.tournament.clubs', add-item='addClub()', remove-item='removeClub(index)')#clubs-table
   thead
     tr
       th #
@@ -7,6 +7,8 @@ table(editable-table, model='ui.tournament.clubs', add-item='addClub()', removeI
         sort-arrow(model='ui.tournament.clubs', sort-by='o.name') Name
       th
         sort-arrow(model='ui.tournament.clubs', sort-by='o.teams.length') # Teams
+      th
+        sort-arrow(model='ui.tournament.clubs', sort-by='o.judges.length') # Judges
   tbody(editable-tbody, add-item-label='Add club')
     script(type='text/html')
       td {{$index + 1}} 
@@ -14,9 +16,11 @@ table(editable-table, model='ui.tournament.clubs', add-item='addClub()', removeI
         div(text-edit-cell, text-edit-bind="o.name")
       td
         | {{o.teams.length}}
+      td
+        | {{o.judges.length}}
 
 :stylus
-  #clubs-table th:first-child
-    width: 35px
   #clubs-table th:nth-child(2)
     width: 70%
+  #clubs-table th:nth-child(3)
+    width: 12%
