@@ -172,23 +172,78 @@
           addItem_: '&addItem',
           removeItem_: '&removeItem'
         },
+        link: {
+          post: function(scope, element, attrs) {
+            var el, elements, i, _i, _len, _results;
+            elements = element.find('th').not('.controls');
+            _results = [];
+            for (i = _i = 0, _len = elements.length; _i < _len; i = ++_i) {
+              el = elements[i];
+              _results.push((function(i) {
+                return scope.$watch(function() {
+                  var j, _j, _ref, _ref1;
+                  if (scope.hover) {
+                    return 1;
+                  }
+                  elements = element.find('th').not('.controls');
+                  el = elements[i];
+                  if ($(el).css('display') === 'none') {
+                    return 1;
+                  }
+                  for (j = _j = _ref = i + 1, _ref1 = elements.length; _ref <= _ref1 ? _j < _ref1 : _j > _ref1; j = _ref <= _ref1 ? ++_j : --_j) {
+                    if ($(elements[j]).css('display') !== 'none') {
+                      return 1;
+                    }
+                  }
+                  return 2;
+                }, function(newValue) {
+                  return el.setAttribute('colspan', newValue);
+                });
+              })(i));
+            }
+            return _results;
+          }
+        },
         controller: [
-          '$scope', function($scope) {
+          '$scope', '$element', function($scope, $element) {
             this.scope = $scope;
+            $scope.tableId = 'tid' + Math.round(Math.random() * 10000);
+            $scope.hover = false;
           }
         ]
       };
     });
     mod.directive('editableHeadTransclude', function() {
       return {
+        require: '^editableTable',
+        link: {
+          post: function(scope, element, attrs, controller) {
+            return element.find('thead').hover(function() {
+              return scope.$apply(function() {
+                var el;
+                scope.hover = true;
+                scope.headId = 'id' + Math.round(Math.random() * 10000);
+                el = element.find('th:visible:last');
+                el.addClass('squeezedElement');
+                return element.find('thead tr').append(templates.editableTh({
+                  id: scope.headId,
+                  tableId: controller.scope.tableId,
+                  width: el.width()
+                }));
+              });
+            }, function() {
+              return scope.$apply(function() {
+                controller.scope.hover = false;
+                element.find('.controls').hide();
+                element.find('.squeezedElement').removeClass('squeezedElement');
+                return element.find('#' + scope.headId).remove();
+              });
+            });
+          }
+        },
         controller: [
           '$transclude', '$element', function($transclude, $element) {
             return $transclude(function(clone) {
-              var lastHeader;
-              lastHeader = clone.find('th:last-child');
-              if (lastHeader.length) {
-                lastHeader[0].setAttribute('colspan', '2');
-              }
               return $element.append(clone);
             });
           }
@@ -204,13 +259,6 @@
         link: function(scope, element, attr, controller) {
           scope.getScope = function() {
             return controller.scope;
-          };
-          scope.noColumns = function(hover) {
-            if (hover) {
-              return 1;
-            } else {
-              return 2;
-            }
           };
           scope.removeItem = function(index) {
             var fcn;
@@ -265,14 +313,61 @@
     });
     return mod.directive('editableScriptTransclude', function() {
       return {
-        compile: function(elem, attrs, transcludeFn) {
-          transcludeFn(elem, function(clone) {
-            var $content;
+        require: '^editableTable',
+        compile: function(element, attrs, transcludeFn) {
+          transcludeFn(element, function(clone) {
+            var $content, el, elements, i, _i, _len, _results;
             $content = $(clone).filter('script').text().replace(/&lt;/gi, '<').replace(/&gt;/gi, '>');
-            $content += templates.editableTr();
-            elem.append($content);
-            return elem.find('td:nth-last-child(2)')[0].setAttribute('colspan', '{{noColumns(hover)}}');
+            element.append($content);
+            elements = element.children('td').not('.controls');
+            _results = [];
+            for (i = _i = 0, _len = elements.length; _i < _len; i = ++_i) {
+              el = elements[i];
+              _results.push(el.setAttribute('colspan', '{{noColumns(hover, ' + i + ')}}'));
+            }
+            return _results;
           });
+          return function(scope, element, attrs, controller) {
+            scope.noColumns = function(hover, i) {
+              var el, elements, j, _i, _ref, _ref1;
+              if (hover) {
+                return 1;
+              }
+              elements = element.children('td').not('.controls');
+              el = elements[i];
+              if ($(el).css('display') === 'none') {
+                return 1;
+              }
+              for (j = _i = _ref = i + 1, _ref1 = elements.length; _ref <= _ref1 ? _i < _ref1 : _i > _ref1; j = _ref <= _ref1 ? ++_i : --_i) {
+                if ($(elements[j]).css('display') !== 'none') {
+                  return 1;
+                }
+              }
+              return 2;
+            };
+            scope.mouseEnter = function() {
+              var el;
+              scope.hover = true;
+              scope.id = 'id' + Math.round(Math.random() * 10000);
+              el = element.find('td:visible:last');
+              el.addClass('squeezedElement');
+              return $(templates.editableTd({
+                id: scope.id,
+                width: el.width(),
+                index: el.index() + 1,
+                tableId: controller.scope.tableId
+              })).appendTo(element).find('i.close').click(function() {
+                return scope.$apply(function() {
+                  return scope.removeItem(scope.$index);
+                });
+              });
+            };
+            return scope.mouseLeave = function() {
+              scope.hover = false;
+              element.find('.squeezedElement').removeClass('squeezedElement');
+              return element.find('#' + scope.id).remove();
+            };
+          };
         }
       };
     });
