@@ -16,5 +16,7 @@ table(editable-table, model='tournament.judges', add-item='addJudge()', remove-i
         div(multi-cell, multi-bind="o.club", multi-choices="tournament.clubs", multi-allow-nil='unaffiliated', multi-choice-name="o.name")
 
 :stylus
+  #judges-table th:nth-child(1)
+    width: 35px
   #judges-table th:nth-child(2)
     width: 30%

@@ -16,5 +16,9 @@ table(editable-table, model='tournament.rooms', add-item='addRoom()', remove-ite
         div(text-edit-cell, text-edit-bind="o.floor")
 
 :stylus
+  #rooms-table th:nth-child(1)
+    width: 35px
   #rooms-table th:nth-child(2)
-    width: 70%
+    width: auto
+  #rooms-table th:nth-child(3)
+    width: 30%

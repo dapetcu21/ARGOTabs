@@ -20,7 +20,11 @@ table(editable-table, model='tournament.clubs', add-item='addClub()', remove-ite
         | {{o.judges.length}}
 
 :stylus
+  #clubs-table th:nth-child(1)
+    width: 35px
   #clubs-table th:nth-child(2)
-    width: 70%
+    width: auto
   #clubs-table th:nth-child(3)
-    width: 12%
+    width: 15%
+  #clubs-table th:nth-child(4)
+    width: 15%

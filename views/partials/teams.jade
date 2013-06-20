@@ -16,5 +16,7 @@ table(editable-table, model='tournament.teams', add-item='addTeam()', remove-ite
         div(multi-cell, multi-bind="o.club", multi-choices="tournament.clubs", multi-allow-nil='unaffiliated', multi-choice-name="o.name")
 
 :stylus
+  #teams-table th:nth-child(1)
+    width: 35px
   #teams-table th:nth-child(2)
     width: 30%

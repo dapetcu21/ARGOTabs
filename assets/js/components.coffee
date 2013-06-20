@@ -126,17 +126,55 @@ define ['jquery', 'underscore', 'templates', 'angular'], ($) ->
       model: '='
       addItem_: '&addItem'
       removeItem_: '&removeItem'
-    controller: [ '$scope', ($scope) ->
+    link:
+      post: (scope, element, attrs) ->
+        elements = element.find('th').not('.controls')
+        for el, i in elements
+          ((i) ->
+            scope.$watch ->
+              return 1 if scope.hover
+              elements = element.find('th').not('.controls')
+              el = elements[i]
+              return 1 if $(el).css('display') == 'none'
+              for j in [i+1...elements.length]
+                if $(elements[j]).css('display') != 'none'
+                  return 1
+              return 2
+            , (newValue) ->
+              el.setAttribute('colspan', newValue)
+          )(i)
+    controller: [ '$scope', '$element', ($scope, $element) ->
       this.scope = $scope
+      $scope.tableId = 'tid' + Math.round( Math.random() * 10000 )
+      $scope.hover = false
+      
       return
     ]
 
   mod.directive 'editableHeadTransclude', ->
+    require: '^editableTable'
+    link:
+      post:
+        (scope, element, attrs, controller) ->
+          element.find('thead').hover ->
+            scope.$apply ->
+              scope.hover = true
+              scope.headId = 'id' + Math.round( Math.random() * 10000)
+              el = element.find('th:visible:last')
+              el.addClass('squeezedElement')
+              element.find('thead tr').append templates.editableTh
+                id: scope.headId
+                tableId: controller.scope.tableId
+                width: el.width()
+          , ->
+            scope.$apply ->
+              controller.scope.hover = false
+              element.find('.controls').hide()
+              element.find('.squeezedElement').removeClass('squeezedElement')
+              element.find('#'+scope.headId).remove()
+
     controller: [ '$transclude', '$element', ($transclude, $element) ->
       $transclude (clone) ->
-        lastHeader = clone.find('th:last-child')
-        if lastHeader.length
-          lastHeader[0].setAttribute('colspan', '2')
         $element.append(clone)
     ]
 
@@ -148,8 +186,8 @@ define ['jquery', 'underscore', 'templates', 'angular'], ($) ->
     link: (scope, element, attr, controller) ->
       scope.getScope = ->
         controller.scope
-      scope.noColumns = (hover) ->
-        if hover then 1 else 2
+
+
       scope.removeItem = (index) ->
         fcn = controller.scope.removeItem_
         if fcn
@@ -190,12 +228,45 @@ define ['jquery', 'underscore', 'templates', 'angular'], ($) ->
         , 1
 
   mod.directive 'editableScriptTransclude', ->
-    compile: (elem, attrs, transcludeFn) ->
-      transcludeFn elem, (clone) ->
+    require: '^editableTable'
+    compile: (element, attrs, transcludeFn) ->
+      transcludeFn element, (clone) ->
         $content = $(clone).filter('script').text()
           .replace(/&lt;/gi, '<')
           .replace(/&gt;/gi, '>')
-        $content += templates.editableTr()
-        elem.append $content
-        elem.find('td:nth-last-child(2)')[0].setAttribute 'colspan', '{{noColumns(hover)}}'
-      return
+        element.append $content
+
+        elements = element.children('td').not('.controls')
+        for el, i in elements
+          el.setAttribute 'colspan', '{{noColumns(hover, '+i+')}}'
+
+      (scope, element, attrs, controller) ->
+        scope.noColumns = (hover, i) ->
+          return 1 if hover
+          elements = element.children('td').not('.controls')
+          el = elements[i]
+          return 1 if $(el).css('display') == 'none'
+          for j in [i+1...elements.length]
+            if $(elements[j]).css('display') != 'none'
+              return 1
+          return 2
+
+        scope.mouseEnter = ->
+          scope.hover = true
+          scope.id = 'id' + Math.round( Math.random() * 10000)
+          el = element.find('td:visible:last')
+          el.addClass('squeezedElement')
+          $(templates.editableTd
+            id: scope.id
+            width: el.width()
+            index: el.index() + 1
+            tableId: controller.scope.tableId
+          ).appendTo(element)
+            .find('i.close').click ->
+              scope.$apply ->
+                scope.removeItem(scope.$index)
+
+        scope.mouseLeave = ->
+          scope.hover = false
+          element.find('.squeezedElement').removeClass('squeezedElement')
+          element.find('#'+scope.id).remove()

@@ -1,4 +1,4 @@
-tr(ng-repeat="o in getScope().model", ng-init="hover = false; initRepeatScope(this)", ng-mouseenter="hover = true", ng-mouseleave="hover = false", editable-script-transclude)
+tr(ng-repeat="o in getScope().model", ng-init="hover = false; initRepeatScope(this)", ng-mouseenter="mouseEnter()", ng-mouseleave="mouseLeave()", editable-script-transclude)
 tr.dont-print(ng-show='addLabel'): td(colspan=100): a(tabindex=0, href="", ng-click="addItem()")
   i.icon-plus
   |  {{addLabel}}
