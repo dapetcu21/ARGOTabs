@@ -161,58 +161,177 @@
         }
       };
     });
-    mod.directive('editableTable', function() {
-      return {
-        template: templates.editableTable(),
-        restrict: 'AE',
-        replace: true,
-        transclude: true,
-        scope: {
-          model: '=',
-          addItem_: '&addItem',
-          removeItem_: '&removeItem'
-        },
-        link: {
-          post: function(scope, element, attrs) {
-            var el, elements, i, _i, _len, _results;
-            elements = element.find('th').not('.controls');
-            _results = [];
-            for (i = _i = 0, _len = elements.length; _i < _len; i = ++_i) {
-              el = elements[i];
-              _results.push((function(i) {
-                return scope.$watch(function() {
-                  var j, _j, _ref, _ref1;
-                  if (scope.hover) {
-                    return 1;
+    mod.directive('editableTable', [
+      '$parse', function($parse) {
+        return {
+          template: templates.editableTable(),
+          restrict: 'AE',
+          replace: true,
+          transclude: true,
+          scope: {
+            model: '=',
+            addItem_: '&addItem',
+            removeItem_: '&removeItem',
+            visible_: '@visible'
+          },
+          link: {
+            post: function(scope, element, attrs) {
+              var context, el, elements, i, n, _i, _len, _results;
+              elements = element.find('th').not('.controls');
+              n = elements.length;
+              context = $(templates.editableTcontext({
+                id: scope.tableId,
+                n: n
+              })).appendTo($('body'));
+              element.find('thead').contextmenu({
+                target: '.context-menu-' + scope.tableId,
+                before: function(e, element, target) {
+                  var i, nm, _i;
+                  nm = [];
+                  for (i = _i = 0; 0 <= n ? _i < n : _i > n; i = 0 <= n ? ++_i : --_i) {
+                    nm.push('Row ' + i);
                   }
-                  elements = element.find('th').not('.controls');
-                  el = elements[i];
-                  if ($(el).css('display') === 'none') {
-                    return 1;
+                  context.find('li.hide-row').each(function(index, element) {
+                    var el, icon;
+                    el = $(element);
+                    i = parseInt(el.data('index'));
+                    el.find('.item-label').html(nm[i]);
+                    icon = el.find('i');
+                    if (scope.visible[i]) {
+                      icon.removeClass('icon-check-empty');
+                      return icon.addClass('icon-check');
+                    } else {
+                      icon.removeClass('icon-check');
+                      return icon.addClass('icon-check-empty');
+                    }
+                  });
+                  return true;
+                },
+                onItem: function(e, item) {
+                  var i;
+                  i = parseInt(item.data('index'));
+                  if (isNaN(i)) {
+                    i = parseInt(item.parents('li').data('index'));
                   }
-                  for (j = _j = _ref = i + 1, _ref1 = elements.length; _ref <= _ref1 ? _j < _ref1 : _j > _ref1; j = _ref <= _ref1 ? ++_j : --_j) {
-                    if ($(elements[j]).css('display') !== 'none') {
+                  return scope.$apply(function() {
+                    scope.visible[i] = !scope.visible[i];
+                    if (!_.reduce(scope.visible, (function(m, i) {
+                      return m || i;
+                    }), false)) {
+                      return scope.visible[i] = !scope.visible[i];
+                    }
+                  });
+                }
+              });
+              if (scope.visible == null) {
+                scope.visible = [];
+              }
+              while (scope.visible.length < n) {
+                scope.visible.push(true);
+              }
+              scope.$watch('visible_', function(newValue) {
+                var newArray, p, ps, val;
+                p = $parse(newValue);
+                ps = scope.$parent;
+                val = p(ps);
+                console.log(newValue, p, val);
+                if (!(val && val instanceof Array) && p.assign) {
+                  newArray = [];
+                  p.assign(ps, newArray);
+                  val = newArray;
+                  console.log(newValue, p(ps), val);
+                }
+                if (val) {
+                  while (val.length < n) {
+                    val.push(true);
+                  }
+                  scope.visible = val;
+                }
+                return console.log(newValue, scope.visible, val, p(ps));
+              });
+              scope.clearAutoCell = function(elements) {
+                if (scope.auto !== null) {
+                  $(elements[scope.auto]).removeClass('a-width');
+                }
+                return scope.auto = null;
+              };
+              scope.updateAutoCell = function(elements) {
+                var auto, el, em, i, min, prior, _i, _len;
+                min = 1000001;
+                auto = null;
+                for (i = _i = 0, _len = elements.length; _i < _len; i = ++_i) {
+                  em = elements[i];
+                  if (!scope.visible[i]) {
+                    continue;
+                  }
+                  el = $(em);
+                  if (el.hasClass('auto-width')) {
+                    auto = null;
+                    break;
+                  }
+                  prior = el.data('autoIndex');
+                  if (isNaN(prior)) {
+                    prior = 1000000 - el.width();
+                  }
+                  if (prior < min) {
+                    min = prior;
+                    auto = i;
+                  }
+                }
+                if (auto !== null) {
+                  $(elements[auto]).addClass('a-width');
+                }
+                return scope.auto = auto;
+              };
+              _results = [];
+              for (i = _i = 0, _len = elements.length; _i < _len; i = ++_i) {
+                el = elements[i];
+                _results.push((function(i, el) {
+                  scope.$watch('visible[' + i + ']', function(newValue, oldValue) {
+                    var es;
+                    es = element.find('th').not('.controls');
+                    scope.clearAutoCell(es);
+                    scope.updateAutoCell(es);
+                    if (newValue) {
+                      return $(el).removeClass('hidden-true');
+                    } else {
+                      return $(el).addClass('hidden-true');
+                    }
+                  });
+                  return scope.$watch(function() {
+                    var j, _j, _ref, _ref1;
+                    if (scope.hover) {
                       return 1;
                     }
-                  }
-                  return 2;
-                }, function(newValue) {
-                  return el.setAttribute('colspan', newValue);
-                });
-              })(i));
+                    elements = element.find('th').not('.controls');
+                    el = elements[i];
+                    if ($(el).css('display') === 'none') {
+                      return 1;
+                    }
+                    for (j = _j = _ref = i + 1, _ref1 = elements.length; _ref <= _ref1 ? _j < _ref1 : _j > _ref1; j = _ref <= _ref1 ? ++_j : --_j) {
+                      if ($(elements[j]).css('display') !== 'none') {
+                        return 1;
+                      }
+                    }
+                    return 2;
+                  }, function(newValue) {
+                    return el.setAttribute('colspan', newValue);
+                  });
+                })(i, el));
+              }
+              return _results;
             }
-            return _results;
-          }
-        },
-        controller: [
-          '$scope', '$element', function($scope, $element) {
-            this.scope = $scope;
-            $scope.tableId = 'tid' + Math.round(Math.random() * 10000);
-            $scope.hover = false;
-          }
-        ]
-      };
-    });
+          },
+          controller: [
+            '$scope', '$element', function($scope, $element) {
+              this.scope = $scope;
+              $scope.tableId = 'tid' + Math.round(Math.random() * 10000);
+              $scope.hover = false;
+            }
+          ]
+        };
+      }
+    ]);
     mod.directive('editableHeadTransclude', function() {
       return {
         require: '^editableTable',
@@ -225,11 +344,16 @@
                 scope.headId = 'id' + Math.round(Math.random() * 10000);
                 el = element.find('th:visible:last');
                 el.addClass('squeezedElement');
-                return element.find('thead tr').append(templates.editableTh({
+                return $(templates.editableTh({
                   id: scope.headId,
                   tableId: controller.scope.tableId,
                   width: el.width()
-                }));
+                })).appendTo(element.find('thead tr')).find('i.close.icon-cog').click(function() {
+                  return element.find('thead').trigger('mousedown', {
+                    button: 2,
+                    which: 3
+                  }).trigger('mouseup');
+                });
               });
             }, function() {
               return scope.$apply(function() {
@@ -323,7 +447,8 @@
             _results = [];
             for (i = _i = 0, _len = elements.length; _i < _len; i = ++_i) {
               el = elements[i];
-              _results.push(el.setAttribute('colspan', '{{noColumns(hover, ' + i + ')}}'));
+              el.setAttribute('colspan', '{{noColumns(hover, ' + i + ')}}');
+              _results.push($(el).addClass('hidden-{{!visible(' + i + ')}}'));
             }
             return _results;
           });
@@ -345,6 +470,13 @@
               }
               return 2;
             };
+            scope.visible = function(i) {
+              try {
+                return controller.scope.visible[i];
+              } catch (_error) {
+                return true;
+              }
+            };
             scope.mouseEnter = function() {
               var el;
               scope.hover = true;
@@ -354,7 +486,6 @@
               return $(templates.editableTd({
                 id: scope.id,
                 width: el.width(),
-                index: el.index() + 1,
                 tableId: controller.scope.tableId
               })).appendTo(element).find('i.close').click(function() {
                 return scope.$apply(function() {

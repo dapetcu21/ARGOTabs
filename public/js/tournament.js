@@ -23,6 +23,7 @@
           _this.teams = [];
           _this.judges = [];
           _this.rooms = [];
+          _this.tableOpts = {};
           for (key in model) {
             value = model[key];
             _this[key] = value;

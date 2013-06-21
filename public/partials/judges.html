@@ -1,13 +1,13 @@
 
 <h3 class="print-only text-center">{{tournament.name}} - Judges</h3>
-<table editable-table="editable-table" model="tournament.judges" add-item="addJudge()" remove-item="removeJudge(index)" id="judges-table">
+<table editable-table="editable-table" model="tournament.judges" visible="tournament.tableOpts.judges" add-item="addJudge()" remove-item="removeJudge(index)" id="judges-table">
   <thead>
     <tr>
-      <th>#</th>
-      <th>
+      <th data-auto-index='3'>#</th>
+      <th data-auto-index='1'>
         <sort-arrow model="tournament.judges" sort-by="o.name">Name</sort-arrow>
       </th>
-      <th>
+      <th data-auto-index='2'>
         <sort-arrow model="tournament.judges" sort-by="eliminateNil(o.club.name)">Club</sort-arrow>
       </th>
     </tr>

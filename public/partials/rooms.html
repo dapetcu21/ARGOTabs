@@ -1,13 +1,13 @@
 
 <h3 class="print-only text-center">{{tournament.name}} - Rooms</h3>
-<table editable-table="editable-table" model="tournament.rooms" add-item="addRoom()" remove-item="removeRoom(index)" id="rooms-table">
+<table editable-table="editable-table" model="tournament.rooms" visible="tournament.tableOpts.rooms" add-item="addRoom()" remove-item="removeRoom(index)" id="rooms-table">
   <thead>
     <tr>
-      <th>#</th>
-      <th>
+      <th data-auto-index='3'>#</th>
+      <th data-auto-index='1'>
         <sort-arrow model="tournament.rooms" sort-by="o.name">Name</sort-arrow>
       </th>
-      <th>
+      <th data-auto-index='2'>
         <sort-arrow model="tournament.rooms" sort-by="o.floor">Floor</sort-arrow>
       </th>
     </tr>
@@ -25,9 +25,6 @@
   </tbody>
 </table><style type="text/css">#rooms-table th:nth-child(1) {
   width: 35px;
-}
-#rooms-table th:nth-child(2) {
-  width: auto;
 }
 #rooms-table th:nth-child(3) {
   width: 30%;

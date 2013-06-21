@@ -108,3 +108,9 @@ th:hover .sortarrow i,
 .editable-table td {
   vertical-align: middle;
 }
+.auto-width {
+  width: auto;
+}
+.a-width {
+  width: auto !important;
+}
