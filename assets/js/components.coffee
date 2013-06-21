@@ -265,9 +265,10 @@ define ['jquery', 'underscore', 'templates', 'angular'], ($) ->
                 width: el.width()
               )
                 .appendTo(element.find('thead tr'))
-                .find('i.close.icon-cog').click ->
-                  #TO DO: make this work
-                  element.find('thead').trigger('mousedown',{button:2, which:3}).trigger('mouseup')
+                .find('i.close.icon-cog').click (e) ->
+                  setTimeout -> #to avoid the click event that cancels my menu
+                    element.find('thead').contextmenu 'show', e
+                  , 1
           , ->
             scope.$apply ->
               controller.scope.hover = false
