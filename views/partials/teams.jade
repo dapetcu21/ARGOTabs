@@ -3,9 +3,9 @@ table(editable-table, model='tournament.teams', visible='tournament.tableOpts.te
   thead
     tr
       th(data-auto-index=3) #
-      th(data-auto-index=1)
-        sort-arrow(model='tournament.teams', sort-by='o.name') Team name
       th(data-auto-index=2)
+        sort-arrow(model='tournament.teams', sort-by='o.name') Team name
+      th(data-auto-index=1)
         sort-arrow(model='tournament.teams', sort-by='eliminateNil(o.club.name)') Club
   tbody(editable-tbody, add-item-label='Add team')
     script(type='text/html')
