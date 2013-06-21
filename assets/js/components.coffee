@@ -140,8 +140,11 @@ define ['jquery', 'underscore', 'templates', 'angular'], ($) ->
           n: n
         ).appendTo $('body')
 
+        scope.$on '$destroy', ->
+          context.remove()
+
         element.find('thead').contextmenu
-          target:'.context-menu-' + scope.tableId
+          target: '.context-menu-' + scope.tableId
           before: (e, element, target) ->
             nm = []
             for i in [0...n]
