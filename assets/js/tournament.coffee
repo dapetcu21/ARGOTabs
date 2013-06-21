@@ -11,9 +11,11 @@ define ['util', 'club', 'team', 'judge', 'room'], (Util, Club, Team, Judge, Room
         @teams = []
         @judges = []
         @rooms = []
+        @tableOpts = {}
 
         for key, value of model
           this[key] = value
+
 
         for club, i in @clubs
           @clubs[i] = new Club(this, club)

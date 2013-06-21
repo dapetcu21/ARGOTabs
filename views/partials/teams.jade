@@ -1,11 +1,11 @@
 h3.print-only.text-center {{tournament.name}} - Teams
-table(editable-table, model='tournament.teams', add-item='addTeam()', remove-item='removeTeam(index)')#teams-table
+table(editable-table, model='tournament.teams', visible='tournament.tableOpts.teams', add-item='addTeam()', remove-item='removeTeam(index)')#teams-table
   thead
     tr
-      th #
-      th
+      th(data-auto-index=3) #
+      th(data-auto-index=1)
         sort-arrow(model='tournament.teams', sort-by='o.name') Team name
-      th
+      th(data-auto-index=2)
         sort-arrow(model='tournament.teams', sort-by='eliminateNil(o.club.name)') Club
   tbody(editable-tbody, add-item-label='Add team')
     script(type='text/html')

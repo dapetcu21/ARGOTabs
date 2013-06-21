@@ -10,12 +10,14 @@ require.config
     B64: '/components/B64/base64'
     cookies: '/components/cookies/cookies'
     underscore: '/components/underscore/underscore'
+    'jquery.bootstrap.contextmenu': '/components/sydcanem-bootstrap-contextmenu/bootstrap-contextmenu'
   shim:
     'jquery.bootstrap': ['jquery']
     'jquery.transit': ['jquery']
+    'jquery.bootstrap.contextmenu': ['jquery.bootstrap']
     filereader: ['jquery']
     angular: ['jquery']
 
-require ['jquery.bootstrap', 'uicontroller', 'globals'], (bs, UIController, globals) ->
+require ['uicontroller', 'globals', 'jquery.bootstrap', 'jquery.bootstrap.contextmenu'], (UIController, globals) ->
   globals.uiController = new UIController()
 

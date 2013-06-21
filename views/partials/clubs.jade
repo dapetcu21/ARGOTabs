@@ -1,13 +1,13 @@
 h3.print-only.text-center {{tournament.name}} - Clubs
-table(editable-table, model='tournament.clubs', add-item='addClub()', remove-item='removeClub(index)')#clubs-table
+table(editable-table, model='tournament.clubs', visible='tournament.tableOpts.clubs', add-item='addClub()', remove-item='removeClub(index)')#clubs-table
   thead
     tr
-      th #
-      th
+      th(data-auto-index=4) #
+      th(data-auto-index=1)
         sort-arrow(model='tournament.clubs', sort-by='o.name') Name
-      th
+      th(data-auto-index=3)
         sort-arrow(model='tournament.clubs', sort-by='o.teams.length') # Teams
-      th
+      th(data-auto-index=2)
         sort-arrow(model='tournament.clubs', sort-by='o.judges.length') # Judges
   tbody(editable-tbody, add-item-label='Add club')
     script(type='text/html')
@@ -22,8 +22,6 @@ table(editable-table, model='tournament.clubs', add-item='addClub()', remove-ite
 :stylus
   #clubs-table th:nth-child(1)
     width: 35px
-  #clubs-table th:nth-child(2)
-    width: auto
   #clubs-table th:nth-child(3)
     width: 15%
   #clubs-table th:nth-child(4)

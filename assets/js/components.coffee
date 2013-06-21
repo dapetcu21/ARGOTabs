@@ -116,8 +116,10 @@ define ['jquery', 'underscore', 'templates', 'angular'], ($) ->
       scope.toggleSort = ->
         scope.ascending = not scope.ascending
         scope.sort()
+
+  #---- Table ----
   
-  mod.directive 'editableTable', ->
+  mod.directive 'editableTable', ['$parse', ($parse) ->
     template: templates.editableTable()
     restrict: 'AE'
     replace: true
@@ -126,11 +128,102 @@ define ['jquery', 'underscore', 'templates', 'angular'], ($) ->
       model: '='
       addItem_: '&addItem'
       removeItem_: '&removeItem'
+      visible_: '@visible'
     link:
       post: (scope, element, attrs) ->
         elements = element.find('th').not('.controls')
+
+        n = elements.length
+
+        context = $(templates.editableTcontext
+          id: scope.tableId
+          n: n
+        ).appendTo $('body')
+
+        element.find('thead').contextmenu
+          target:'.context-menu-' + scope.tableId
+          before: (e, element, target) ->
+            nm = []
+            for i in [0...n]
+              nm.push 'Row ' + i
+
+            context.find('li.hide-row').each (index, element) ->
+              el = $(element)
+              i = parseInt el.data 'index'
+              el.find('.item-label').html nm[i]
+              icon = el.find('i')
+              if scope.visible[i]
+                icon.removeClass 'icon-check-empty'
+                icon.addClass 'icon-check'
+              else
+                icon.removeClass 'icon-check'
+                icon.addClass 'icon-check-empty'
+            return true
+          onItem: (e, item) ->
+            i = parseInt item.data 'index'
+            if isNaN(i)
+              i = parseInt item.parents('li').data 'index'
+            scope.$apply ->
+              scope.visible[i] = not scope.visible[i]
+              if not _.reduce scope.visible, ((m, i) -> m or i), false
+                scope.visible[i] = not scope.visible[i]
+
+        if not scope.visible?
+          scope.visible = []
+        while scope.visible.length < n
+          scope.visible.push true
+
+        scope.$watch 'visible_', (newValue) ->
+          p = $parse(newValue)
+          ps = scope.$parent
+          val = p ps
+          console.log newValue, p, val
+          if not (val and val instanceof Array) and p.assign
+            newArray = []
+            p.assign ps, newArray
+            val = newArray
+            console.log newValue, p(ps), val
+          if val
+            while val.length < n
+              val.push true
+            scope.visible = val
+          console.log newValue, scope.visible, val, p ps
+
+        scope.clearAutoCell = (elements) ->
+          if scope.auto != null
+            $(elements[scope.auto]).removeClass 'a-width'
+          scope.auto = null
+
+        scope.updateAutoCell = (elements) ->
+          min = 1000001
+          auto = null
+          for em, i in elements
+            continue if not scope.visible[i]
+            el = $(em)
+            if el.hasClass('auto-width')
+              auto = null
+              break
+            prior = el.data('autoIndex')
+            if isNaN prior
+              prior = 1000000 - el.width()
+            if prior < min
+              min = prior
+              auto = i
+          if auto != null
+            $(elements[auto]).addClass 'a-width'
+          scope.auto = auto
+
         for el, i in elements
-          ((i) ->
+          ((i, el) ->
+            scope.$watch 'visible['+i+']', (newValue, oldValue) ->
+              es = element.find('th').not('.controls')
+              scope.clearAutoCell es
+              scope.updateAutoCell es
+              if newValue
+                $(el).removeClass 'hidden-true'
+              else
+                $(el).addClass 'hidden-true'
+              
             scope.$watch ->
               return 1 if scope.hover
               elements = element.find('th').not('.controls')
@@ -142,7 +235,7 @@ define ['jquery', 'underscore', 'templates', 'angular'], ($) ->
               return 2
             , (newValue) ->
               el.setAttribute('colspan', newValue)
-          )(i)
+          )(i, el)
     controller: [ '$scope', '$element', ($scope, $element) ->
       this.scope = $scope
       $scope.tableId = 'tid' + Math.round( Math.random() * 10000 )
@@ -150,6 +243,7 @@ define ['jquery', 'underscore', 'templates', 'angular'], ($) ->
       
       return
     ]
+  ]
 
   mod.directive 'editableHeadTransclude', ->
     require: '^editableTable'
@@ -162,10 +256,15 @@ define ['jquery', 'underscore', 'templates', 'angular'], ($) ->
               scope.headId = 'id' + Math.round( Math.random() * 10000)
               el = element.find('th:visible:last')
               el.addClass('squeezedElement')
-              element.find('thead tr').append templates.editableTh
+              $(templates.editableTh
                 id: scope.headId
                 tableId: controller.scope.tableId
                 width: el.width()
+              )
+                .appendTo(element.find('thead tr'))
+                .find('i.close.icon-cog').click ->
+                  #TO DO: make this work
+                  element.find('thead').trigger('mousedown',{button:2, which:3}).trigger('mouseup')
           , ->
             scope.$apply ->
               controller.scope.hover = false
@@ -239,6 +338,7 @@ define ['jquery', 'underscore', 'templates', 'angular'], ($) ->
         elements = element.children('td').not('.controls')
         for el, i in elements
           el.setAttribute 'colspan', '{{noColumns(hover, '+i+')}}'
+          $(el).addClass 'hidden-{{!visible('+i+')}}'
 
       (scope, element, attrs, controller) ->
         scope.noColumns = (hover, i) ->
@@ -251,6 +351,12 @@ define ['jquery', 'underscore', 'templates', 'angular'], ($) ->
               return 1
           return 2
 
+        scope.visible = (i) ->
+          try
+            controller.scope.visible[i]
+          catch
+            true
+
         scope.mouseEnter = ->
           scope.hover = true
           scope.id = 'id' + Math.round( Math.random() * 10000)
@@ -259,7 +365,6 @@ define ['jquery', 'underscore', 'templates', 'angular'], ($) ->
           $(templates.editableTd
             id: scope.id
             width: el.width()
-            index: el.index() + 1
             tableId: controller.scope.tableId
           ).appendTo(element)
             .find('i.close').click ->
