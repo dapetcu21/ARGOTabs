@@ -1,4 +1,4 @@
-define ['jquery', 'underscore', 'templates', 'angular'], ($) ->
+define ['jquery', 'underscore', 'templates', 'angular', 'jquery.event.drag', 'jquery.bootstrap.contextmenu', 'html2canvas'], ($) ->
   mod = angular.module "components", []
   mod.directive 'navLi', ->
     restrict: 'E'
@@ -129,6 +129,7 @@ define ['jquery', 'underscore', 'templates', 'angular'], ($) ->
       addItem_: '&addItem'
       removeItem_: '&removeItem'
       visible_: '@visible'
+      reorders: '@reorders'
     link:
       post: (scope, element, attrs) ->
         elements = element.find('th').not('.controls')
@@ -180,17 +181,14 @@ define ['jquery', 'underscore', 'templates', 'angular'], ($) ->
           p = $parse(newValue)
           ps = scope.$parent
           val = p ps
-          console.log newValue, p, val
           if not (val and val instanceof Array) and p.assign
             newArray = []
             p.assign ps, newArray
             val = newArray
-            console.log newValue, p(ps), val
           if val
             while val.length < n
               val.push true
             scope.visible = val
-          console.log newValue, scope.visible, val, p ps
 
         scope.clearAutoCell = (elements) ->
           if scope.auto != null
@@ -229,8 +227,6 @@ define ['jquery', 'underscore', 'templates', 'angular'], ($) ->
               
             scope.$watch ->
               return 1 if scope.hover
-              elements = element.find('th').not('.controls')
-              el = elements[i]
               return 1 if $(el).css('display') == 'none'
               for j in [i+1...elements.length]
                 if $(elements[j]).css('display') != 'none'
@@ -290,7 +286,6 @@ define ['jquery', 'underscore', 'templates', 'angular'], ($) ->
       scope.getScope = ->
         controller.scope
 
-
       scope.removeItem = (index) ->
         fcn = controller.scope.removeItem_
         if fcn
@@ -344,10 +339,11 @@ define ['jquery', 'underscore', 'templates', 'angular'], ($) ->
           el.setAttribute 'colspan', '{{noColumns(hover, '+i+')}}'
           $(el).addClass 'hidden-{{!visible('+i+')}}'
 
-      (scope, element, attrs, controller) ->
+      post: (scope, element, attrs, controller) ->
+        elements = element.children('td').not('.controls')
+
         scope.noColumns = (hover, i) ->
           return 1 if hover
-          elements = element.children('td').not('.controls')
           el = elements[i]
           return 1 if $(el).css('display') == 'none'
           for j in [i+1...elements.length]
@@ -379,3 +375,143 @@ define ['jquery', 'underscore', 'templates', 'angular'], ($) ->
           scope.hover = false
           element.find('.squeezedElement').removeClass('squeezedElement')
           element.find('#'+scope.id).remove()
+
+        currentPoint = null
+        getCurrentPoint = (x, y) ->
+          parent = element.parent()
+          rows = parent.children()
+          omitLast = scope.addLabel
+          n = rows.length
+          n-- if omitLast
+          return null if not n
+          lel = $(rows[n-1])
+          lelbt = lel.offset().top + lel.outerHeight()
+          return null if y > lelbt + 10
+          po = parent.offset()
+          return null if y < po.top - 10
+          return null if x < po.left or x > po.left + parent.outerWidth()
+          a = 0
+          b = n
+          while a < b
+            m = (a+b) >> 1
+            el = $(rows[m])
+            if y < el.offset().top + el.outerHeight() / 2
+              b = m
+            else
+              a = m+1
+          return {
+            index: b
+            y: if b == n then lelbt else $(rows[b]).offset().top
+          }
+
+        $canvas = null
+        $line = null
+        dragPointX = dragPointY = 0
+        dragStart = null
+        updateCanvas = (e) ->
+          if $canvas
+            $canvas.css 'left', e.pageX - dragPointX
+            $canvas.css 'top', e.pageY - dragPointY
+          if $line
+            pnt = getCurrentPoint e.pageX, e.pageY
+            if pnt and (pnt.index == dragStart or pnt.index == dragStart+1)
+              pnt = null
+            if currentPoint and not pnt
+              $line.css 'display', 'none'
+            else if pnt and not currentPoint
+              $line.css 'display', 'block'
+            if pnt
+              $line.css 'top', pnt.y + 'px'
+            currentPoint = pnt
+
+        sc = controller.scope
+        element.on 'draginit', (e) ->
+          return false if not sc.reorders
+          return element
+        element.on 'dragstart', (e) ->
+          return false if not sc.reorders
+          table = element.parents('table')
+          dragStart = element.index()
+
+          html2canvas element[0],
+            onrendered: (fullCanvas) ->
+              #remove borders
+              fullContex = fullCanvas.getContext('2d')
+              parseIntN = (s) ->
+                n = parseInt s
+                return 0 if isNaN n
+                return n
+              td = element.find('td:visible')
+              borders =
+                left: parseIntN(td.css 'border-left-width') +
+                      parseIntN(element.css 'border-left-width')
+                right: parseIntN(td.last().css 'border-right-width') +
+                       parseIntN(element.css 'border-right-width')
+                top: parseIntN(td.css 'border-top-width') +
+                     parseIntN(element.css 'border-top-width')
+                bottom: parseIntN(td.css 'border-bottom-width') +
+                        parseIntN(element.css 'border-bottom-width')
+              pos = element.offset()
+              elW = element.outerWidth()
+              elH = element.outerHeight()
+              scale =
+                x: fullCanvas.width / elW
+                y: fullCanvas.height / elH
+              css =
+                width: elW - borders.left - borders.right
+                height: elH - borders.top - borders.bottom
+              pos.left = borders.left * scale.x
+              pos.top = borders.top * scale.y
+              pos.width = css.width * scale.x
+              pos.height = css.height * scale.y
+
+              canvas = document.createElement 'canvas'
+              $canvas = $(canvas)
+              $canvas.attr 'width', pos.width
+              $canvas.attr 'height', pos.height
+              $canvas.css 'width', css.width
+              $canvas.css 'height', css.height
+              canvas.getContext('2d').drawImage fullCanvas, -pos.left, -pos.top
+
+              $canvas.css 'border', '1px solid #dddddd' #add our own borders
+              $canvas.css 'position', 'fixed'
+              $canvas.css 'opacity', '0.6'
+              offs = element.offset()
+              dragPointX = e.pageX - offs.left
+              dragPointY = e.pageY - offs.top
+              element.css 'opacity', '0.2'
+
+              $line = $(document.createElement 'div')
+              $line.css 'position', 'fixed'
+              $line.css 'border', '2px solid #dddddd'
+              $line.css 'border-radius', '2px'
+              $line.css 'width', element.outerWidth()
+              $line.css 'left', element.offset().left
+              $line.css 'display', 'none'
+
+              $(document.body).append $line
+              $(document.body).append $canvas
+
+              updateCanvas e
+              return
+          return $line
+        element.on 'drag', (e) ->
+          updateCanvas e
+          return
+        element.on 'dragend', (e) ->
+          if $canvas
+            $canvas.remove()
+            $canvas = null
+          element.css 'opacity', '1'
+          if $line
+            $line.remove()
+            $line = null
+          if sc.reorders and currentPoint
+            idx = currentPoint.index
+            idx-- if idx > dragStart
+            if idx != dragStart
+              sc.$apply ->
+                arr = sc.model
+                el = arr.splice(dragStart, 1)[0]
+                arr.splice idx, 0, el
+          return

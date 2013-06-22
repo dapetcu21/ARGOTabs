@@ -1,5 +1,5 @@
 h3.print-only.text-center {{tournament.name}} - Rooms
-table(editable-table, model='tournament.rooms', visible='tournament.tableOpts.rooms', add-item='addRoom()', remove-item='removeRoom(index)')#rooms-table
+table(editable-table, reorders, model='tournament.rooms', visible='tournament.tableOpts.rooms', add-item='addRoom()', remove-item='removeRoom(index)')#rooms-table
   thead
     tr
       th(data-auto-index=3) #
