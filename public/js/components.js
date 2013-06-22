@@ -183,6 +183,9 @@
                 id: scope.tableId,
                 n: n
               })).appendTo($('body'));
+              scope.$on('$destroy', function() {
+                return context.remove();
+              });
               element.find('thead').contextmenu({
                 target: '.context-menu-' + scope.tableId,
                 before: function(e, element, target) {
@@ -348,11 +351,10 @@
                   id: scope.headId,
                   tableId: controller.scope.tableId,
                   width: el.width()
-                })).appendTo(element.find('thead tr')).find('i.close.icon-cog').click(function() {
-                  return element.find('thead').trigger('mousedown', {
-                    button: 2,
-                    which: 3
-                  }).trigger('mouseup');
+                })).appendTo(element.find('thead tr')).find('i.close.icon-cog').click(function(e) {
+                  return setTimeout(function() {
+                    return element.find('thead').contextmenu('show', e);
+                  }, 1);
                 });
               });
             }, function() {
