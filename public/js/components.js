@@ -1,5 +1,5 @@
 (function() {
-  define(['jquery', 'underscore', 'templates', 'angular'], function($) {
+  define(['jquery', 'underscore', 'templates', 'angular', 'jquery.event.drag', 'jquery.bootstrap.contextmenu', 'html2canvas'], function($) {
     var mod;
     mod = angular.module("components", []);
     mod.directive('navLi', function() {
@@ -172,7 +172,8 @@
             model: '=',
             addItem_: '&addItem',
             removeItem_: '&removeItem',
-            visible_: '@visible'
+            visible_: '@visible',
+            reorders: '@reorders'
           },
           link: {
             post: function(scope, element, attrs) {
@@ -237,20 +238,17 @@
                 p = $parse(newValue);
                 ps = scope.$parent;
                 val = p(ps);
-                console.log(newValue, p, val);
                 if (!(val && val instanceof Array) && p.assign) {
                   newArray = [];
                   p.assign(ps, newArray);
                   val = newArray;
-                  console.log(newValue, p(ps), val);
                 }
                 if (val) {
                   while (val.length < n) {
                     val.push(true);
                   }
-                  scope.visible = val;
+                  return scope.visible = val;
                 }
-                return console.log(newValue, scope.visible, val, p(ps));
               });
               scope.clearAutoCell = function(elements) {
                 if (scope.auto !== null) {
@@ -306,8 +304,6 @@
                     if (scope.hover) {
                       return 1;
                     }
-                    elements = element.find('th').not('.controls');
-                    el = elements[i];
                     if ($(el).css('display') === 'none') {
                       return 1;
                     }
@@ -454,52 +450,227 @@
             }
             return _results;
           });
-          return function(scope, element, attrs, controller) {
-            scope.noColumns = function(hover, i) {
-              var el, elements, j, _i, _ref, _ref1;
-              if (hover) {
-                return 1;
-              }
+          return {
+            post: function(scope, element, attrs, controller) {
+              var $canvas, $line, currentPoint, dragPointX, dragPointY, dragStart, elements, getCurrentPoint, sc, updateCanvas;
               elements = element.children('td').not('.controls');
-              el = elements[i];
-              if ($(el).css('display') === 'none') {
-                return 1;
-              }
-              for (j = _i = _ref = i + 1, _ref1 = elements.length; _ref <= _ref1 ? _i < _ref1 : _i > _ref1; j = _ref <= _ref1 ? ++_i : --_i) {
-                if ($(elements[j]).css('display') !== 'none') {
+              scope.noColumns = function(hover, i) {
+                var el, j, _i, _ref, _ref1;
+                if (hover) {
                   return 1;
                 }
-              }
-              return 2;
-            };
-            scope.visible = function(i) {
-              try {
-                return controller.scope.visible[i];
-              } catch (_error) {
-                return true;
-              }
-            };
-            scope.mouseEnter = function() {
-              var el;
-              scope.hover = true;
-              scope.id = 'id' + Math.round(Math.random() * 10000);
-              el = element.find('td:visible:last');
-              el.addClass('squeezedElement');
-              return $(templates.editableTd({
-                id: scope.id,
-                width: el.width(),
-                tableId: controller.scope.tableId
-              })).appendTo(element).find('i.close').click(function() {
-                return scope.$apply(function() {
-                  return scope.removeItem(scope.$index);
+                el = elements[i];
+                if ($(el).css('display') === 'none') {
+                  return 1;
+                }
+                for (j = _i = _ref = i + 1, _ref1 = elements.length; _ref <= _ref1 ? _i < _ref1 : _i > _ref1; j = _ref <= _ref1 ? ++_i : --_i) {
+                  if ($(elements[j]).css('display') !== 'none') {
+                    return 1;
+                  }
+                }
+                return 2;
+              };
+              scope.visible = function(i) {
+                try {
+                  return controller.scope.visible[i];
+                } catch (_error) {
+                  return true;
+                }
+              };
+              scope.mouseEnter = function() {
+                var el;
+                scope.hover = true;
+                scope.id = 'id' + Math.round(Math.random() * 10000);
+                el = element.find('td:visible:last');
+                el.addClass('squeezedElement');
+                return $(templates.editableTd({
+                  id: scope.id,
+                  width: el.width(),
+                  tableId: controller.scope.tableId
+                })).appendTo(element).find('i.close').click(function() {
+                  return scope.$apply(function() {
+                    return scope.removeItem(scope.$index);
+                  });
                 });
+              };
+              scope.mouseLeave = function() {
+                scope.hover = false;
+                element.find('.squeezedElement').removeClass('squeezedElement');
+                return element.find('#' + scope.id).remove();
+              };
+              currentPoint = null;
+              getCurrentPoint = function(x, y) {
+                var a, b, el, lel, lelbt, m, n, omitLast, parent, po, rows;
+                parent = element.parent();
+                rows = parent.children();
+                omitLast = scope.addLabel;
+                n = rows.length;
+                if (omitLast) {
+                  n--;
+                }
+                if (!n) {
+                  return null;
+                }
+                lel = $(rows[n - 1]);
+                lelbt = lel.offset().top + lel.outerHeight();
+                if (y > lelbt + 10) {
+                  return null;
+                }
+                po = parent.offset();
+                if (y < po.top - 10) {
+                  return null;
+                }
+                if (x < po.left || x > po.left + parent.outerWidth()) {
+                  return null;
+                }
+                a = 0;
+                b = n;
+                while (a < b) {
+                  m = (a + b) >> 1;
+                  el = $(rows[m]);
+                  if (y < el.offset().top + el.outerHeight() / 2) {
+                    b = m;
+                  } else {
+                    a = m + 1;
+                  }
+                }
+                return {
+                  index: b,
+                  y: b === n ? lelbt : $(rows[b]).offset().top
+                };
+              };
+              $canvas = null;
+              $line = null;
+              dragPointX = dragPointY = 0;
+              dragStart = null;
+              updateCanvas = function(e) {
+                var pnt;
+                if ($canvas) {
+                  $canvas.css('left', e.pageX - dragPointX);
+                  $canvas.css('top', e.pageY - dragPointY);
+                }
+                if ($line) {
+                  pnt = getCurrentPoint(e.pageX, e.pageY);
+                  if (pnt && (pnt.index === dragStart || pnt.index === dragStart + 1)) {
+                    pnt = null;
+                  }
+                  if (currentPoint && !pnt) {
+                    $line.css('display', 'none');
+                  } else if (pnt && !currentPoint) {
+                    $line.css('display', 'block');
+                  }
+                  if (pnt) {
+                    $line.css('top', pnt.y + 'px');
+                  }
+                  return currentPoint = pnt;
+                }
+              };
+              sc = controller.scope;
+              element.on('draginit', function(e) {
+                if (!sc.reorders) {
+                  return false;
+                }
+                return element;
               });
-            };
-            return scope.mouseLeave = function() {
-              scope.hover = false;
-              element.find('.squeezedElement').removeClass('squeezedElement');
-              return element.find('#' + scope.id).remove();
-            };
+              element.on('dragstart', function(e) {
+                var table;
+                if (!sc.reorders) {
+                  return false;
+                }
+                table = element.parents('table');
+                dragStart = element.index();
+                html2canvas(element[0], {
+                  onrendered: function(fullCanvas) {
+                    var borders, canvas, css, elH, elW, fullContex, offs, parseIntN, pos, scale, td;
+                    fullContex = fullCanvas.getContext('2d');
+                    parseIntN = function(s) {
+                      var n;
+                      n = parseInt(s);
+                      if (isNaN(n)) {
+                        return 0;
+                      }
+                      return n;
+                    };
+                    td = element.find('td:visible');
+                    borders = {
+                      left: parseIntN(td.css('border-left-width')) + parseIntN(element.css('border-left-width')),
+                      right: parseIntN(td.last().css('border-right-width')) + parseIntN(element.css('border-right-width')),
+                      top: parseIntN(td.css('border-top-width')) + parseIntN(element.css('border-top-width')),
+                      bottom: parseIntN(td.css('border-bottom-width')) + parseIntN(element.css('border-bottom-width'))
+                    };
+                    pos = element.offset();
+                    elW = element.outerWidth();
+                    elH = element.outerHeight();
+                    scale = {
+                      x: fullCanvas.width / elW,
+                      y: fullCanvas.height / elH
+                    };
+                    css = {
+                      width: elW - borders.left - borders.right,
+                      height: elH - borders.top - borders.bottom
+                    };
+                    pos.left = borders.left * scale.x;
+                    pos.top = borders.top * scale.y;
+                    pos.width = css.width * scale.x;
+                    pos.height = css.height * scale.y;
+                    canvas = document.createElement('canvas');
+                    $canvas = $(canvas);
+                    $canvas.attr('width', pos.width);
+                    $canvas.attr('height', pos.height);
+                    $canvas.css('width', css.width);
+                    $canvas.css('height', css.height);
+                    canvas.getContext('2d').drawImage(fullCanvas, -pos.left, -pos.top);
+                    $canvas.css('border', '1px solid #dddddd');
+                    $canvas.css('position', 'fixed');
+                    $canvas.css('opacity', '0.6');
+                    offs = element.offset();
+                    dragPointX = e.pageX - offs.left;
+                    dragPointY = e.pageY - offs.top;
+                    element.css('opacity', '0.2');
+                    $line = $(document.createElement('div'));
+                    $line.css('position', 'fixed');
+                    $line.css('border', '2px solid #dddddd');
+                    $line.css('border-radius', '2px');
+                    $line.css('width', element.outerWidth());
+                    $line.css('left', element.offset().left);
+                    $line.css('display', 'none');
+                    $(document.body).append($line);
+                    $(document.body).append($canvas);
+                    updateCanvas(e);
+                  }
+                });
+                return $line;
+              });
+              element.on('drag', function(e) {
+                updateCanvas(e);
+              });
+              return element.on('dragend', function(e) {
+                var idx;
+                if ($canvas) {
+                  $canvas.remove();
+                  $canvas = null;
+                }
+                element.css('opacity', '1');
+                if ($line) {
+                  $line.remove();
+                  $line = null;
+                }
+                if (sc.reorders && currentPoint) {
+                  idx = currentPoint.index;
+                  if (idx > dragStart) {
+                    idx--;
+                  }
+                  if (idx !== dragStart) {
+                    sc.$apply(function() {
+                      var arr, el;
+                      arr = sc.model;
+                      el = arr.splice(dragStart, 1)[0];
+                      return arr.splice(idx, 0, el);
+                    });
+                  }
+                }
+              });
+            }
           };
         }
       };
