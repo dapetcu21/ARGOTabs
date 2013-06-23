@@ -434,6 +434,7 @@ define ['jquery', 'util', 'underscore', 'templates', 'angular', 'jquery.event.dr
           dragStart = element.index()
 
           html2canvas element[0],
+            scale: if window.devicePixelRatio then window.devicePixelRatio else 1 #if only this actually worked
             onrendered: (fullCanvas) ->
               #remove borders
               fullContex = fullCanvas.getContext('2d')
@@ -483,8 +484,8 @@ define ['jquery', 'util', 'underscore', 'templates', 'angular', 'jquery.event.dr
 
               $line = $(document.createElement 'div')
               $line.css 'position', 'fixed'
-              $line.css 'border', '2px solid #dddddd'
-              $line.css 'border-radius', '2px'
+              $line.css 'border', '1px solid #0088cc'
+              $line.css 'border-radius', '1px'
               $line.css 'width', element.outerWidth()
               $line.css 'left', element.offset().left
               $line.css 'display', 'none'
