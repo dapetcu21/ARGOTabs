@@ -79,6 +79,14 @@
         return model;
       };
 
+      Util.safeApply = function(scope, fn) {
+        if (scope.$$phase || scope.$root.$$phase) {
+          fn();
+        } else {
+          scope.$apply(fn);
+        }
+      };
+
       return Util;
 
     })();

@@ -1,5 +1,5 @@
 (function() {
-  define(['jquery', 'underscore', 'templates', 'angular', 'jquery.event.drag', 'jquery.bootstrap.contextmenu', 'html2canvas'], function($) {
+  define(['jquery', 'util', 'underscore', 'templates', 'angular', 'jquery.event.drag', 'jquery.bootstrap.contextmenu', 'html2canvas'], function($, Util) {
     var mod;
     mod = angular.module("components", []);
     mod.directive('navLi', function() {
@@ -32,7 +32,7 @@
           var callback;
           scope.editing = false;
           callback = function() {
-            return scope.$apply(function() {
+            return Util.safeApply(scope, function() {
               return scope.beginEdit();
             });
           };
@@ -48,13 +48,13 @@
             scope.editing = true;
             input = element.find('input');
             input.blur(function() {
-              return scope.$apply(function() {
+              return Util.safeApply(scope, function() {
                 return scope.endEdit();
               });
             });
             input.keypress(function(e) {
               if (e.which === 13) {
-                return scope.$apply(function() {
+                return Util.safeApply(scope, function() {
                   return scope.endEdit();
                 });
               }
@@ -84,7 +84,7 @@
           var callback;
           scope.editing = false;
           callback = function() {
-            return scope.$apply(function() {
+            return Util.safeApply(scope, function() {
               return scope.beginEdit();
             });
           };
@@ -100,7 +100,7 @@
             scope.editing = true;
             select = element.find('select');
             select.blur(function() {
-              return scope.$apply(function() {
+              return Util.safeApply(scope, function() {
                 return scope.endEdit();
               });
             });
@@ -217,7 +217,7 @@
                   if (isNaN(i)) {
                     i = parseInt(item.parents('li').data('index'));
                   }
-                  return scope.$apply(function() {
+                  return Util.safeApply(scope, function() {
                     scope.visible[i] = !scope.visible[i];
                     if (!_.reduce(scope.visible, (function(m, i) {
                       return m || i;
@@ -337,7 +337,7 @@
         link: {
           post: function(scope, element, attrs, controller) {
             return element.find('thead').hover(function() {
-              return scope.$apply(function() {
+              return Util.safeApply(scope, function() {
                 var el;
                 scope.hover = true;
                 scope.headId = 'id' + Math.round(Math.random() * 10000);
@@ -354,7 +354,7 @@
                 });
               });
             }, function() {
-              return scope.$apply(function() {
+              return Util.safeApply(scope, function() {
                 controller.scope.hover = false;
                 element.find('.controls').hide();
                 element.find('.squeezedElement').removeClass('squeezedElement');
@@ -488,7 +488,7 @@
                   width: el.width(),
                   tableId: controller.scope.tableId
                 })).appendTo(element).find('i.close').click(function() {
-                  return scope.$apply(function() {
+                  return Util.safeApply(scope, function() {
                     return scope.removeItem(scope.$index);
                   });
                 });
@@ -626,7 +626,7 @@
                     offs = element.offset();
                     dragPointX = e.pageX - offs.left;
                     dragPointY = e.pageY - offs.top;
-                    element.css('opacity', '0.2');
+                    element.css('opacity', '0.4');
                     $line = $(document.createElement('div'));
                     $line.css('position', 'fixed');
                     $line.css('border', '2px solid #dddddd');
@@ -661,7 +661,7 @@
                     idx--;
                   }
                   if (idx !== dragStart) {
-                    sc.$apply(function() {
+                    Util.safeApply(sc, function() {
                       var arr, el;
                       arr = sc.model;
                       el = arr.splice(dragStart, 1)[0];
