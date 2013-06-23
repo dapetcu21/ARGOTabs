@@ -46,3 +46,10 @@ define ->
       for key in ignores
         model[key] = undefined
       return model
+
+    @safeApply: (scope, fn) ->
+      if scope.$$phase or scope.$root.$$phase
+        fn()
+      else
+        scope.$apply fn
+      return

@@ -1,4 +1,4 @@
-define ['jquery', 'underscore', 'templates', 'angular', 'jquery.event.drag', 'jquery.bootstrap.contextmenu', 'html2canvas'], ($) ->
+define ['jquery', 'util', 'underscore', 'templates', 'angular', 'jquery.event.drag', 'jquery.bootstrap.contextmenu', 'html2canvas'], ($, Util) ->
   mod = angular.module "components", []
   mod.directive 'navLi', ->
     restrict: 'E'
@@ -22,7 +22,7 @@ define ['jquery', 'underscore', 'templates', 'angular', 'jquery.event.drag', 'jq
       scope.editing = false
 
       callback = ->
-        scope.$apply ->
+        Util.safeApply scope, ->
           scope.beginEdit()
       element.find('.textedit-label').focus callback
 
@@ -34,11 +34,11 @@ define ['jquery', 'underscore', 'templates', 'angular', 'jquery.event.drag', 'jq
         scope.editing = true
         input = element.find('input')
         input.blur -> #because angular doesn't know focusout
-          scope.$apply ->
+          Util.safeApply scope, ->
             scope.endEdit()
         input.keypress (e) ->
           if e.which == 13
-            scope.$apply ->
+            Util.safeApply scope, ->
               scope.endEdit()
         input[0].value = scope.value
         setTimeout ->
@@ -59,7 +59,7 @@ define ['jquery', 'underscore', 'templates', 'angular', 'jquery.event.drag', 'jq
       scope.editing = false
 
       callback = ->
-        scope.$apply ->
+        Util.safeApply scope, ->
           scope.beginEdit()
       element.find('.multi-label').focus callback
 
@@ -71,7 +71,7 @@ define ['jquery', 'underscore', 'templates', 'angular', 'jquery.event.drag', 'jq
         scope.editing = true
         select = element.find('select')
         select.blur ->
-          scope.$apply ->
+          Util.safeApply scope, ->
             scope.endEdit()
 
         setTimeout ->
@@ -167,7 +167,7 @@ define ['jquery', 'underscore', 'templates', 'angular', 'jquery.event.drag', 'jq
             i = parseInt item.data 'index'
             if isNaN(i)
               i = parseInt item.parents('li').data 'index'
-            scope.$apply ->
+            Util.safeApply scope, ->
               scope.visible[i] = not scope.visible[i]
               if not _.reduce scope.visible, ((m, i) -> m or i), false
                 scope.visible[i] = not scope.visible[i]
@@ -250,7 +250,7 @@ define ['jquery', 'underscore', 'templates', 'angular', 'jquery.event.drag', 'jq
       post:
         (scope, element, attrs, controller) ->
           element.find('thead').hover ->
-            scope.$apply ->
+            Util.safeApply scope, ->
               scope.hover = true
               scope.headId = 'id' + Math.round( Math.random() * 10000)
               el = element.find('th:visible:last')
@@ -266,7 +266,7 @@ define ['jquery', 'underscore', 'templates', 'angular', 'jquery.event.drag', 'jq
                     element.find('thead').contextmenu 'show', e
                   , 1
           , ->
-            scope.$apply ->
+            Util.safeApply scope, ->
               controller.scope.hover = false
               element.find('.controls').hide()
               element.find('.squeezedElement').removeClass('squeezedElement')
@@ -368,7 +368,7 @@ define ['jquery', 'underscore', 'templates', 'angular', 'jquery.event.drag', 'jq
             tableId: controller.scope.tableId
           ).appendTo(element)
             .find('i.close').click ->
-              scope.$apply ->
+              Util.safeApply scope, ->
                 scope.removeItem(scope.$index)
 
         scope.mouseLeave = ->
@@ -479,7 +479,7 @@ define ['jquery', 'underscore', 'templates', 'angular', 'jquery.event.drag', 'jq
               offs = element.offset()
               dragPointX = e.pageX - offs.left
               dragPointY = e.pageY - offs.top
-              element.css 'opacity', '0.2'
+              element.css 'opacity', '0.4'
 
               $line = $(document.createElement 'div')
               $line.css 'position', 'fixed'
@@ -510,7 +510,7 @@ define ['jquery', 'underscore', 'templates', 'angular', 'jquery.event.drag', 'jq
             idx = currentPoint.index
             idx-- if idx > dragStart
             if idx != dragStart
-              sc.$apply ->
+              Util.safeApply sc, ->
                 arr = sc.model
                 el = arr.splice(dragStart, 1)[0]
                 arr.splice idx, 0, el
