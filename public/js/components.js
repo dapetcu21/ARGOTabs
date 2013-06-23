@@ -1,6 +1,6 @@
 (function() {
-  define(['jquery', 'util', 'underscore', 'templates', 'angular', 'jquery.event.drag', 'jquery.bootstrap.contextmenu', 'html2canvas'], function($, Util) {
-    var mod;
+  define(['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.event.drag', 'jquery.bootstrap.contextmenu', 'html2canvas'], function($, Util, B64) {
+    var elementToString, mod, serializeTr;
     mod = angular.module("components", []);
     mod.directive('navLi', function() {
       return {
@@ -154,6 +154,12 @@
               return scope.model.reverse();
             }
           };
+          scope.elementToString = function(el) {
+            if (el.hasClass('sortarrow')) {
+              return elementToString(element.find('.sortarrow-content'));
+            }
+            return false;
+          };
           return scope.toggleSort = function() {
             scope.ascending = !scope.ascending;
             return scope.sort();
@@ -161,6 +167,61 @@
         }
       };
     });
+    elementToString = function(element, visible) {
+      var first, r, scope;
+      if (visible == null) {
+        visible = false;
+      }
+      if (element.hasClass('dont-export') || (visible && element.css('display') === 'none')) {
+        return '';
+      }
+      scope = angular.element(element).scope();
+      if (scope.elementToString) {
+        r = scope.elementToString(element, visible);
+        if (r || typeof r === 'string') {
+          return r;
+        }
+      }
+      first = false;
+      r = '';
+      element.children().each(function() {
+        var nw;
+        nw = elementToString($(this), visible);
+        if (nw) {
+          if (first) {
+            r += ' ';
+          }
+          r += nw;
+          return first = true;
+        }
+      });
+      if (!first) {
+        return element.text();
+      }
+      return r;
+    };
+    serializeTr = function(element, visible) {
+      var arr;
+      if (visible == null) {
+        visible = false;
+      }
+      arr = [];
+      element.children().each(function() {
+        var $this;
+        $this = $(this);
+        if ($this.hasClass('dont-export')) {
+          return;
+        }
+        if (this.tagName !== 'TD' && this.tagName !== 'TH') {
+          return;
+        }
+        if (visible && $this.css('display') === 'none') {
+          return;
+        }
+        return arr.push(elementToString($this, visible));
+      });
+      return arr;
+    };
     mod.directive('editableTable', [
       '$parse', function($parse) {
         return {
@@ -177,7 +238,7 @@
           },
           link: {
             post: function(scope, element, attrs) {
-              var context, el, elements, i, n, _i, _len, _results;
+              var context, el, elements, exportCSV, i, n, _i, _len, _results;
               elements = element.find('th').not('.controls');
               n = elements.length;
               context = $(templates.editableTcontext({
@@ -187,16 +248,43 @@
               scope.$on('$destroy', function() {
                 return context.remove();
               });
+              exportCSV = function() {
+                var cell, csv, data, i, j, link, row, txt, _i, _j, _len, _len1;
+                csv = [];
+                element.find('tr').each(function() {
+                  var $this;
+                  $this = $(this);
+                  if ($this.hasClass('dont-export')) {
+                    return;
+                  }
+                  return csv.push(serializeTr($this, true));
+                });
+                txt = '';
+                for (i = _i = 0, _len = csv.length; _i < _len; i = ++_i) {
+                  row = csv[i];
+                  if (i) {
+                    txt += '\r\n';
+                  }
+                  for (j = _j = 0, _len1 = row.length; _j < _len1; j = ++_j) {
+                    cell = row[j];
+                    if (j) {
+                      txt += ',';
+                    }
+                    txt += '"' + cell.replace(/"/g, '""') + '"';
+                  }
+                }
+                data = B64.encode(txt);
+                link = $('<a id="downloader" download="table.csv" href="data:application/octet-stream;base64,' + data + '"></a>').appendTo($("body"));
+                link[0].click();
+                return link.remove();
+              };
               element.find('thead').contextmenu({
                 target: '.context-menu-' + scope.tableId,
                 before: function(e, element, target) {
-                  var i, nm, _i;
-                  nm = [];
-                  for (i = _i = 0; 0 <= n ? _i < n : _i > n; i = 0 <= n ? ++_i : --_i) {
-                    nm.push('Row ' + i);
-                  }
+                  var nm;
+                  nm = serializeTr(element.find('tr'));
                   context.find('li.hide-row').each(function(index, element) {
-                    var el, icon;
+                    var el, i, icon;
                     el = $(element);
                     i = parseInt(el.data('index'));
                     el.find('.item-label').html(nm[i]);
@@ -217,14 +305,20 @@
                   if (isNaN(i)) {
                     i = parseInt(item.parents('li').data('index'));
                   }
-                  return Util.safeApply(scope, function() {
-                    scope.visible[i] = !scope.visible[i];
-                    if (!_.reduce(scope.visible, (function(m, i) {
-                      return m || i;
-                    }), false)) {
-                      return scope.visible[i] = !scope.visible[i];
+                  if (!isNaN(i)) {
+                    return Util.safeApply(scope, function() {
+                      scope.visible[i] = !scope.visible[i];
+                      if (!_.reduce(scope.visible, (function(m, i) {
+                        return m || i;
+                      }), false)) {
+                        return scope.visible[i] = !scope.visible[i];
+                      }
+                    });
+                  } else {
+                    if (item.hasClass('export-csv') || item.parents('.export-csv')) {
+                      return exportCSV();
                     }
-                  });
+                  }
                 }
               });
               if (scope.visible == null) {
@@ -580,6 +674,7 @@
                 table = element.parents('table');
                 dragStart = element.index();
                 html2canvas(element[0], {
+                  scale: window.devicePixelRatio ? window.devicePixelRatio : 1,
                   onrendered: function(fullCanvas) {
                     var borders, canvas, css, elH, elW, fullContex, offs, parseIntN, pos, scale, td;
                     fullContex = fullCanvas.getContext('2d');
@@ -629,8 +724,8 @@
                     element.css('opacity', '0.4');
                     $line = $(document.createElement('div'));
                     $line.css('position', 'fixed');
-                    $line.css('border', '2px solid #dddddd');
-                    $line.css('border-radius', '2px');
+                    $line.css('border', '1px solid #0088cc');
+                    $line.css('border-radius', '1px');
                     $line.css('width', element.outerWidth());
                     $line.css('left', element.offset().left);
                     $line.css('display', 'none');

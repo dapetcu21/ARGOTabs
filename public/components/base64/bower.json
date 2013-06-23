@@ -1,8 +1,0 @@
-{
-  "name": "base64",
-  "version": "0.1.1",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/davidchambers/Base64.js.git"
-  }
-}
