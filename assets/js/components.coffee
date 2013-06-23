@@ -1,4 +1,4 @@
-define ['jquery', 'util', 'underscore', 'templates', 'angular', 'jquery.event.drag', 'jquery.bootstrap.contextmenu', 'html2canvas'], ($, Util) ->
+define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.event.drag', 'jquery.bootstrap.contextmenu', 'html2canvas'], ($, Util, B64) ->
   mod = angular.module "components", []
   mod.directive 'navLi', ->
     restrict: 'E'
@@ -112,12 +112,45 @@ define ['jquery', 'util', 'underscore', 'templates', 'angular', 'jquery.event.dr
         if not scope.ascending
           scope.model.reverse()
 
+      scope.elementToString = (el) ->
+        if el.hasClass('sortarrow')
+          return elementToString element.find('.sortarrow-content')
+        return false
 
       scope.toggleSort = ->
         scope.ascending = not scope.ascending
         scope.sort()
 
   #---- Table ----
+
+  elementToString = (element, visible = false) ->
+    return '' if element.hasClass('dont-export') or (visible and element.css('display') == 'none')
+    scope = angular.element(element).scope()
+    if scope.elementToString
+      r = scope.elementToString element, visible
+      if r or typeof(r) == 'string'
+        return r
+    first = false
+    r = ''
+    element.children().each ->
+      nw = elementToString $(this), visible
+      if nw
+        r += ' ' if first
+        r += nw
+        first = true
+    if not first
+      return element.text()
+    return r
+
+  serializeTr = (element, visible = false) ->
+    arr = []
+    element.children().each ->
+      $this = $(this)
+      return if $this.hasClass 'dont-export'
+      return if this.tagName != 'TD' and this.tagName != 'TH'
+      return if visible and $this.css('display') == 'none'
+      arr.push elementToString $this, visible
+    return arr
   
   mod.directive 'editableTable', ['$parse', ($parse) ->
     template: templates.editableTable()
@@ -144,13 +177,28 @@ define ['jquery', 'util', 'underscore', 'templates', 'angular', 'jquery.event.dr
         scope.$on '$destroy', ->
           context.remove()
 
+        exportCSV = ->
+          csv = []
+          element.find('tr').each ->
+            $this = $(this)
+            return if $this.hasClass 'dont-export'
+            csv.push serializeTr $this, true
+          txt = ''
+          for row, i in csv
+            txt += '\r\n' if i
+            for cell, j in row
+              txt += ',' if j
+              txt += '"' + cell.replace(/"/g, '""') + '"'
+          data = B64.encode txt
+          link = $('<a id="downloader" download="table.csv" href="data:application/octet-stream;base64,' + data + '"></a>')
+            .appendTo $("body")
+          link[0].click()
+          link.remove()
+
         element.find('thead').contextmenu
           target: '.context-menu-' + scope.tableId
           before: (e, element, target) ->
-            nm = []
-            for i in [0...n]
-              nm.push 'Row ' + i
-
+            nm = serializeTr element.find('tr')
             context.find('li.hide-row').each (index, element) ->
               el = $(element)
               i = parseInt el.data 'index'
@@ -167,10 +215,14 @@ define ['jquery', 'util', 'underscore', 'templates', 'angular', 'jquery.event.dr
             i = parseInt item.data 'index'
             if isNaN(i)
               i = parseInt item.parents('li').data 'index'
-            Util.safeApply scope, ->
-              scope.visible[i] = not scope.visible[i]
-              if not _.reduce scope.visible, ((m, i) -> m or i), false
+            if not isNaN(i)
+              Util.safeApply scope, ->
                 scope.visible[i] = not scope.visible[i]
+                if not _.reduce scope.visible, ((m, i) -> m or i), false
+                  scope.visible[i] = not scope.visible[i]
+            else
+              if item.hasClass('export-csv') or item.parents('.export-csv')
+                exportCSV()
 
         if not scope.visible?
           scope.visible = []

@@ -1,5 +1,5 @@
 span(ng-click='toggleSort()').sortarrow
-  span(ng-transclude)
+  span(ng-transclude).sortarrow-content
   span &nbsp;
   i(ng-show='ascending', ng-click='toggleSort()').icon-sort-up.dont-print
   i(ng-show='!ascending', ng-click='toggleSort()').icon-sort-down.dont-print
