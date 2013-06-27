@@ -127,6 +127,7 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
       removeItem: '&removeItem'
       editHidden: '=editHidden'
       separator: '@separator'
+      reorders: '@reorders'
     transclude: true
     link: (scope, element, attrs) ->
       scope.edit = false
@@ -138,7 +139,7 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
       scope.add = ->
         scope.addItem()
         setTimeout ->
-          if item = Util.focusableElement element.find('.list-items')[0], false
+          if item = Util.focusableElement element.find('.item'), false
             item.focus()
         , 1
       scope.comma = (show) ->
@@ -146,6 +147,121 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
           ','
         else
           ''
+
+      currentPoint = null
+      dragElement = null
+      $canvas = null
+      $line = null
+      dragPointX = dragPointY = 0
+      dragStart = null
+
+      getCurrentPoint = (x,y) ->
+        items = element.find('.item')
+        for item, i in items
+          $item = $(item)
+          offs = $item.offset()
+          w = $item.outerWidth()
+          h = $item.outerHeight()
+          continue if y < offs.top or y > offs.top + h or x < offs.left or x > offs.left + w
+          m = offs.left + w/2
+          return {
+            x: if x < m then offs.left else offs.left + w
+            y: offs.top
+            height: h
+            index: if x < m then i else i + 1
+          }
+        return null
+
+      updateCanvas = (e) ->
+        if $canvas
+          $canvas.css 'left', e.pageX - dragPointX
+          $canvas.css 'top', e.pageY - dragPointY
+        if $line
+          pnt = getCurrentPoint e.pageX, e.pageY
+          if pnt and (pnt.index == dragStart or pnt.index == dragStart+1)
+            pnt = null
+          if currentPoint and not pnt
+            $line.css 'display', 'none'
+          else if pnt and not currentPoint
+            $line.css 'display', 'block'
+          if pnt
+            $line.css 'left', pnt.x + 'px'
+            $line.css 'top', pnt.y + 'px'
+            $line.css 'height', pnt.height + 'px'
+          currentPoint = pnt
+
+      element.on 'draginit', (e) ->
+        el = $(e.target)
+        console.log e.target
+        dragElement = null
+        if el.hasClass 'moveable-true'
+          dragElement = el
+        else if (a = el.parents('.moveable-true')).length
+          dragElement = a
+        console.log dragElement
+        if dragElement
+          return element
+        return false
+
+      element.on 'dragstart', (e) ->
+        dragStart = dragElement.index()
+        console.log 'dragstart', dragStart
+        html2canvas dragElement[0],
+          scale: if window.devicePixelRatio then window.devicePixelRatio else 1
+          onrendered: (canvas) ->
+            elW = dragElement.outerWidth()
+            elH = dragElement.outerHeight()
+            scale =
+              x: canvas.width / elW
+              y: canvas.height / elH
+
+            $canvas = $(canvas)
+            $canvas.css 'width', elW
+            $canvas.css 'height', elH
+            $canvas.css 'position', 'fixed'
+            $canvas.css 'opacity', '0.6'
+
+            offs = dragElement.offset()
+            dragPointX = e.pageX - offs.left
+            dragPointY = e.pageY - offs.top
+            dragElement.css 'opacity', '0.4'
+
+            $line = $(document.createElement 'div')
+            $line.css 'position', 'fixed'
+            $line.css 'border', '1px solid #0088cc'
+            $line.css 'border-radius', '1px'
+            $line.css 'width', '0px'
+            $line.css 'height', '0px'
+            $line.css 'display', 'none'
+
+            $(document.body).append $line
+            $(document.body).append $canvas
+
+            updateCanvas e
+            return
+        return dragElement
+
+      element.on 'drag', {distance: 2}, (e) ->
+        updateCanvas e
+        return
+
+      element.on 'dragend', (e) ->
+        if $canvas
+          $canvas.remove()
+          $canvas = null
+        dragElement.css 'opacity', '1'
+        if $line
+          $line.remove()
+          $line = null
+        if currentPoint
+          idx = currentPoint.index
+          idx-- if idx > dragStart
+          if idx != dragStart
+            Util.safeApply scope, ->
+              arr = scope.model
+              el = arr.splice(dragStart, 1)[0]
+              arr.splice idx, 0, el
+        return
   ]
 
   mod.directive "sortArrow", ->
@@ -415,7 +531,7 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
       scope.addItem = ->
         controller.scope.addItem_()
         setTimeout ->
-          if item = Util.focusableElement element.find("tr:nth-last-child(2)")[0]
+          if item = Util.focusableElement element.find("tr:nth-last-child(2)")
             item.focus()
         , 1
 

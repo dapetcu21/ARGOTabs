@@ -70,6 +70,7 @@ define ->
           minIndex = tabIndex
           minItem = el
         $(el).children().each traverse
-      traverse 0, element
+      for el in element
+        traverse 0, el
       return minItem
 

@@ -17,7 +17,7 @@ table(editable-table, reorders, model='tournament.teams', visible='tournament.ta
       td(ng-init='initRepeat(this)')
         multi-cell(bind='o.club', choices='tournament.clubs', nil-placeholder='unaffiliated', choice-name='o.name')
       td(ng-mouseenter='playerHover = true', ng-mouseleave='playerHover = false')
-        hlist-cell(bind='o.players', add-item='o.addPlayer()', remove-item='o.removePlayerAtIndex(index)', separator=',', edit-hidden='!playerHover')
+        hlist-cell(bind='o.players', add-item='o.addPlayer()', remove-item='o.removePlayerAtIndex(index)', separator=',', edit-hidden='!playerHover', reorders)
           text-edit-cell(bind='hlo.name')
           
 :stylus
