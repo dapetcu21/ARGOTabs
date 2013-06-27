@@ -164,10 +164,12 @@
             addItem: '&addItem',
             removeItem: '&removeItem',
             editHidden: '=editHidden',
-            separator: '@separator'
+            separator: '@separator',
+            reorders: '@reorders'
           },
           transclude: true,
           link: function(scope, element, attrs) {
+            var $canvas, $line, currentPoint, dragElement, dragPointX, dragPointY, dragStart, getCurrentPoint, updateCanvas;
             scope.edit = false;
             scope.remove = function(index) {
               scope.removeItem({
@@ -181,18 +183,153 @@
               scope.addItem();
               return setTimeout(function() {
                 var item;
-                if (item = Util.focusableElement(element.find('.list-items')[0], false)) {
+                if (item = Util.focusableElement(element.find('.item'), false)) {
                   return item.focus();
                 }
               }, 1);
             };
-            return scope.comma = function(show) {
+            scope.comma = function(show) {
               if (show) {
                 return ',';
               } else {
                 return '';
               }
             };
+            currentPoint = null;
+            dragElement = null;
+            $canvas = null;
+            $line = null;
+            dragPointX = dragPointY = 0;
+            dragStart = null;
+            getCurrentPoint = function(x, y) {
+              var $item, h, i, item, items, m, offs, w, _i, _len;
+              items = element.find('.item');
+              for (i = _i = 0, _len = items.length; _i < _len; i = ++_i) {
+                item = items[i];
+                $item = $(item);
+                offs = $item.offset();
+                w = $item.outerWidth();
+                h = $item.outerHeight();
+                if (y < offs.top || y > offs.top + h || x < offs.left || x > offs.left + w) {
+                  continue;
+                }
+                m = offs.left + w / 2;
+                return {
+                  x: x < m ? offs.left : offs.left + w,
+                  y: offs.top,
+                  height: h,
+                  index: x < m ? i : i + 1
+                };
+              }
+              return null;
+            };
+            updateCanvas = function(e) {
+              var pnt;
+              if ($canvas) {
+                $canvas.css('left', e.pageX - dragPointX);
+                $canvas.css('top', e.pageY - dragPointY);
+              }
+              if ($line) {
+                pnt = getCurrentPoint(e.pageX, e.pageY);
+                if (pnt && (pnt.index === dragStart || pnt.index === dragStart + 1)) {
+                  pnt = null;
+                }
+                if (currentPoint && !pnt) {
+                  $line.css('display', 'none');
+                } else if (pnt && !currentPoint) {
+                  $line.css('display', 'block');
+                }
+                if (pnt) {
+                  $line.css('left', pnt.x + 'px');
+                  $line.css('top', pnt.y + 'px');
+                  $line.css('height', pnt.height + 'px');
+                }
+                return currentPoint = pnt;
+              }
+            };
+            element.on('draginit', function(e) {
+              var a, el;
+              el = $(e.target);
+              console.log(e.target);
+              dragElement = null;
+              if (el.hasClass('moveable-true')) {
+                dragElement = el;
+              } else if ((a = el.parents('.moveable-true')).length) {
+                dragElement = a;
+              }
+              console.log(dragElement);
+              if (dragElement) {
+                return element;
+              }
+              return false;
+            });
+            element.on('dragstart', function(e) {
+              dragStart = dragElement.index();
+              console.log('dragstart', dragStart);
+              html2canvas(dragElement[0], {
+                scale: window.devicePixelRatio ? window.devicePixelRatio : 1,
+                onrendered: function(canvas) {
+                  var elH, elW, offs, scale;
+                  elW = dragElement.outerWidth();
+                  elH = dragElement.outerHeight();
+                  scale = {
+                    x: canvas.width / elW,
+                    y: canvas.height / elH
+                  };
+                  $canvas = $(canvas);
+                  $canvas.css('width', elW);
+                  $canvas.css('height', elH);
+                  $canvas.css('position', 'fixed');
+                  $canvas.css('opacity', '0.6');
+                  offs = dragElement.offset();
+                  dragPointX = e.pageX - offs.left;
+                  dragPointY = e.pageY - offs.top;
+                  dragElement.css('opacity', '0.4');
+                  $line = $(document.createElement('div'));
+                  $line.css('position', 'fixed');
+                  $line.css('border', '1px solid #0088cc');
+                  $line.css('border-radius', '1px');
+                  $line.css('width', '0px');
+                  $line.css('height', '0px');
+                  $line.css('display', 'none');
+                  $(document.body).append($line);
+                  $(document.body).append($canvas);
+                  updateCanvas(e);
+                }
+              });
+              return dragElement;
+            });
+            element.on('drag', {
+              distance: 2
+            }, function(e) {
+              updateCanvas(e);
+            });
+            return element.on('dragend', function(e) {
+              var idx;
+              if ($canvas) {
+                $canvas.remove();
+                $canvas = null;
+              }
+              dragElement.css('opacity', '1');
+              if ($line) {
+                $line.remove();
+                $line = null;
+              }
+              if (currentPoint) {
+                idx = currentPoint.index;
+                if (idx > dragStart) {
+                  idx--;
+                }
+                if (idx !== dragStart) {
+                  Util.safeApply(scope, function() {
+                    var arr, el;
+                    arr = scope.model;
+                    el = arr.splice(dragStart, 1)[0];
+                    return arr.splice(idx, 0, el);
+                  });
+                }
+              }
+            });
           }
         };
       }
@@ -571,7 +708,7 @@
             controller.scope.addItem_();
             return setTimeout(function() {
               var item;
-              if (item = Util.focusableElement(element.find("tr:nth-last-child(2)")[0])) {
+              if (item = Util.focusableElement(element.find("tr:nth-last-child(2)"))) {
                 return item.focus();
               }
             }, 1);

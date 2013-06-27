@@ -155,12 +155,19 @@ th:hover .sortarrow i,
   width: 0px;
   overflow: hidden;
   display: inline-block;
+  cursor: default;
 }
 .hlist .item-controls.enabled-true {
   width: 15px;
 }
+.hlist .item.moveable-true {
+  cursor: move;
+}
 .inline {
   display: inline-block;
+}
+.valign-middle {
+  vertical-align: middle;
 }
 .pre-space {
   margin-left: 3px;

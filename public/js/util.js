@@ -88,7 +88,7 @@
       };
 
       Util.focusableElement = function(element, first) {
-        var minIndex, minItem, traverse;
+        var el, minIndex, minItem, traverse, _i, _len;
         if (first == null) {
           first = true;
         }
@@ -114,7 +114,10 @@
           }
           return $(el).children().each(traverse);
         };
-        traverse(0, element);
+        for (_i = 0, _len = element.length; _i < _len; _i++) {
+          el = element[_i];
+          traverse(0, el);
+        }
         return minItem;
       };
 
