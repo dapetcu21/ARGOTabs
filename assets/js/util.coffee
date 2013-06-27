@@ -53,3 +53,23 @@ define ->
       else
         scope.$apply fn
       return
+
+    @focusableElement: (element, first = true) ->
+      minItem = null
+      minIndex = if first then 1000001 else 0
+      traverse = (index, el) ->
+        return if $(el).css('display') == 'none' or $(el).css('visibility') == 'hidden'
+        tabIndex = parseInt(el.getAttribute('tabindex'))
+        if isNaN(tabIndex)
+          focusable = _.contains ['INPUT', 'TEXTAREA', 'OBJECT', 'BUTTON'], el.tagName
+          focusable = focusable or (_.contains(['A', 'AREA'], el.tagName) and el[0].getAttribute('href'))
+          tabIndex = if focusable then 0 else -1
+        if first and tabIndex <= 0
+          tabIndex = 1000000 - tabIndex
+        if (if first then tabIndex < minIndex else tabIndex >= minIndex)
+          minIndex = tabIndex
+          minItem = el
+        $(el).children().each traverse
+      traverse 0, element
+      return minItem
+

@@ -11,9 +11,9 @@ table(editable-table, reorders, model='tournament.rooms', visible='tournament.ta
     script(type='text/html')
       td {{$index + 1}}
       td
-        div(text-edit-cell, text-edit-bind="o.name")
+        text-edit-cell(bind="o.name")
       td
-        div(text-edit-cell, text-edit-bind="o.floor")
+        text-edit-cell(bind="o.floor")
 
 :stylus
   #rooms-table th:nth-child(1)

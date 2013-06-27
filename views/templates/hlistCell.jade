@@ -1,0 +1,11 @@
+div.hlist.inline
+  .inline.list-items
+    div(ng-repeat='hlo in model').inline
+      div(class='enabled-{{edit}}').item-controls
+        i(ng-click='remove($index)').icon-remove-sign.highlight-button
+      div(ng-transclude).inline
+      span(ng-show='!$last') {{separator}}&nbsp;
+  .inline
+    a(ng-click='add()', class='pre-space-{{!!model.length}}', href='', tabindex=0).dont-print.unstyled-link
+      i.icon-plus-sign.highlight-button
+    i(ng-click='edit = !edit', ng-show='model.length && (!editHidden || edit)', class='edit-{{edit}}').icon-edit-sign.highlight-button.dont-print.edit-button.pre-space

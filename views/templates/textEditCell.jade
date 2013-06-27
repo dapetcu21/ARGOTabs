@@ -1,2 +1,4 @@
-span(ng-show='!editing', ng-click="beginEdit()", tabindex=0).textedit-label {{value}}
-input(type='text', ng-show='editing', ng-model='value').textedit-input
+div.inline
+  div(ng-show='!editing', ng-click="beginEdit()", tabindex=0).inline.textedit-label {{value}}
+  input(type='text', ng-show='editing', ng-model='value').textedit-input
+  div.inline {{extra}}

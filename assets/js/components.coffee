@@ -16,31 +16,46 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
 
   mod.directive "textEditCell", ->
     template: templates.textEditCell()
+    restrict: 'E'
     scope:
-      value: '=textEditBind'
+      value: '=bind'
+      extra: '@'
+      minWidth: '@inputWidth'
+    replace: true
     link: (scope, element) ->
       scope.editing = false
+      label = element.find('.textedit-label')
+      input = element.find('input')
 
       callback = ->
         Util.safeApply scope, ->
           scope.beginEdit()
-      element.find('.textedit-label').focus callback
+      label.focus callback
 
       if element.parent()[0].tagName == 'TD'
         element.parent().click callback
 
+      input.blur -> #because angular doesn't know focusout
+        Util.safeApply scope, ->
+          scope.endEdit()
+      input.keypress (e) ->
+        if e.which == 13
+          Util.safeApply scope, ->
+            scope.endEdit()
+
       scope.beginEdit = ->
         return if scope.editing
         scope.editing = true
-        input = element.find('input')
-        input.blur -> #because angular doesn't know focusout
-          Util.safeApply scope, ->
-            scope.endEdit()
-        input.keypress (e) ->
-          if e.which == 13
-            Util.safeApply scope, ->
-              scope.endEdit()
         input[0].value = scope.value
+
+        minW = parseInt scope.minWidth
+        if isNaN minW
+          minW = 100
+        rw = label.outerWidth()
+        if minW > rw
+          rw = minW
+        input.css 'width', rw
+
         setTimeout ->
           input.focus()
           input.select()
@@ -50,42 +65,88 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
 
   mod.directive "multiCell", ->
     template: templates.multiCell()
+    restrict: 'E'
     scope:
-      value: '=multiBind'
-      choiceName: '&multiChoiceName'
-      choices: '=multiChoices'
-      allowNil: '@multiAllowNil'
-    link: (scope, element, attrs) ->
-      scope.editing = false
-
-      callback = ->
-        Util.safeApply scope, ->
-          scope.beginEdit()
-      element.find('.multi-label').focus callback
-
-      if element.parent()[0].tagName == 'TD'
-        element.parent().click callback
-      
-      scope.beginEdit = ->
-        return if scope.editing
-        scope.editing = true
+      value: '=bind'
+      choiceName: '&choiceName'
+      choices: '=choices'
+      allowNil: '@nilPlaceholder'
+      minWidth: '@inputWidth'
+    replace: true
+    compile: (element, attrs, transclude) ->
+      if not attrs.nilPlaceholder
+        element.find('option').remove()
+      (scope, element, attrs) ->
+        scope.editing = false
         select = element.find('select')
+        label = element.find('.multi-label')
+
+        callback = ->
+          Util.safeApply scope, ->
+            scope.beginEdit()
+        label.focus callback
+
+        if element.parent()[0].tagName == 'TD'
+          element.parent().click callback
+
         select.blur ->
           Util.safeApply scope, ->
             scope.endEdit()
+        
+        scope.beginEdit = ->
+          return if scope.editing
+          scope.editing = true
 
+          minW = parseInt scope.minWidth
+          if isNaN minW
+            minW = 100
+          rw = label.outerWidth()
+          if minW > rw
+            rw = minW
+          select.css 'width', rw
+
+          setTimeout ->
+            select.focus()
+          , 0
+
+        scope.endEdit = ->
+          scope.editing = false
+
+        scope.getChoiceName = (o) ->
+          if o?
+            return scope.choiceName
+              o: o
+          return scope.allowNil
+
+  mod.directive "hlistCell", ['$parse', ($parse)->
+    template: templates.hlistCell()
+    restrict: 'E'
+    scope:
+      model: '=bind'
+      addItem: '&addItem'
+      removeItem: '&removeItem'
+      editHidden: '=editHidden'
+      separator: '@separator'
+    transclude: true
+    link: (scope, element, attrs) ->
+      scope.edit = false
+      scope.remove = (index) ->
+        scope.removeItem
+          index: index
+        if not scope.model.length
+          scope.edit = false
+      scope.add = ->
+        scope.addItem()
         setTimeout ->
-          select.focus()
-        , 0
-
-      scope.endEdit = ->
-        scope.editing = false
-
-      scope.getChoiceName = (o) ->
-        if o?
-          return scope.choiceName
-            o: o
-        return scope.allowNil
+          if item = Util.focusableElement element.find('.list-items')[0], false
+            item.focus()
+        , 1
+      scope.comma = (show) ->
+        if show
+          ','
+        else
+          ''
+  ]
 
   mod.directive "sortArrow", ->
     template: templates.sortArrow()
@@ -353,28 +414,9 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
 
       scope.addItem = ->
         controller.scope.addItem_()
-
-        #select the first selectable item
         setTimeout ->
-          minItem = null
-          minIndex = 1000001
-          traverse = (index, el) ->
-            return if $(el).css('display') == 'none' or $(el).css('visibility') == 'hidden'
-            tabIndex = parseInt(el.getAttribute('tabindex'))
-            if isNaN(tabIndex)
-              focusable = _.contains ['INPUT', 'TEXTAREA', 'OBJECT', 'BUTTON'], el.tagName
-              focusable = focusable or (_.contains(['A', 'AREA'], el.tagName) and el[0].getAttribute('href'))
-              tabIndex = if focusable then 0 else -1
-            if tabIndex <= 0
-              tabIndex = 1000000 - tabIndex
-            if tabIndex < minIndex
-              minIndex = tabIndex
-              minItem = el
-            $(el).children().each traverse
-          traverse 0, element.find("tr:nth-last-child(2)")[0]
-
-          if minItem
-            minItem.focus()
+          if item = Util.focusableElement element.find("tr:nth-last-child(2)")[0]
+            item.focus()
         , 1
 
   mod.directive 'editableScriptTransclude', ->
@@ -410,6 +452,7 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
             true
 
         scope.mouseEnter = ->
+          return if scope.hover
           scope.hover = true
           scope.id = 'id' + Math.round( Math.random() * 10000)
           el = element.find('td:visible:last')
@@ -424,6 +467,7 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
                 scope.removeItem(scope.$index)
 
         scope.mouseLeave = ->
+          return if not scope.hover
           scope.hover = false
           element.find('.squeezedElement').removeClass('squeezedElement')
           element.find('#'+scope.id).remove()
@@ -548,7 +592,7 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
               updateCanvas e
               return
           return $line
-        element.on 'drag', (e) ->
+        element.on 'drag', {distance: 4}, (e) ->
           updateCanvas e
           return
         element.on 'dragend', (e) ->

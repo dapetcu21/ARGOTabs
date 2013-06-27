@@ -1,20 +1,19 @@
 define ['util'], (Util) ->
-  class Judge
+  class Player
     constructor: (@tournament, other) ->
       if other
         for key, value of other
           this[key] = value
-      @name ?= ""
-      @rank ?= 0
+      @name ?= "Unnamed"
 
     unpackCycles: ->
-      @club = Util.unpackCycle @club, @tournament.clubs
+      @team = Util.unpackCycle @team, @tournament.teams
     
     toJSON: ->
       model = Util.copyObject this, ['tournament']
-      model.club = Util.packCycle @club, @tournament.clubs
+      model.team = Util.packCycle @team, @tournament.teams
       return model
 
     destroy: ->
-      if @club
-        @club.removeJudge(this)
+      if @team
+        @team.removePlayer(this)

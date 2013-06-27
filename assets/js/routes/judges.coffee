@@ -3,6 +3,9 @@ define ['judge'], (Judge) ->
     $routeProvider.when '/judges',
       templateUrl: 'partials/judges.html'
       controller: [ '$scope', ($scope) ->
+        $scope.ranks = [0, 1, 2]
+        $scope.rankString = 'ABC'
+
         $scope.addJudge = ->
           tournament = ui.tournament
           judge = new Judge tournament

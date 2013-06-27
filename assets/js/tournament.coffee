@@ -1,4 +1,4 @@
-define ['util', 'club', 'team', 'judge', 'room'], (Util, Club, Team, Judge, Room) ->
+define ['util', 'club', 'team', 'judge', 'room', 'player'], (Util, Club, Team, Judge, Room, Player) ->
   class Tournament
     constructor: (@backend) ->
       @clubs = []
@@ -11,11 +11,11 @@ define ['util', 'club', 'team', 'judge', 'room'], (Util, Club, Team, Judge, Room
         @teams = []
         @judges = []
         @rooms = []
+        @players = []
         @tableOpts = {}
 
         for key, value of model
           this[key] = value
-
 
         for club, i in @clubs
           @clubs[i] = new Club(this, club)
@@ -25,6 +25,8 @@ define ['util', 'club', 'team', 'judge', 'room'], (Util, Club, Team, Judge, Room
           @judges[i] = new Judge(this, judge)
         for room, i in @rooms
           @rooms[i] = new Room(this, room)
+        for player, i in @players
+          @players[i] = new Player(this, player)
 
         for club in @clubs
           club.unpackCycles()
@@ -34,6 +36,8 @@ define ['util', 'club', 'team', 'judge', 'room'], (Util, Club, Team, Judge, Room
           judge.unpackCycles()
         for room in @rooms
           room.unpackCycles()
+        for player in @players
+          player.unpackCycles()
 
         @lastData = @toFile()
         fn()

@@ -2,21 +2,28 @@ h3.print-only.text-center {{tournament.name}} - Teams
 table(editable-table, reorders, model='tournament.teams', visible='tournament.tableOpts.teams', add-item='addTeam()', remove-item='removeTeam(index)')#teams-table
   thead
     tr
-      th(data-auto-index=3) #
-      th(data-auto-index=2)
+      th(data-auto-index=4) #
+      th(data-auto-index=3)
         sort-arrow(model='tournament.teams', sort-by='o.name') Team name
-      th(data-auto-index=1)
+      th(data-auto-index=2)
         sort-arrow(model='tournament.teams', sort-by='eliminateNil(o.club.name)') Club
+      th(data-auto-index=1)
+        | Members
   tbody(editable-tbody, add-item-label='Add team')
     script(type='text/html')
       td {{$index + 1}}
       td
-        div(text-edit-cell, text-edit-bind="o.name")
+        text-edit-cell(bind='o.name')
       td(ng-init='initRepeat(this)')
-        div(multi-cell, multi-bind="o.club", multi-choices="tournament.clubs", multi-allow-nil='unaffiliated', multi-choice-name="o.name")
-
+        multi-cell(bind='o.club', choices='tournament.clubs', nil-placeholder='unaffiliated', choice-name='o.name')
+      td(ng-mouseenter='playerHover = true', ng-mouseleave='playerHover = false')
+        hlist-cell(bind='o.players', add-item='o.addPlayer()', remove-item='o.removePlayerAtIndex(index)', separator=',', edit-hidden='!playerHover')
+          text-edit-cell(bind='hlo.name')
+          
 :stylus
   #teams-table th:nth-child(1)
     width: 35px
   #teams-table th:nth-child(2)
-    width: 30%
+    width: 20%
+  #teams-table th:nth-child(3)
+    width: 10%
