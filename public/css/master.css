@@ -114,3 +114,63 @@ th:hover .sortarrow i,
 .a-width {
   width: auto !important;
 }
+.highlight-button {
+  -webkit-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=20);
+  -moz-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=20);
+  -o-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=20);
+  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=20);
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=20);
+  opacity: 0.2;
+}
+.highlight-button:hover {
+  -webkit-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
+  -moz-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
+  -o-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
+  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
+  opacity: 0.5;
+}
+.highlight-button.edit-true {
+  -webkit-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=60);
+  -moz-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=60);
+  -o-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=60);
+  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=60);
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=60);
+  opacity: 0.6;
+}
+.highlight-button.edit-true:hover {
+  -webkit-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=80);
+  -moz-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=80);
+  -o-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=80);
+  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=80);
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=80);
+  opacity: 0.8;
+}
+.hlist .item-controls {
+  -webkit-transition: width 0.3s;
+  -moz-transition: width 0.3s;
+  -o-transition: width 0.3s;
+  -ms-transition: width 0.3s;
+  transition: width 0.3s;
+  width: 0px;
+  overflow: hidden;
+  display: inline-block;
+}
+.hlist .item-controls.enabled-true {
+  width: 15px;
+}
+.inline {
+  display: inline-block;
+}
+.pre-space {
+  margin-left: 3px;
+}
+.pre-space-true {
+  margin-left: 3px;
+}
+a.unstyled-link {
+  color: #000;
+}
+a.unstyled-link:hover {
+  text-decoration: none;
+}

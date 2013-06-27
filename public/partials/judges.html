@@ -3,12 +3,15 @@
 <table editable-table="editable-table" reorders="reorders" model="tournament.judges" visible="tournament.tableOpts.judges" add-item="addJudge()" remove-item="removeJudge(index)" id="judges-table">
   <thead>
     <tr>
-      <th data-auto-index='3'>#</th>
+      <th data-auto-index='4'>#</th>
       <th data-auto-index='2'>
         <sort-arrow model="tournament.judges" sort-by="o.name">Name</sort-arrow>
       </th>
       <th data-auto-index='1'>
         <sort-arrow model="tournament.judges" sort-by="eliminateNil(o.club.name)">Club</sort-arrow>
+      </th>
+      <th data-auto-index='3'>
+        <sort-arrow model="tournament.judges" sort-by="o.rank">Rank</sort-arrow>
       </th>
     </tr>
   </thead>
@@ -16,10 +19,13 @@
     <script type="text/html">
       <td>{{$index + 1}}</td>
       <td>
-        <div text-edit-cell="text-edit-cell" text-edit-bind="o.name"></div>
+        <text-edit-cell bind="o.name"></text-edit-cell>
       </td>
       <td ng-init="initRepeat(this)">
-        <div multi-cell="multi-cell" multi-bind="o.club" multi-choices="tournament.clubs" multi-allow-nil="unaffiliated" multi-choice-name="o.name"></div>
+        <multi-cell bind="o.club" choices="tournament.clubs" nil-placeholder="unaffiliated" choice-name="o.name"></multi-cell>
+      </td>
+      <td>
+        <multi-cell bind="o.rank" choices="ranks" choice-name="rankString[o]" input-width="50"></multi-cell>
       </td>
     </script>
   </tbody>
@@ -28,5 +34,8 @@
 }
 #judges-table th:nth-child(2) {
   width: 30%;
+}
+#judges-table th:nth-child(4) {
+  width: 10%;
 }
 </style>

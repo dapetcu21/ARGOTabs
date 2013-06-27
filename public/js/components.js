@@ -25,41 +25,55 @@
     mod.directive("textEditCell", function() {
       return {
         template: templates.textEditCell(),
+        restrict: 'E',
         scope: {
-          value: '=textEditBind'
+          value: '=bind',
+          extra: '@',
+          minWidth: '@inputWidth'
         },
+        replace: true,
         link: function(scope, element) {
-          var callback;
+          var callback, input, label;
           scope.editing = false;
+          label = element.find('.textedit-label');
+          input = element.find('input');
           callback = function() {
             return Util.safeApply(scope, function() {
               return scope.beginEdit();
             });
           };
-          element.find('.textedit-label').focus(callback);
+          label.focus(callback);
           if (element.parent()[0].tagName === 'TD') {
             element.parent().click(callback);
           }
+          input.blur(function() {
+            return Util.safeApply(scope, function() {
+              return scope.endEdit();
+            });
+          });
+          input.keypress(function(e) {
+            if (e.which === 13) {
+              return Util.safeApply(scope, function() {
+                return scope.endEdit();
+              });
+            }
+          });
           scope.beginEdit = function() {
-            var input;
+            var minW, rw;
             if (scope.editing) {
               return;
             }
             scope.editing = true;
-            input = element.find('input');
-            input.blur(function() {
-              return Util.safeApply(scope, function() {
-                return scope.endEdit();
-              });
-            });
-            input.keypress(function(e) {
-              if (e.which === 13) {
-                return Util.safeApply(scope, function() {
-                  return scope.endEdit();
-                });
-              }
-            });
             input[0].value = scope.value;
+            minW = parseInt(scope.minWidth);
+            if (isNaN(minW)) {
+              minW = 100;
+            }
+            rw = label.outerWidth();
+            if (minW > rw) {
+              rw = minW;
+            }
+            input.css('width', rw);
             return setTimeout(function() {
               input.focus();
               return input.select();
@@ -74,54 +88,115 @@
     mod.directive("multiCell", function() {
       return {
         template: templates.multiCell(),
+        restrict: 'E',
         scope: {
-          value: '=multiBind',
-          choiceName: '&multiChoiceName',
-          choices: '=multiChoices',
-          allowNil: '@multiAllowNil'
+          value: '=bind',
+          choiceName: '&choiceName',
+          choices: '=choices',
+          allowNil: '@nilPlaceholder',
+          minWidth: '@inputWidth'
         },
-        link: function(scope, element, attrs) {
-          var callback;
-          scope.editing = false;
-          callback = function() {
-            return Util.safeApply(scope, function() {
-              return scope.beginEdit();
-            });
-          };
-          element.find('.multi-label').focus(callback);
-          if (element.parent()[0].tagName === 'TD') {
-            element.parent().click(callback);
+        replace: true,
+        compile: function(element, attrs, transclude) {
+          if (!attrs.nilPlaceholder) {
+            element.find('option').remove();
           }
-          scope.beginEdit = function() {
-            var select;
-            if (scope.editing) {
-              return;
-            }
-            scope.editing = true;
+          return function(scope, element, attrs) {
+            var callback, label, select;
+            scope.editing = false;
             select = element.find('select');
+            label = element.find('.multi-label');
+            callback = function() {
+              return Util.safeApply(scope, function() {
+                return scope.beginEdit();
+              });
+            };
+            label.focus(callback);
+            if (element.parent()[0].tagName === 'TD') {
+              element.parent().click(callback);
+            }
             select.blur(function() {
               return Util.safeApply(scope, function() {
                 return scope.endEdit();
               });
             });
-            return setTimeout(function() {
-              return select.focus();
-            }, 0);
-          };
-          scope.endEdit = function() {
-            return scope.editing = false;
-          };
-          return scope.getChoiceName = function(o) {
-            if (o != null) {
-              return scope.choiceName({
-                o: o
-              });
-            }
-            return scope.allowNil;
+            scope.beginEdit = function() {
+              var minW, rw;
+              if (scope.editing) {
+                return;
+              }
+              scope.editing = true;
+              minW = parseInt(scope.minWidth);
+              if (isNaN(minW)) {
+                minW = 100;
+              }
+              rw = label.outerWidth();
+              if (minW > rw) {
+                rw = minW;
+              }
+              select.css('width', rw);
+              return setTimeout(function() {
+                return select.focus();
+              }, 0);
+            };
+            scope.endEdit = function() {
+              return scope.editing = false;
+            };
+            return scope.getChoiceName = function(o) {
+              if (o != null) {
+                return scope.choiceName({
+                  o: o
+                });
+              }
+              return scope.allowNil;
+            };
           };
         }
       };
     });
+    mod.directive("hlistCell", [
+      '$parse', function($parse) {
+        return {
+          template: templates.hlistCell(),
+          restrict: 'E',
+          scope: {
+            model: '=bind',
+            addItem: '&addItem',
+            removeItem: '&removeItem',
+            editHidden: '=editHidden',
+            separator: '@separator'
+          },
+          transclude: true,
+          link: function(scope, element, attrs) {
+            scope.edit = false;
+            scope.remove = function(index) {
+              scope.removeItem({
+                index: index
+              });
+              if (!scope.model.length) {
+                return scope.edit = false;
+              }
+            };
+            scope.add = function() {
+              scope.addItem();
+              return setTimeout(function() {
+                var item;
+                if (item = Util.focusableElement(element.find('.list-items')[0], false)) {
+                  return item.focus();
+                }
+              }, 1);
+            };
+            return scope.comma = function(show) {
+              if (show) {
+                return ',';
+              } else {
+                return '';
+              }
+            };
+          }
+        };
+      }
+    ]);
     mod.directive("sortArrow", function() {
       return {
         template: templates.sortArrow(),
@@ -495,32 +570,9 @@
           return scope.addItem = function() {
             controller.scope.addItem_();
             return setTimeout(function() {
-              var minIndex, minItem, traverse;
-              minItem = null;
-              minIndex = 1000001;
-              traverse = function(index, el) {
-                var focusable, tabIndex;
-                if ($(el).css('display') === 'none' || $(el).css('visibility') === 'hidden') {
-                  return;
-                }
-                tabIndex = parseInt(el.getAttribute('tabindex'));
-                if (isNaN(tabIndex)) {
-                  focusable = _.contains(['INPUT', 'TEXTAREA', 'OBJECT', 'BUTTON'], el.tagName);
-                  focusable = focusable || (_.contains(['A', 'AREA'], el.tagName) && el[0].getAttribute('href'));
-                  tabIndex = focusable ? 0 : -1;
-                }
-                if (tabIndex <= 0) {
-                  tabIndex = 1000000 - tabIndex;
-                }
-                if (tabIndex < minIndex) {
-                  minIndex = tabIndex;
-                  minItem = el;
-                }
-                return $(el).children().each(traverse);
-              };
-              traverse(0, element.find("tr:nth-last-child(2)")[0]);
-              if (minItem) {
-                return minItem.focus();
+              var item;
+              if (item = Util.focusableElement(element.find("tr:nth-last-child(2)")[0])) {
+                return item.focus();
               }
             }, 1);
           };
@@ -573,6 +625,9 @@
               };
               scope.mouseEnter = function() {
                 var el;
+                if (scope.hover) {
+                  return;
+                }
                 scope.hover = true;
                 scope.id = 'id' + Math.round(Math.random() * 10000);
                 el = element.find('td:visible:last');
@@ -588,6 +643,9 @@
                 });
               };
               scope.mouseLeave = function() {
+                if (!scope.hover) {
+                  return;
+                }
                 scope.hover = false;
                 element.find('.squeezedElement').removeClass('squeezedElement');
                 return element.find('#' + scope.id).remove();
@@ -736,7 +794,9 @@
                 });
                 return $line;
               });
-              element.on('drag', function(e) {
+              element.on('drag', {
+                distance: 4
+              }, function(e) {
                 updateCanvas(e);
               });
               return element.on('dragend', function(e) {

@@ -87,6 +87,37 @@
         }
       };
 
+      Util.focusableElement = function(element, first) {
+        var minIndex, minItem, traverse;
+        if (first == null) {
+          first = true;
+        }
+        minItem = null;
+        minIndex = first ? 1000001 : 0;
+        traverse = function(index, el) {
+          var focusable, tabIndex;
+          if ($(el).css('display') === 'none' || $(el).css('visibility') === 'hidden') {
+            return;
+          }
+          tabIndex = parseInt(el.getAttribute('tabindex'));
+          if (isNaN(tabIndex)) {
+            focusable = _.contains(['INPUT', 'TEXTAREA', 'OBJECT', 'BUTTON'], el.tagName);
+            focusable = focusable || (_.contains(['A', 'AREA'], el.tagName) && el[0].getAttribute('href'));
+            tabIndex = focusable ? 0 : -1;
+          }
+          if (first && tabIndex <= 0) {
+            tabIndex = 1000000 - tabIndex;
+          }
+          if ((first ? tabIndex < minIndex : tabIndex >= minIndex)) {
+            minIndex = tabIndex;
+            minItem = el;
+          }
+          return $(el).children().each(traverse);
+        };
+        traverse(0, element);
+        return minItem;
+      };
+
       return Util;
 
     })();

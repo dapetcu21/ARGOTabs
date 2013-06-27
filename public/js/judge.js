@@ -14,6 +14,9 @@
         if (this.name == null) {
           this.name = "";
         }
+        if (this.rank == null) {
+          this.rank = 0;
+        }
       }
 
       Judge.prototype.unpackCycles = function() {
