@@ -89,7 +89,7 @@ define ['jquery', 'filereader', 'alertcontroller', 'tournament', 'backends', 'lo
           if textBox[0].ongoingDeletion
             if newName == "confirm deletion of file"
               new backend(itemName).delete()
-              fl[itemName] = undefined
+              delete fl[itemName]
               itemNode.remove()
 
               textBox[0].readOnly = true
@@ -106,7 +106,7 @@ define ['jquery', 'filereader', 'alertcontroller', 'tournament', 'backends', 'lo
               be = new backend(itemName)
               be.rename(newName)
               textBox[0].readOnly = true
-              fl[itemName] = undefined
+              delete fl[itemName]
               fl[newName] = true
               itemNode.find('.omodal-label').html(newName)
               itemName = newName

@@ -14,18 +14,38 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
     ]
     template: templates.navLi()
 
-  mod.directive "textEditCell", ->
+  mod.directive "textEditCell", ['$parse', ($parse) ->
     template: templates.textEditCell()
     restrict: 'E'
     scope:
-      value: '=bind'
       extra: '@'
       minWidth: '@inputWidth'
+      pattern: '@pattern'
+      getter: '&'
+      setter: '&'
     replace: true
-    link: (scope, element) ->
+    transclude: true
+    link: (scope, element, attrs) ->
       scope.editing = false
       label = element.find('.textedit-label')
       input = element.find('input')
+
+      scope.$watch ->
+        $parse(attrs.bind)(scope.$parent)
+      , (newValue) ->
+        if attrs.getter?
+          scope.valueParsed = scope.getter {o: newValue}
+        else
+          scope.valueParsed = newValue
+      scope.$watch 'valueParsed', (newValue, oldValue) ->
+        if scope.pattern and typeof(newValue) == 'string' and not newValue.match(new RegExp '^' + scope.pattern + '$')
+          scope.valueParsed = oldValue
+        else
+          $parse(attrs.bind).assign scope.$parent,
+            if attrs.setter?
+              scope.setter {o: newValue}
+            else
+              newValue
 
       callback = ->
         Util.safeApply scope, ->
@@ -46,7 +66,6 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
       scope.beginEdit = ->
         return if scope.editing
         scope.editing = true
-        input[0].value = scope.value
 
         minW = parseInt scope.minWidth
         if isNaN minW
@@ -62,6 +81,7 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
         , 0
       scope.endEdit = ->
         scope.editing = false
+  ]
 
   mod.directive "multiCell", ->
     template: templates.multiCell()
@@ -73,6 +93,7 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
       allowNil: '@nilPlaceholder'
       minWidth: '@inputWidth'
     replace: true
+    transclude: true
     compile: (element, attrs, transclude) ->
       if not attrs.nilPlaceholder
         element.find('option').remove()
@@ -192,23 +213,23 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
 
       element.on 'draginit', (e) ->
         el = $(e.target)
-        console.log e.target
         dragElement = null
         if el.hasClass 'moveable-true'
           dragElement = el
         else if (a = el.parents('.moveable-true')).length
           dragElement = a
-        console.log dragElement
         if dragElement
           return element
         return false
 
       element.on 'dragstart', (e) ->
         dragStart = dragElement.index()
-        console.log 'dragstart', dragStart
+        scrollX = window.pageXOffset
+        scrollY = window.pageYOffset
         html2canvas dragElement[0],
           scale: if window.devicePixelRatio then window.devicePixelRatio else 1
           onrendered: (canvas) ->
+            window.scrollTo scrollX, scrollY
             elW = dragElement.outerWidth()
             elH = dragElement.outerHeight()
             scale =
@@ -218,7 +239,7 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
             $canvas = $(canvas)
             $canvas.css 'width', elW
             $canvas.css 'height', elH
-            $canvas.css 'position', 'fixed'
+            $canvas.css 'position', 'absolute'
             $canvas.css 'opacity', '0.6'
 
             offs = dragElement.offset()
@@ -227,7 +248,7 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
             dragElement.css 'opacity', '0.4'
 
             $line = $(document.createElement 'div')
-            $line.css 'position', 'fixed'
+            $line.css 'position', 'absolute'
             $line.css 'border', '1px solid #0088cc'
             $line.css 'border-radius', '1px'
             $line.css 'width', '0px'
@@ -271,6 +292,7 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
       model: '='
       sortBy: '&'
       compareFunction: '&'
+      hideArrows: '@'
     replace: true
     transclude: true
     link: (scope, element) ->
@@ -338,6 +360,7 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
       model: '='
       addItem_: '&addItem'
       removeItem_: '&removeItem'
+      canRemoveItem_: '&canRemoveItem'
       visible_: '@visible'
       reorders: '@reorders'
     link:
@@ -353,6 +376,12 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
 
         scope.$on '$destroy', ->
           context.remove()
+
+        scope.canRemoveItem = (o) ->
+          if not attrs.canRemoveItem?
+            return attrs.removeItem?
+          return scope.canRemoveItem_
+            o: o
 
         exportCSV = ->
           csv = []
@@ -569,6 +598,7 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
 
         scope.mouseEnter = ->
           return if scope.hover
+          return if not controller.scope.canRemoveItem scope.o
           scope.hover = true
           scope.id = 'id' + Math.round( Math.random() * 10000)
           el = element.find('td:visible:last')
@@ -592,9 +622,7 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
         getCurrentPoint = (x, y) ->
           parent = element.parent()
           rows = parent.children()
-          omitLast = scope.addLabel
-          n = rows.length
-          n-- if omitLast
+          n = rows.length - 1
           return null if not n
           lel = $(rows[n-1])
           lelbt = lel.offset().top + lel.outerHeight()
@@ -645,9 +673,13 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
           table = element.parents('table')
           dragStart = element.index()
 
+          scrollX = window.pageXOffset
+          scrollY = window.pageYOffset
           html2canvas element[0],
             scale: if window.devicePixelRatio then window.devicePixelRatio else 1 #if only this actually worked
             onrendered: (fullCanvas) ->
+              window.scrollTo scrollX, scrollY
+
               #remove borders
               fullContex = fullCanvas.getContext('2d')
               parseIntN = (s) ->
@@ -687,7 +719,7 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
               canvas.getContext('2d').drawImage fullCanvas, -pos.left, -pos.top
 
               $canvas.css 'border', '1px solid #dddddd' #add our own borders
-              $canvas.css 'position', 'fixed'
+              $canvas.css 'position', 'absolute'
               $canvas.css 'opacity', '0.6'
               offs = element.offset()
               dragPointX = e.pageX - offs.left
@@ -695,17 +727,17 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
               element.css 'opacity', '0.4'
 
               $line = $(document.createElement 'div')
-              $line.css 'position', 'fixed'
+              $line.css 'position', 'absolute'
               $line.css 'border', '1px solid #0088cc'
               $line.css 'border-radius', '1px'
               $line.css 'width', element.outerWidth()
               $line.css 'left', element.offset().left
               $line.css 'display', 'none'
 
+              updateCanvas e
               $(document.body).append $line
               $(document.body).append $canvas
 
-              updateCanvas e
               return
           return $line
         element.on 'drag', {distance: 4}, (e) ->

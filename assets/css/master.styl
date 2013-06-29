@@ -61,14 +61,14 @@ body
 .multi-input
   margin: 0px !important
 
-.sortarrow i
+.sortarrow i.arrow
   display: none
 
-th:hover .sortarrow i, .sortarrow:hover i
+th:hover .sortarrow i.arrow, .sortarrow:hover i.arrow
   opacity: 0.5
   display: inline-block
 
-.multi-label.null-true
+.muted-true
   opacity: 0.5
 
 .text-center
@@ -129,3 +129,44 @@ a.unstyled-link
   color: #000
 a.unstyled-link:hover
   text-decoration: none
+
+.heading .textedit-label
+  font-size: 36px
+  letter-spacing: -1px
+  font-weight: bold
+  line-height: 1
+
+i.bottom-line
+  position: relative
+  bottom: -1px
+  margin-left: 10px
+  opacity: 0.6
+
+i.bottom-line:hover
+  opacity: 1
+ 
+.heading table.stats
+  margin-top: 10px
+
+.heading table.stats td
+  padding: 10px 50px 0px 0px
+
+.settings-group div
+  margin: 5px 0px 5px 0px
+
+.remove-round
+  position:relative
+  color: #0088cc
+  top: 2px
+ 
+.small-margin
+  margin: 3px
+
+.remove-round:hover
+  text-decoration: none
+
+li.active .remove-round
+  color: #fff
+
+li.active .remove-round:hover
+  color: #005580

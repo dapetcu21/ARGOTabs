@@ -1,4 +1,4 @@
-div.inline
-  div(ng-show='!editing', ng-click="beginEdit()", tabindex=0).inline.textedit-label {{value}}
-  input(type='text', ng-show='editing', ng-model='value').textedit-input
-  div.inline {{extra}}
+div(ng-transclude, ng-click='beginEdit()').inline.textedit-cell
+  div(ng-show='!editing', tabindex=0).inline.textedit-label {{valueParsed}}
+  input(type='text', ng-show='editing', ng-model='valueParsed').textedit-input
+  div.inline.textedit-extra {{extra}}

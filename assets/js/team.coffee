@@ -6,6 +6,10 @@ define ['util', 'player'], (Util, Player) ->
           this[key] = value
       @name ?= ""
       @players ?= []
+      @rounds ?= {}
+      if not other
+        for round in @tournament.rounds
+          round.registerTeam this
 
     unpackCycles: ->
       @club = Util.unpackCycle @club, @tournament.clubs
@@ -35,5 +39,7 @@ define ['util', 'player'], (Util, Player) ->
       arr.splice idx, 1
 
     destroy: ->
+      for round in @tournament.rounds
+        round.unregisterTeam this
       if @club
         @club.removeTeam(this)

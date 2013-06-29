@@ -1,10 +1,35 @@
-define ['jquery', 'B64', 'cookies', 'opencontroller', 'alertcontroller', 'tournament', 'backends', 'localbackend', 'routes/routes', 'util', 'components', 'angular'], ($, B64, Cookies, OpenController, AlertController, Tournament, Backends, LocalBackend, Routes, Util) ->
+define ['jquery', 'B64', 'cookies', 'opencontroller', 'alertcontroller', 'tournament', 'backends', 'localbackend', 'routes/routes', 'util', 'round', 'components', 'angular'], ($, B64, Cookies, OpenController, AlertController, Tournament, Backends, LocalBackend, Routes, Util, Round) ->
   class UIController
     constructor: ->
       @app = app = angular.module 'argotabs', ['components']
 
       app.controller 'LoadingCtrl', ['$scope', ($scope) =>
         $scope.loaded = true
+      ]
+
+      app.controller 'RoutesList', ['$scope', '$location', ($scope, $location) =>
+        $scope.addRound = =>
+          t = @tournament
+          t.rounds.push new Round t
+
+        $scope.removeRound = (i) =>
+          new AlertController
+            buttons: ['Cancel', 'Delete']
+            cancelButtonIndex: 0
+            primaryButtonIndex: 1
+            title: 'Delete Round ' + (i+1)
+            width: 400
+            htmlMessage: '<p>Are you sure you want to delete Round '+(i+1)+'?</p><p>This will remove the pairing, all ballots and all scores associated with this round. Most mistakes can be corrected without deleting the whole round.</p>'
+            onClick: (alert, bIndex, bName) =>
+              if bIndex == 1
+                $scope.$apply =>
+                  if $location.path().match(/^\/round/)
+                    $location.path('/')
+                  t = @tournament
+                  r = t.rounds[i]
+                  t.rounds.splice i, 1
+                  r.destroy()
+                  alert.modal('hide')
       ]
 
       Routes(this)

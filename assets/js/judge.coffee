@@ -6,6 +6,10 @@ define ['util'], (Util) ->
           this[key] = value
       @name ?= ""
       @rank ?= 0
+      @rounds ?= {}
+      if not other
+        for round in @tournament.rounds
+          round.registerJudge this
 
     unpackCycles: ->
       @club = Util.unpackCycle @club, @tournament.clubs
@@ -16,5 +20,7 @@ define ['util'], (Util) ->
       return model
 
     destroy: ->
+      for round in @tournament.rounds
+        round.unregisterJudge this
       if @club
         @club.removeJudge(this)

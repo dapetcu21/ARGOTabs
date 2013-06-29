@@ -27,7 +27,7 @@ div(ng-controller='LoadingCtrl', ng-show="!loaded").loading-screen
   .row-fluid
     .span2.dont-print
       .well.sidebar-nav
-        ul.nav.nav-list
+        ul(ng-controller='RoutesList').nav.nav-list
           li.nav-header Tournament
           nav-li(href="/") Dashboard
           li.nav-header Participants
@@ -41,7 +41,15 @@ div(ng-controller='LoadingCtrl', ng-show="!loaded").loading-screen
           nav-li(href="/speaker-rank") Speaker rank
           nav-li(href="/judge-avg") Judge averages
           li.nav-header Rounds
-          nav-li(href="/rounds/1") {{tournament.name}}
+          nav-li(ng-repeat='round in tournament.rounds', href='/rounds/{{$index+1}}') 
+            | Round {{$index+1}} 
+            a(href='', ng-click='removeRound($index)').pull-right.unstyled.remove-round
+              i.icon-remove-sign.pull-right
+          li
+            a(href='', ng-click='addRound()')
+              i.icon-plus
+              |  New round
+          
     div(ng-view).span10.print-full-width
 
 :stylus

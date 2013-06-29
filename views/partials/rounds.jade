@@ -1,0 +1,80 @@
+ul.nav.nav-tabs
+  li.active
+    a(href='#teams', data-toggle='tab') Teams
+  li
+    a(href='#judges', data-toggle='tab') Judges
+ 
+div.tab-content
+  div#teams.tab-pane.active
+    .control-group
+      .btn-group.inline
+        button(ng-click='addAllTeams()').btn Check all
+        button(ng-click='removeAllTeams()').btn Uncheck all
+      .btn-group.inline
+        button(ng-click='sortByRank()').btn Sort by rank
+      div.inline.small-margin Check teams that are to play this round.
+
+    table(editable-table, model='round.teams', visible='round.tableOpts.teams', reorders)#round-teams-table
+      thead
+        tr
+          th(data-auto-index=5) #
+          th(data-auto-index=4)
+            sort-arrow(model='round.teams', sort-by='o.rounds[round.id].participates', hide-arrows)
+              i.icon-check
+          th(data-auto-index=3)
+            sort-arrow(model='round.teams', sort-by='o.name') Team name
+          th(data-auto-index=2)
+            sort-arrow(model='round.teams', sort-by='eliminateNil(o.club.name)') Club
+      tbody(editable-tbody)
+        script(type='text/html')
+          td {{$index + 1}}
+          td
+            input(type='checkbox', ng-model='o.rounds[round.id].participates')
+          td {{o.name}}
+          td: span(class='muted-{{o.club == null}}') {{nilPlaceholder(o.club, {name:"unaffiliated"}).name}}
+
+  div#judges.tab-pane
+    .control-group
+      .btn-group.inline
+        button(ng-click='addAllJudges()').btn Check all
+        button(ng-click='removeAllJudges()').btn Uncheck all
+      div.inline.small-margin Check judges that are available to judge this round.
+
+    table(editable-table, model='round.judges', visible='round.tableOpts.judges', reorders)#round-judges-table
+      thead
+        tr
+          th(data-auto-index=5) #
+          th(data-auto-index=4)
+            sort-arrow(model='round.judges', sort-by='o.rounds[round.id].participates', hide-arrows)
+              i.icon-check
+          th(data-auto-index=2)
+            sort-arrow(model='round.judges', sort-by='o.name') Name
+          th(data-auto-index=1)
+            sort-arrow(model='round.judges', sort-by='eliminateNil(o.club.name)') Club
+          th(data-auto-index=3)
+            sort-arrow(model='round.judges', sort-by='o.rank') Rank
+      tbody(editable-tbody)
+        script(type='text/html')
+          td {{$index + 1}}
+          td
+            input(type='checkbox', ng-model='o.rounds[round.id].participates')
+          td {{o.name}}
+          td: span(class='muted-{{o.club == null}}') {{nilPlaceholder(o.club, {name:"unaffiliated"}).name}}
+          td {{rankString[o.rank]}}
+
+:stylus
+  #round-judges-table th:nth-child(1)
+    width: 15px
+  #round-judges-table th:nth-child(2)
+    width: 10px
+  #round-judges-table th:nth-child(3)
+    width: 30%
+  #round-judges-table th:nth-child(5)
+    width: 10%
+    
+  #round-teams-table th:nth-child(1)
+    width: 15px
+  #round-teams-table th:nth-child(2)
+    width: 10px
+  #round-teams-table th:nth-child(3)
+    width: 30%
