@@ -118,7 +118,7 @@
             if (textBox[0].ongoingDeletion) {
               if (newName === "confirm deletion of file") {
                 new backend(itemName)["delete"]();
-                fl[itemName] = void 0;
+                delete fl[itemName];
                 itemNode.remove();
                 textBox[0].readOnly = true;
                 animDiv.transition({
@@ -138,7 +138,7 @@
                 be = new backend(itemName);
                 be.rename(newName);
                 textBox[0].readOnly = true;
-                fl[itemName] = void 0;
+                delete fl[itemName];
                 fl[newName] = true;
                 itemNode.find('.omodal-label').html(newName);
                 itemName = newName;

@@ -3,7 +3,7 @@
     var Judge;
     return Judge = (function() {
       function Judge(tournament, other) {
-        var key, value;
+        var key, round, value, _i, _len, _ref;
         this.tournament = tournament;
         if (other) {
           for (key in other) {
@@ -16,6 +16,16 @@
         }
         if (this.rank == null) {
           this.rank = 0;
+        }
+        if (this.rounds == null) {
+          this.rounds = {};
+        }
+        if (!other) {
+          _ref = this.tournament.rounds;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            round = _ref[_i];
+            round.registerJudge(this);
+          }
         }
       }
 
@@ -31,6 +41,12 @@
       };
 
       Judge.prototype.destroy = function() {
+        var round, _i, _len, _ref;
+        _ref = this.tournament.rounds;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          round = _ref[_i];
+          round.unregisterJudge(this);
+        }
         if (this.club) {
           return this.club.removeJudge(this);
         }

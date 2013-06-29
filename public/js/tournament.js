@@ -1,5 +1,5 @@
 (function() {
-  define(['util', 'club', 'team', 'judge', 'room', 'player'], function(Util, Club, Team, Judge, Room, Player) {
+  define(['util', 'club', 'team', 'judge', 'room', 'player', 'round'], function(Util, Club, Team, Judge, Room, Player, Round) {
     var Tournament;
     return Tournament = (function() {
       function Tournament(backend) {
@@ -10,7 +10,7 @@
       Tournament.prototype.load = function(fn) {
         var _this = this;
         return this.backend.load(function(loadedString) {
-          var club, i, judge, key, model, player, room, team, value, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _len6, _len7, _len8, _len9, _m, _n, _o, _p, _q, _r, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
+          var club, i, judge, key, model, player, room, round, team, value, _i, _j, _k, _l, _len, _len1, _len10, _len11, _len2, _len3, _len4, _len5, _len6, _len7, _len8, _len9, _m, _n, _o, _p, _q, _r, _ref, _ref1, _ref10, _ref11, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9, _s, _t;
           try {
             model = JSON.parse(loadedString);
           } catch (_error) {
@@ -24,7 +24,10 @@
           _this.judges = [];
           _this.rooms = [];
           _this.players = [];
+          _this.rounds = [];
           _this.tableOpts = {};
+          _this.ballotsPerMatch = 1;
+          _this.minPlayed = 1;
           for (key in model) {
             value = model[key];
             _this[key] = value;
@@ -54,30 +57,40 @@
             player = _ref4[i];
             _this.players[i] = new Player(_this, player);
           }
-          _ref5 = _this.clubs;
-          for (_n = 0, _len5 = _ref5.length; _n < _len5; _n++) {
-            club = _ref5[_n];
+          _ref5 = _this.rounds;
+          for (i = _n = 0, _len5 = _ref5.length; _n < _len5; i = ++_n) {
+            round = _ref5[i];
+            _this.rounds[i] = new Round(_this, round);
+          }
+          _ref6 = _this.clubs;
+          for (_o = 0, _len6 = _ref6.length; _o < _len6; _o++) {
+            club = _ref6[_o];
             club.unpackCycles();
           }
-          _ref6 = _this.teams;
-          for (_o = 0, _len6 = _ref6.length; _o < _len6; _o++) {
-            team = _ref6[_o];
+          _ref7 = _this.teams;
+          for (_p = 0, _len7 = _ref7.length; _p < _len7; _p++) {
+            team = _ref7[_p];
             team.unpackCycles();
           }
-          _ref7 = _this.judges;
-          for (_p = 0, _len7 = _ref7.length; _p < _len7; _p++) {
-            judge = _ref7[_p];
+          _ref8 = _this.judges;
+          for (_q = 0, _len8 = _ref8.length; _q < _len8; _q++) {
+            judge = _ref8[_q];
             judge.unpackCycles();
           }
-          _ref8 = _this.rooms;
-          for (_q = 0, _len8 = _ref8.length; _q < _len8; _q++) {
-            room = _ref8[_q];
+          _ref9 = _this.rooms;
+          for (_r = 0, _len9 = _ref9.length; _r < _len9; _r++) {
+            room = _ref9[_r];
             room.unpackCycles();
           }
-          _ref9 = _this.players;
-          for (_r = 0, _len9 = _ref9.length; _r < _len9; _r++) {
-            player = _ref9[_r];
+          _ref10 = _this.players;
+          for (_s = 0, _len10 = _ref10.length; _s < _len10; _s++) {
+            player = _ref10[_s];
             player.unpackCycles();
+          }
+          _ref11 = _this.rounds;
+          for (_t = 0, _len11 = _ref11.length; _t < _len11; _t++) {
+            round = _ref11[_t];
+            round.unpackCycles();
           }
           _this.lastData = _this.toFile();
           fn();

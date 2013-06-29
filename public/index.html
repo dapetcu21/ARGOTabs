@@ -37,7 +37,7 @@
   <div class="row-fluid">
     <div class="span2 dont-print">
       <div class="well sidebar-nav">
-        <ul class="nav nav-list">
+        <ul ng-controller="RoutesList" class="nav nav-list">
           <li class="nav-header">Tournament</li>
           <nav-li href="/">Dashboard</nav-li>
           <li class="nav-header">Participants</li>
@@ -51,7 +51,11 @@
           <nav-li href="/speaker-rank">Speaker rank</nav-li>
           <nav-li href="/judge-avg">Judge averages</nav-li>
           <li class="nav-header">Rounds</li>
-          <nav-li href="/rounds/1">{{tournament.name}}</nav-li>
+          <nav-li ng-repeat="round in tournament.rounds" href="/rounds/{{$index+1}}">
+             
+            Round {{$index+1}} <a href="" ng-click="removeRound($index)" class="pull-right unstyled remove-round"><i class="icon-remove-sign pull-right"></i></a>
+          </nav-li>
+          <li><a href="" ng-click="addRound()"><i class="icon-plus"></i> New round</a></li>
         </ul>
       </div>
     </div>

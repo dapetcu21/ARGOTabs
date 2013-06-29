@@ -73,11 +73,11 @@ body {
 .multi-input {
   margin: 0px !important;
 }
-.sortarrow i {
+.sortarrow i.arrow {
   display: none;
 }
-th:hover .sortarrow i,
-.sortarrow:hover i {
+th:hover .sortarrow i.arrow,
+.sortarrow:hover i.arrow {
   -webkit-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
   -moz-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
   -o-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
@@ -86,7 +86,7 @@ th:hover .sortarrow i,
   opacity: 0.5;
   display: inline-block;
 }
-.multi-label.null-true {
+.muted-true {
   -webkit-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
   -moz-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
   -o-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
@@ -180,4 +180,55 @@ a.unstyled-link {
 }
 a.unstyled-link:hover {
   text-decoration: none;
+}
+.heading .textedit-label {
+  font-size: 36px;
+  letter-spacing: -1px;
+  font-weight: bold;
+  line-height: 1;
+}
+i.bottom-line {
+  position: relative;
+  bottom: -1px;
+  margin-left: 10px;
+  -webkit-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=60);
+  -moz-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=60);
+  -o-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=60);
+  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=60);
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=60);
+  opacity: 0.6;
+}
+i.bottom-line:hover {
+  -webkit-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+  -moz-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+  -o-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+  opacity: 1;
+}
+.heading table.stats {
+  margin-top: 10px;
+}
+.heading table.stats td {
+  padding: 10px 50px 0px 0px;
+}
+.settings-group div {
+  margin: 5px 0px 5px 0px;
+}
+.remove-round {
+  position: relative;
+  color: #08c;
+  top: 2px;
+}
+.small-margin {
+  margin: 3px;
+}
+.remove-round:hover {
+  text-decoration: none;
+}
+li.active .remove-round {
+  color: #fff;
+}
+li.active .remove-round:hover {
+  color: #005580;
 }

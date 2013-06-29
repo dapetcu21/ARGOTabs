@@ -22,69 +22,93 @@
         template: templates.navLi()
       };
     });
-    mod.directive("textEditCell", function() {
-      return {
-        template: templates.textEditCell(),
-        restrict: 'E',
-        scope: {
-          value: '=bind',
-          extra: '@',
-          minWidth: '@inputWidth'
-        },
-        replace: true,
-        link: function(scope, element) {
-          var callback, input, label;
-          scope.editing = false;
-          label = element.find('.textedit-label');
-          input = element.find('input');
-          callback = function() {
-            return Util.safeApply(scope, function() {
-              return scope.beginEdit();
+    mod.directive("textEditCell", [
+      '$parse', function($parse) {
+        return {
+          template: templates.textEditCell(),
+          restrict: 'E',
+          scope: {
+            extra: '@',
+            minWidth: '@inputWidth',
+            pattern: '@pattern',
+            getter: '&',
+            setter: '&'
+          },
+          replace: true,
+          transclude: true,
+          link: function(scope, element, attrs) {
+            var callback, input, label;
+            scope.editing = false;
+            label = element.find('.textedit-label');
+            input = element.find('input');
+            scope.$watch(function() {
+              return $parse(attrs.bind)(scope.$parent);
+            }, function(newValue) {
+              if (attrs.getter != null) {
+                return scope.valueParsed = scope.getter({
+                  o: newValue
+                });
+              } else {
+                return scope.valueParsed = newValue;
+              }
             });
-          };
-          label.focus(callback);
-          if (element.parent()[0].tagName === 'TD') {
-            element.parent().click(callback);
-          }
-          input.blur(function() {
-            return Util.safeApply(scope, function() {
-              return scope.endEdit();
+            scope.$watch('valueParsed', function(newValue, oldValue) {
+              if (scope.pattern && typeof newValue === 'string' && !newValue.match(new RegExp('^' + scope.pattern + '$'))) {
+                return scope.valueParsed = oldValue;
+              } else {
+                return $parse(attrs.bind).assign(scope.$parent, attrs.setter != null ? scope.setter({
+                  o: newValue
+                }) : newValue);
+              }
             });
-          });
-          input.keypress(function(e) {
-            if (e.which === 13) {
+            callback = function() {
+              return Util.safeApply(scope, function() {
+                return scope.beginEdit();
+              });
+            };
+            label.focus(callback);
+            if (element.parent()[0].tagName === 'TD') {
+              element.parent().click(callback);
+            }
+            input.blur(function() {
               return Util.safeApply(scope, function() {
                 return scope.endEdit();
               });
-            }
-          });
-          scope.beginEdit = function() {
-            var minW, rw;
-            if (scope.editing) {
-              return;
-            }
-            scope.editing = true;
-            input[0].value = scope.value;
-            minW = parseInt(scope.minWidth);
-            if (isNaN(minW)) {
-              minW = 100;
-            }
-            rw = label.outerWidth();
-            if (minW > rw) {
-              rw = minW;
-            }
-            input.css('width', rw);
-            return setTimeout(function() {
-              input.focus();
-              return input.select();
-            }, 0);
-          };
-          return scope.endEdit = function() {
-            return scope.editing = false;
-          };
-        }
-      };
-    });
+            });
+            input.keypress(function(e) {
+              if (e.which === 13) {
+                return Util.safeApply(scope, function() {
+                  return scope.endEdit();
+                });
+              }
+            });
+            scope.beginEdit = function() {
+              var minW, rw;
+              if (scope.editing) {
+                return;
+              }
+              scope.editing = true;
+              minW = parseInt(scope.minWidth);
+              if (isNaN(minW)) {
+                minW = 100;
+              }
+              rw = label.outerWidth();
+              if (minW > rw) {
+                rw = minW;
+              }
+              input.css('width', rw);
+              return setTimeout(function() {
+                input.focus();
+                return input.select();
+              }, 0);
+            };
+            return scope.endEdit = function() {
+              return scope.editing = false;
+            };
+          }
+        };
+      }
+    ]);
     mod.directive("multiCell", function() {
       return {
         template: templates.multiCell(),
@@ -97,6 +121,7 @@
           minWidth: '@inputWidth'
         },
         replace: true,
+        transclude: true,
         compile: function(element, attrs, transclude) {
           if (!attrs.nilPlaceholder) {
             element.find('option').remove();
@@ -250,26 +275,27 @@
             element.on('draginit', function(e) {
               var a, el;
               el = $(e.target);
-              console.log(e.target);
               dragElement = null;
               if (el.hasClass('moveable-true')) {
                 dragElement = el;
               } else if ((a = el.parents('.moveable-true')).length) {
                 dragElement = a;
               }
-              console.log(dragElement);
               if (dragElement) {
                 return element;
               }
               return false;
             });
             element.on('dragstart', function(e) {
+              var scrollX, scrollY;
               dragStart = dragElement.index();
-              console.log('dragstart', dragStart);
+              scrollX = window.pageXOffset;
+              scrollY = window.pageYOffset;
               html2canvas(dragElement[0], {
                 scale: window.devicePixelRatio ? window.devicePixelRatio : 1,
                 onrendered: function(canvas) {
                   var elH, elW, offs, scale;
+                  window.scrollTo(scrollX, scrollY);
                   elW = dragElement.outerWidth();
                   elH = dragElement.outerHeight();
                   scale = {
@@ -279,14 +305,14 @@
                   $canvas = $(canvas);
                   $canvas.css('width', elW);
                   $canvas.css('height', elH);
-                  $canvas.css('position', 'fixed');
+                  $canvas.css('position', 'absolute');
                   $canvas.css('opacity', '0.6');
                   offs = dragElement.offset();
                   dragPointX = e.pageX - offs.left;
                   dragPointY = e.pageY - offs.top;
                   dragElement.css('opacity', '0.4');
                   $line = $(document.createElement('div'));
-                  $line.css('position', 'fixed');
+                  $line.css('position', 'absolute');
                   $line.css('border', '1px solid #0088cc');
                   $line.css('border-radius', '1px');
                   $line.css('width', '0px');
@@ -341,7 +367,8 @@
         scope: {
           model: '=',
           sortBy: '&',
-          compareFunction: '&'
+          compareFunction: '&',
+          hideArrows: '@'
         },
         replace: true,
         transclude: true,
@@ -445,6 +472,7 @@
             model: '=',
             addItem_: '&addItem',
             removeItem_: '&removeItem',
+            canRemoveItem_: '&canRemoveItem',
             visible_: '@visible',
             reorders: '@reorders'
           },
@@ -460,6 +488,14 @@
               scope.$on('$destroy', function() {
                 return context.remove();
               });
+              scope.canRemoveItem = function(o) {
+                if (attrs.canRemoveItem == null) {
+                  return attrs.removeItem != null;
+                }
+                return scope.canRemoveItem_({
+                  o: o
+                });
+              };
               exportCSV = function() {
                 var cell, csv, data, i, j, link, row, txt, _i, _j, _len, _len1;
                 csv = [];
@@ -765,6 +801,9 @@
                 if (scope.hover) {
                   return;
                 }
+                if (!controller.scope.canRemoveItem(scope.o)) {
+                  return;
+                }
                 scope.hover = true;
                 scope.id = 'id' + Math.round(Math.random() * 10000);
                 el = element.find('td:visible:last');
@@ -789,14 +828,10 @@
               };
               currentPoint = null;
               getCurrentPoint = function(x, y) {
-                var a, b, el, lel, lelbt, m, n, omitLast, parent, po, rows;
+                var a, b, el, lel, lelbt, m, n, parent, po, rows;
                 parent = element.parent();
                 rows = parent.children();
-                omitLast = scope.addLabel;
-                n = rows.length;
-                if (omitLast) {
-                  n--;
-                }
+                n = rows.length - 1;
                 if (!n) {
                   return null;
                 }
@@ -862,16 +897,19 @@
                 return element;
               });
               element.on('dragstart', function(e) {
-                var table;
+                var scrollX, scrollY, table;
                 if (!sc.reorders) {
                   return false;
                 }
                 table = element.parents('table');
                 dragStart = element.index();
+                scrollX = window.pageXOffset;
+                scrollY = window.pageYOffset;
                 html2canvas(element[0], {
                   scale: window.devicePixelRatio ? window.devicePixelRatio : 1,
                   onrendered: function(fullCanvas) {
                     var borders, canvas, css, elH, elW, fullContex, offs, parseIntN, pos, scale, td;
+                    window.scrollTo(scrollX, scrollY);
                     fullContex = fullCanvas.getContext('2d');
                     parseIntN = function(s) {
                       var n;
@@ -911,22 +949,22 @@
                     $canvas.css('height', css.height);
                     canvas.getContext('2d').drawImage(fullCanvas, -pos.left, -pos.top);
                     $canvas.css('border', '1px solid #dddddd');
-                    $canvas.css('position', 'fixed');
+                    $canvas.css('position', 'absolute');
                     $canvas.css('opacity', '0.6');
                     offs = element.offset();
                     dragPointX = e.pageX - offs.left;
                     dragPointY = e.pageY - offs.top;
                     element.css('opacity', '0.4');
                     $line = $(document.createElement('div'));
-                    $line.css('position', 'fixed');
+                    $line.css('position', 'absolute');
                     $line.css('border', '1px solid #0088cc');
                     $line.css('border-radius', '1px');
                     $line.css('width', element.outerWidth());
                     $line.css('left', element.offset().left);
                     $line.css('display', 'none');
+                    updateCanvas(e);
                     $(document.body).append($line);
                     $(document.body).append($canvas);
-                    updateCanvas(e);
                   }
                 });
                 return $line;

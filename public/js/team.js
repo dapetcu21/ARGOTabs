@@ -3,7 +3,7 @@
     var Team;
     return Team = (function() {
       function Team(tournament, other) {
-        var key, value;
+        var key, round, value, _i, _len, _ref;
         this.tournament = tournament;
         if (other) {
           for (key in other) {
@@ -16,6 +16,16 @@
         }
         if (this.players == null) {
           this.players = [];
+        }
+        if (this.rounds == null) {
+          this.rounds = {};
+        }
+        if (!other) {
+          _ref = this.tournament.rounds;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            round = _ref[_i];
+            round.registerTeam(this);
+          }
         }
       }
 
@@ -56,6 +66,12 @@
       };
 
       Team.prototype.destroy = function() {
+        var round, _i, _len, _ref;
+        _ref = this.tournament.rounds;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          round = _ref[_i];
+          round.unregisterTeam(this);
+        }
         if (this.club) {
           return this.club.removeTeam(this);
         }

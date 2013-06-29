@@ -1,0 +1,105 @@
+
+<ul class="nav nav-tabs">
+  <li class="active"><a href="#teams" data-toggle="tab">Teams</a></li>
+  <li><a href="#judges" data-toggle="tab">Judges</a></li>
+</ul>
+<div class="tab-content">
+  <div id="teams" class="tab-pane active">
+    <div class="control-group">
+      <div class="btn-group inline">
+        <button ng-click="addAllTeams()" class="btn">Check all</button>
+        <button ng-click="removeAllTeams()" class="btn">Uncheck all</button>
+      </div>
+      <div class="btn-group inline">
+        <button ng-click="sortByRank()" class="btn">Sort by rank</button>
+      </div>
+      <div class="inline small-margin">Check teams that are to play this round.</div>
+    </div>
+    <table editable-table="editable-table" model="round.teams" visible="round.tableOpts.teams" reorders="reorders" id="round-teams-table">
+      <thead>
+        <tr>
+          <th data-auto-index='5'>#</th>
+          <th data-auto-index='4'>
+            <sort-arrow model="round.teams" sort-by="o.rounds[round.id].participates" hide-arrows="hide-arrows"><i class="icon-check"></i></sort-arrow>
+          </th>
+          <th data-auto-index='3'>
+            <sort-arrow model="round.teams" sort-by="o.name">Team name</sort-arrow>
+          </th>
+          <th data-auto-index='2'>
+            <sort-arrow model="round.teams" sort-by="eliminateNil(o.club.name)">Club</sort-arrow>
+          </th>
+        </tr>
+      </thead>
+      <tbody editable-tbody="editable-tbody">
+        <script type="text/html">
+          <td>{{$index + 1}}</td>
+          <td>
+            <input type="checkbox" ng-model="o.rounds[round.id].participates"/>
+          </td>
+          <td>{{o.name}}</td>
+          <td><span class="muted-{{o.club == null}}">{{nilPlaceholder(o.club, {name:"unaffiliated"}).name}}</span></td>
+        </script>
+      </tbody>
+    </table>
+  </div>
+  <div id="judges" class="tab-pane">
+    <div class="control-group">
+      <div class="btn-group inline">
+        <button ng-click="addAllJudges()" class="btn">Check all</button>
+        <button ng-click="removeAllJudges()" class="btn">Uncheck all</button>
+      </div>
+      <div class="inline small-margin">Check judges that are available to judge this round.</div>
+    </div>
+    <table editable-table="editable-table" model="round.judges" visible="round.tableOpts.judges" reorders="reorders" id="round-judges-table">
+      <thead>
+        <tr>
+          <th data-auto-index='5'>#</th>
+          <th data-auto-index='4'>
+            <sort-arrow model="round.judges" sort-by="o.rounds[round.id].participates" hide-arrows="hide-arrows"><i class="icon-check"></i></sort-arrow>
+          </th>
+          <th data-auto-index='2'>
+            <sort-arrow model="round.judges" sort-by="o.name">Name</sort-arrow>
+          </th>
+          <th data-auto-index='1'>
+            <sort-arrow model="round.judges" sort-by="eliminateNil(o.club.name)">Club</sort-arrow>
+          </th>
+          <th data-auto-index='3'>
+            <sort-arrow model="round.judges" sort-by="o.rank">Rank</sort-arrow>
+          </th>
+        </tr>
+      </thead>
+      <tbody editable-tbody="editable-tbody">
+        <script type="text/html">
+          <td>{{$index + 1}}</td>
+          <td>
+            <input type="checkbox" ng-model="o.rounds[round.id].participates"/>
+          </td>
+          <td>{{o.name}}</td>
+          <td><span class="muted-{{o.club == null}}">{{nilPlaceholder(o.club, {name:"unaffiliated"}).name}}</span></td>
+          <td>{{rankString[o.rank]}}</td>
+        </script>
+      </tbody>
+    </table>
+  </div>
+</div><style type="text/css">#round-judges-table th:nth-child(1) {
+  width: 15px;
+}
+#round-judges-table th:nth-child(2) {
+  width: 10px;
+}
+#round-judges-table th:nth-child(3) {
+  width: 30%;
+}
+#round-judges-table th:nth-child(5) {
+  width: 10%;
+}
+#round-teams-table th:nth-child(1) {
+  width: 15px;
+}
+#round-teams-table th:nth-child(2) {
+  width: 10px;
+}
+#round-teams-table th:nth-child(3) {
+  width: 30%;
+}
+</style>
