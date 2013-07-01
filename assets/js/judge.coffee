@@ -11,6 +11,14 @@ define ['util'], (Util) ->
         for round in @tournament.rounds
           round.registerJudge this
 
+    @rankStrings = ['A', 'B', 'C']
+    for i in [3..31]
+      @rankStrings.push null
+    @rankStrings.push 'Shd'
+
+    @ranks = [0, 1, 2, 32]
+    @shadowRank = 32
+
     unpackCycles: ->
       @club = Util.unpackCycle @club, @tournament.clubs
     

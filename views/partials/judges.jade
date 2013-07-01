@@ -17,7 +17,7 @@ table(editable-table, reorders, model='tournament.judges', visible='tournament.t
       td(ng-init='initRepeat(this)')
         multi-cell(bind='o.club', choices='tournament.clubs', nil-placeholder='unaffiliated', choice-name='o.name')
       td
-        multi-cell(bind='o.rank', choices='ranks', choice-name='rankString[o]', input-width='50')
+        multi-cell(bind='o.rank', choices='ranks', choice-name='rankStrings[o]', input-width='50')
 
 :stylus
   #judges-table th:nth-child(1)

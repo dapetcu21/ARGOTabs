@@ -3,15 +3,21 @@ ul.nav.nav-tabs
     a(href='#teams', data-toggle='tab') Teams
   li
     a(href='#judges', data-toggle='tab') Judges
+  li
+    a(href='#settings', data-toggle='tab') Settings
  
 div.tab-content
   div#teams.tab-pane.active
     .control-group
       .btn-group.inline
-        button(ng-click='addAllTeams()').btn Check all
-        button(ng-click='removeAllTeams()').btn Uncheck all
-      .btn-group.inline
-        button(ng-click='sortByRank()').btn Sort by rank
+        button(ng-click='addAllTeams()').btn
+          i.icon-check
+          |  all
+        button(ng-click='removeAllTeams()').btn
+          i.icon-check-empty
+          |  all
+      button(ng-click='sortByRank()').btn Sort by pairing rank
+      button(ng-click='pair()').btn.btn-danger Pair
       div.inline.small-margin Check teams that are to play this round.
 
     table(editable-table, model='round.teams', visible='round.tableOpts.teams', reorders)#round-teams-table
@@ -36,8 +42,15 @@ div.tab-content
   div#judges.tab-pane
     .control-group
       .btn-group.inline
-        button(ng-click='addAllJudges()').btn Check all
-        button(ng-click='removeAllJudges()').btn Uncheck all
+        button(ng-click='addAllJudges()').btn
+          i.icon-check
+          |  all
+        button(ng-click='removeAllJudges()').btn
+          i.icon-check-empty
+          |  all
+        button(ng-click='removeShadows()').btn 
+          i.icon-check-empty
+          |  shadows
       div.inline.small-margin Check judges that are available to judge this round.
 
     table(editable-table, model='round.judges', visible='round.tableOpts.judges', reorders)#round-judges-table
@@ -60,7 +73,28 @@ div.tab-content
             input(type='checkbox', ng-model='o.rounds[round.id].participates')
           td {{o.name}}
           td: span(class='muted-{{o.club == null}}') {{nilPlaceholder(o.club, {name:"unaffiliated"}).name}}
-          td {{rankString[o.rank]}}
+          td {{rankStrings[o.rank]}}
+
+  div#settings.tab-pane
+    .row-fluid
+      .span6
+        .well.settings-group
+          strong Settings
+          div
+            span Ballots per match:
+        .well
+          strong Judge assignment rules
+      .span6
+        .well.settings-group
+          strong Pairing rank criteria
+        .well.settings-group
+          strong Calculate pairing rank based on:
+          div
+            label.checkbox
+              input(type='checkbox')
+              | All previous rounds
+
+
 
 :stylus
   #round-judges-table th:nth-child(1)

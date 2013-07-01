@@ -44,6 +44,9 @@ define ['util', 'underscore'], (Util, _) ->
       if idx != -1
         @teams.splice idx, 1
     
+    sortByRank: (array) ->
+      console.log "sorting by rank: ", array
+
     toJSON: ->
       model = Util.copyObject this, ['tournament']
       model.teams = Util.packCycles @teams, @tournament.teams
