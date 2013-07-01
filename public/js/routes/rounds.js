@@ -1,5 +1,5 @@
 (function() {
-  define(['team'], function(Team) {
+  define(['team', 'judge'], function(Team, Judge) {
     return function(ui, $routeProvider) {
       return $routeProvider.when('/rounds/:roundIndex', {
         templateUrl: 'partials/rounds.html',
@@ -8,8 +8,8 @@
             var index, round;
             index = $routeParams.roundIndex - 1;
             round = $scope.round = $scope.tournament.rounds[index];
-            $scope.ranks = [0, 1, 2];
-            $scope.rankString = 'ABC';
+            $scope.ranks = Judge.ranks;
+            $scope.rankStrings = Judge.rankStrings;
             $scope.addAllTeams = function() {
               var team, _i, _len, _ref, _results;
               _ref = $scope.tournament.teams;
@@ -49,6 +49,26 @@
                 _results.push(judge.rounds[round.id].participates = false);
               }
               return _results;
+            };
+            $scope.removeShadows = function() {
+              var judge, _i, _len, _ref, _results;
+              _ref = $scope.tournament.judges;
+              _results = [];
+              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                judge = _ref[_i];
+                if (judge.rank === Judge.shadowRank) {
+                  _results.push(judge.rounds[round.id].participates = false);
+                } else {
+                  _results.push(void 0);
+                }
+              }
+              return _results;
+            };
+            $scope.sortByRank = function() {
+              return round.sortByRank(round.teams);
+            };
+            $scope.pair = function() {
+              return console.log("pair");
             };
             $scope.eliminateNil = function(a) {
               if (a == null) {

@@ -82,6 +82,10 @@
         }
       };
 
+      Round.prototype.sortByRank = function(array) {
+        return console.log("sorting by rank: ", array);
+      };
+
       Round.prototype.toJSON = function() {
         var model;
         model = Util.copyObject(this, ['tournament']);
