@@ -1,0 +1,13 @@
+.alert.alert-block <strong>Warning!</strong> Once you create a pairing, you can only undo it by deleting the round. You also can't remove teams that have been paired or judges that filled in at least a ballot sheet from the tournament.
+
+.settings-group
+  div
+    .small-margin.inline Algorithm:&nbsp;
+    select(ng-model='pairOpts.algorithm', ng-options='algoName[algo] for algo in pairAlgorithms')
+  label(ng-show='pairOpts.algorithm != 0').checkbox
+    | Shuffle rooms 
+    input(type='checkbox', ng-model='pairOpts.shuffle')
+  div(ng-show='pairOpts.algorithm == 2')
+    span Number of brackets: 
+    text-edit-cell(bind='pairOpts.brackets', editing, input-width='50', pattern='[0-9]*', setter='parseInt(o)')
+    

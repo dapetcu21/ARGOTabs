@@ -8,23 +8,19 @@ define ['jquery'], ($) ->
       o.primaryButtonIndex ?= o.buttons.length - 1
       o.title ?= "Alert"
       o.closeable ?= true
-      o.id ?= 'modal' + (Math.round Math.random() * 100000)
       o.cssClass ?= ""
       o.animated ?= true
 
       if o.animated
         o.cssClass = 'fade ' + o.cssClass
 
-      contents = ""
-      contents += '<p>'+o.message+'</p>' if o.message
-      contents += o.htmlMessage if o.htmlMessage
-
-      
-      $('body').append templates.modal
-        o: o
-        contents: contents
-
-      jq = $('#' + o.id)
+      jq = $(templates.modal {o:o})
+      mbody = jq.find('.modal-body')
+      if o.message
+        mbody.append '<p>'+o.message+'</p>'
+      if o.htmlMessage
+        mbody.append o.htmlMessage
+      $('body').append jq
 
       jq.find('.modal-button').click ->
         button = parseInt this.dataset.count

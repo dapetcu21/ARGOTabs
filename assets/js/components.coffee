@@ -47,21 +47,37 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
             else
               newValue
 
-      callback = ->
-        Util.safeApply scope, ->
-          scope.beginEdit()
-      label.focus callback
+      scope.$watch ->
+        attrs.editing
+      , (newValue, oldValue) ->
+        console.log newValue, oldValue
+        if newValue?
+          if newValue and not oldValue
+            scope.beginEdit()
+          else if not newValue and oldValue
+            scope.endEdit()
 
+      scope.beginEdit_ = ->
+          console.log attrs.editing
+          if not attrs.editing?
+            console.log attrs.editing
+            scope.beginEdit()
+
+      focusCallback = ->
+        Util.safeApply scope, scope.beginEdit_
+      defocusCallback = ->
+        Util.safeApply scope, ->
+          if not attrs.editing?
+            scope.endEdit()
+
+      label.focus focusCallback
       if element.parent()[0].tagName == 'TD'
-        element.parent().click callback
+        element.parent().click focusCallback
 
-      input.blur -> #because angular doesn't know focusout
-        Util.safeApply scope, ->
-          scope.endEdit()
+      input.blur defocusCallback
       input.keypress (e) ->
         if e.which == 13
-          Util.safeApply scope, ->
-            scope.endEdit()
+          defocusCallback()
 
       scope.beginEdit = ->
         return if scope.editing
@@ -81,6 +97,9 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
         , 0
       scope.endEdit = ->
         scope.editing = false
+
+      if attrs.editing
+        scope.beginEdit()
   ]
 
   mod.directive "multiCell", ->

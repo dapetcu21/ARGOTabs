@@ -4,7 +4,6 @@ div(id=o.id, class=o.cssClass).modal.hide
       button(type="button", data-dismiss="modal", aria-hidden="true").close.modal-cancel &times;
     h3= o.title
   .modal-body
-    != contents        
   if o.buttons.length
     .modal-footer
       each button, i in o.buttons

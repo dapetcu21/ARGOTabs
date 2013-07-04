@@ -8,36 +8,44 @@ ul.nav.nav-tabs
  
 div.tab-content
   div#teams.tab-pane.active
-    .control-group
-      .btn-group.inline
-        button(ng-click='addAllTeams()').btn
-          i.icon-check
-          |  all
-        button(ng-click='removeAllTeams()').btn
-          i.icon-check-empty
-          |  all
-      button(ng-click='sortByRank()').btn Sort by pairing rank
-      button(ng-click='pair()').btn.btn-danger Pair
-      div.inline.small-margin Check teams that are to play this round.
+    div#team-list(ng-show='!round.paired')
+      .control-group
+        .btn-group.inline
+          button(ng-click='addAllTeams()').btn
+            i.icon-check
+            |  all
+          button(ng-click='removeAllTeams()').btn
+            i.icon-check-empty
+            |  all
+        button(ng-click='sortByRank()').btn Sort by pairing rank
+        button(ng-click='pair()').btn.btn-danger Pair
+        div.inline.small-margin Check teams that are to play this round.
 
-    table(editable-table, model='round.teams', visible='round.tableOpts.teams', reorders)#round-teams-table
-      thead
-        tr
-          th(data-auto-index=5) #
-          th(data-auto-index=4)
-            sort-arrow(model='round.teams', sort-by='o.rounds[round.id].participates', hide-arrows)
-              i.icon-check
-          th(data-auto-index=3)
-            sort-arrow(model='round.teams', sort-by='o.name') Team name
-          th(data-auto-index=2)
-            sort-arrow(model='round.teams', sort-by='eliminateNil(o.club.name)') Club
-      tbody(editable-tbody)
-        script(type='text/html')
-          td {{$index + 1}}
-          td
-            input(type='checkbox', ng-model='o.rounds[round.id].participates')
-          td {{o.name}}
-          td: span(class='muted-{{o.club == null}}') {{nilPlaceholder(o.club, {name:"unaffiliated"}).name}}
+      table(editable-table, model='round.teams', visible='round.tableOpts.teams', reorders)#round-teams-table
+        thead
+          tr
+            th(data-auto-index=5) #
+            th(data-auto-index=4)
+              sort-arrow(model='round.teams', sort-by='o.rounds[round.id].participates', hide-arrows)
+                i.icon-check
+            th(data-auto-index=3)
+              sort-arrow(model='round.teams', sort-by='o.name') Team name
+            th(data-auto-index=2)
+              sort-arrow(model='round.teams', sort-by='eliminateNil(o.club.name)') Club
+        tbody(editable-tbody)
+          script(type='text/html')
+            td {{$index + 1}}
+            td
+              input(type='checkbox', ng-model='o.rounds[round.id].participates')
+            td {{o.name}}
+            td: span(class='muted-{{o.club == null}}') {{nilPlaceholder(o.club, {name:"unaffiliated"}).name}}
+    div#pairings(ng-show='round.paired')
+      .control-group
+        button(ng-click='assignJudges()').btn Reassign judges
+        button(ng-click='assignJudges()').btn Shuffle in chambers
+        div.inline.small-margin You can manually drag judges to fine-tune
+          
+            
 
   div#judges.tab-pane
     .control-group
@@ -91,8 +99,12 @@ div.tab-content
           strong Calculate pairing rank based on:
           div
             label.checkbox
-              input(type='checkbox')
+              input(type='checkbox', ng-model='round.rankFrom.all')
               | All previous rounds
+            label.checkbox(ng-repeat='o in tournament.rounds', ng-show='o!=round && !round.rankFrom.all')
+              input(type='checkbox', , ng-model='round.rankFrom[o.id]')
+              | Round {{$index+1}}
+
 
 
 
