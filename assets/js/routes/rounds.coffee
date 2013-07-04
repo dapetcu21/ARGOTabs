@@ -36,6 +36,7 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
           $scope.pairOpts =
             algorithm: 0
             shuffle: false
+            balance: true
             brackets: 1
           prev = $scope.prevRounds = round.previousRounds()
           $scope.pairAlgorithms = if prev.length then Round.allAlgos else Round.initialAlgos
@@ -58,6 +59,11 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
         $scope.eliminateNil = (a) ->
           if not a?
             return ''
+          return a
+
+        $scope.teamPlaceholder = (a) ->
+          if not a?
+            return {name: ''}
           return a
 
         $scope.nilPlaceholder = (a, p) ->

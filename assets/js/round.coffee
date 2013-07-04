@@ -1,4 +1,4 @@
-define ['util', 'underscore'], (Util, _) ->
+define ['util', 'ballot', 'underscore'], (Util, Ballot) ->
   class Round
     constructor: (@tournament, other) ->
       if other
@@ -8,8 +8,12 @@ define ['util', 'underscore'], (Util, _) ->
       @tableOpts ?= {}
       @judges ?= []
       @teams ?= []
+      @ballots ?= []
       @rankFrom ?= {all:true}
-      if not other
+      if other
+        for ballot, i in @ballots
+          @ballots[i] = new Ballot this, ballot
+      else
         for team in @tournament.teams
           @registerTeam team
         for judge in @tournament.judges
@@ -18,6 +22,8 @@ define ['util', 'underscore'], (Util, _) ->
     unpackCycles: ->
       Util.unpackCycles @teams, @tournament.teams
       Util.unpackCycles @judges, @tournament.judges
+      for ballot in @ballots
+        ballot.unpackCycles()
 
     previousRounds: ->
       r = []
@@ -62,8 +68,29 @@ define ['util', 'underscore'], (Util, _) ->
       console.log "sorting by rank: ", array
 
     pair: (opts) ->
-      console.log 'pair'
+      id = @id
+      teams = _.filter @teams, (o) -> o.rounds[id].participates
+      
+      if opts.algorithm
+        @sortByRank teams
+      else
+        teams = _.shuffle teams
+      if teams.length & 1
+        teams.push null
+
+      pairTeams = (a, b, balance = true) =>
+        ballot = new Ballot this
+        ballot.prop = a
+        ballot.opp = b
+        @ballots.push ballot
+
+      switch opts.algorithm
+        when 0, 3
+          for i in [0...teams.length] by 2
+            pairTeams teams[i], teams[i+1], opts.balance
+
       @paired = true
+
 
     toJSON: ->
       model = Util.copyObject this, ['tournament']
