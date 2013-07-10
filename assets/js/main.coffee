@@ -1,4 +1,5 @@
 # for more info on require config, see http://requirejs.org/docs/api.html#config
+#
 require.config
   baseUrl: '/js'
   paths:

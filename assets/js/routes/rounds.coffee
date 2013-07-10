@@ -44,6 +44,7 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
           $scope.parseInt = (s) ->
             return 0 if s == ''
             return parseInt s
+          $scope.pairingTeams = round.pairingTeams()
 
           new AlertController
             buttons: ['Cancel', 'Ok']

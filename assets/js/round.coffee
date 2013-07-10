@@ -67,9 +67,12 @@ define ['util', 'ballot', 'underscore'], (Util, Ballot) ->
     sortByRank: (array) ->
       console.log "sorting by rank: ", array
 
-    pair: (opts) ->
+    pairingTeams: ->
       id = @id
       teams = _.filter @teams, (o) -> o.rounds[id].participates
+
+    pair: (opts) ->
+      teams = @pairingTeams()
       
       if opts.algorithm
         @sortByRank teams

@@ -11,3 +11,8 @@
     span Number of brackets: 
     text-edit-cell(bind='pairOpts.brackets', editing, input-width='50', pattern='[0-9]*', setter='parseInt(o)')
     
+  .container-fluid(ng-show='pairOpts.algorithm == 1')
+    .row-fluid
+      .span9
+      .span3
+        div(ng-repeat='o in pairingTeams') {{o.name}}
