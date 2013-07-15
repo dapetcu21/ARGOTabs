@@ -37,7 +37,7 @@
           replace: true,
           transclude: true,
           link: function(scope, element, attrs) {
-            var callback, input, label;
+            var defocusCallback, focusCallback, input, label;
             scope.editing = false;
             label = element.find('.textedit-label');
             input = element.find('input');
@@ -61,25 +61,43 @@
                 }) : newValue);
               }
             });
-            callback = function() {
-              return Util.safeApply(scope, function() {
+            scope.$watch(function() {
+              return attrs.editing;
+            }, function(newValue, oldValue) {
+              console.log(newValue, oldValue);
+              if (newValue != null) {
+                if (newValue && !oldValue) {
+                  return scope.beginEdit();
+                } else if (!newValue && oldValue) {
+                  return scope.endEdit();
+                }
+              }
+            });
+            scope.beginEdit_ = function() {
+              console.log(attrs.editing);
+              if (attrs.editing == null) {
+                console.log(attrs.editing);
                 return scope.beginEdit();
+              }
+            };
+            focusCallback = function() {
+              return Util.safeApply(scope, scope.beginEdit_);
+            };
+            defocusCallback = function() {
+              return Util.safeApply(scope, function() {
+                if (attrs.editing == null) {
+                  return scope.endEdit();
+                }
               });
             };
-            label.focus(callback);
+            label.focus(focusCallback);
             if (element.parent()[0].tagName === 'TD') {
-              element.parent().click(callback);
+              element.parent().click(focusCallback);
             }
-            input.blur(function() {
-              return Util.safeApply(scope, function() {
-                return scope.endEdit();
-              });
-            });
+            input.blur(defocusCallback);
             input.keypress(function(e) {
               if (e.which === 13) {
-                return Util.safeApply(scope, function() {
-                  return scope.endEdit();
-                });
+                return defocusCallback();
               }
             });
             scope.beginEdit = function() {
@@ -102,9 +120,12 @@
                 return input.select();
               }, 0);
             };
-            return scope.endEdit = function() {
+            scope.endEdit = function() {
               return scope.editing = false;
             };
+            if (attrs.editing) {
+              return scope.beginEdit();
+            }
           }
         };
       }

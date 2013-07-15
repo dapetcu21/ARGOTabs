@@ -3,7 +3,7 @@
     var Room;
     return Room = (function() {
       function Room(tournament, other) {
-        var key, value;
+        var key, round, value, _i, _len, _ref;
         this.tournament = tournament;
         if (other) {
           for (key in other) {
@@ -17,6 +17,16 @@
         if (this.floor == null) {
           this.floor = "";
         }
+        if (this.rounds == null) {
+          this.rounds = {};
+        }
+        if (!other) {
+          _ref = this.tournament.rounds;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            round = _ref[_i];
+            round.registerRounds(this);
+          }
+        }
       }
 
       Room.prototype.unpackCycles = function() {};
@@ -27,7 +37,16 @@
         return model;
       };
 
-      Room.prototype.destroy = function() {};
+      Room.prototype.destroy = function() {
+        var round, _i, _len, _ref, _results;
+        _ref = this.tournament.rounds;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          round = _ref[_i];
+          _results.push(round.unregisterRoom(this));
+        }
+        return _results;
+      };
 
       return Room;
 

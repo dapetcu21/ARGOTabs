@@ -2,45 +2,79 @@
 <ul class="nav nav-tabs">
   <li class="active"><a href="#teams" data-toggle="tab">Teams</a></li>
   <li><a href="#judges" data-toggle="tab">Judges</a></li>
+  <li><a href="#rooms" data-toggle="tab">Rooms</a></li>
   <li><a href="#settings" data-toggle="tab">Settings</a></li>
 </ul>
 <div class="tab-content">
   <div id="teams" class="tab-pane active">
-    <div class="control-group">
-      <div class="btn-group inline">
-        <button ng-click="addAllTeams()" class="btn"><i class="icon-check"></i> all</button>
-        <button ng-click="removeAllTeams()" class="btn"><i class="icon-check-empty"></i> all</button>
+    <div id="team-list" ng-show="!round.paired">
+      <div class="control-group">
+        <div class="btn-group inline">
+          <button ng-click="addAllTeams()" class="btn"><i class="icon-check"></i> all</button>
+          <button ng-click="removeAllTeams()" class="btn"><i class="icon-check-empty"></i> all</button>
+        </div>
+        <button ng-click="sortByRank()" class="btn">Sort by pairing rank</button>
+        <button ng-click="pair()" class="btn btn-danger">Pair</button>
+        <div class="inline small-margin">Check teams that are to play this round.</div>
       </div>
-      <button ng-click="sortByRank()" class="btn">Sort by pairing rank</button>
-      <button ng-click="pair()" class="btn btn-danger">Pair</button>
-      <div class="inline small-margin">Check teams that are to play this round.</div>
+      <table editable-table="editable-table" model="round.teams" visible="round.tableOpts.teams" reorders="reorders" id="round-teams-table">
+        <thead>
+          <tr>
+            <th data-auto-index='5'>#</th>
+            <th data-auto-index='4'>
+              <sort-arrow model="round.teams" sort-by="o.rounds[round.id].participates" hide-arrows="hide-arrows"><i class="icon-check"></i></sort-arrow>
+            </th>
+            <th data-auto-index='3'>
+              <sort-arrow model="round.teams" sort-by="o.name">Team name</sort-arrow>
+            </th>
+            <th data-auto-index='2'>
+              <sort-arrow model="round.teams" sort-by="eliminateNil(o.club.name)">Club</sort-arrow>
+            </th>
+          </tr>
+        </thead>
+        <tbody editable-tbody="editable-tbody">
+          <script type="text/html">
+            <td>{{$index + 1}}</td>
+            <td>
+              <input type="checkbox" ng-model="o.rounds[round.id].participates"/>
+            </td>
+            <td>{{o.name}}</td>
+            <td><span class="muted-{{o.club == null}}">{{nilPlaceholder(o.club, {name:"unaffiliated"}).name}}</span></td>
+          </script>
+        </tbody>
+      </table>
     </div>
-    <table editable-table="editable-table" model="round.teams" visible="round.tableOpts.teams" reorders="reorders" id="round-teams-table">
-      <thead>
-        <tr>
-          <th data-auto-index='5'>#</th>
-          <th data-auto-index='4'>
-            <sort-arrow model="round.teams" sort-by="o.rounds[round.id].participates" hide-arrows="hide-arrows"><i class="icon-check"></i></sort-arrow>
-          </th>
-          <th data-auto-index='3'>
-            <sort-arrow model="round.teams" sort-by="o.name">Team name</sort-arrow>
-          </th>
-          <th data-auto-index='2'>
-            <sort-arrow model="round.teams" sort-by="eliminateNil(o.club.name)">Club</sort-arrow>
-          </th>
-        </tr>
-      </thead>
-      <tbody editable-tbody="editable-tbody">
-        <script type="text/html">
-          <td>{{$index + 1}}</td>
-          <td>
-            <input type="checkbox" ng-model="o.rounds[round.id].participates"/>
-          </td>
-          <td>{{o.name}}</td>
-          <td><span class="muted-{{o.club == null}}">{{nilPlaceholder(o.club, {name:"unaffiliated"}).name}}</span></td>
-        </script>
-      </tbody>
-    </table>
+    <div id="pairings" ng-show="round.paired">
+      <div class="control-group">
+        <button ng-click="assignJudges()" class="btn">Reassign judges</button>
+        <button ng-click="shuffleRooms()" class="btn">Shuffle in chambers</button>
+        <div class="inline small-margin">You can manually drag judges to fine-tune</div>
+      </div>
+      <table editable-table="editable-table" model="round.ballots" visible="round.tableOpts.ballots" reorders="reorders" id="round-pairings-table">
+        <thead>
+          <tr>
+            <th data-auto-index='5'>#</th>
+            <th data-auto-index='4'>
+              <sort-arrow model="round.ballots" sort-by="namePlaceholder(o.room.name)">Room</sort-arrow>
+            </th>
+            <th data-auto-index='3'>
+              <sort-arrow model="round.ballots" sort-by="namePlaceholder(o.prop).name">Prop</sort-arrow>
+            </th>
+            <th data-auto-index='2'>
+              <sort-arrow model="round.ballots" sort-by="namePlaceholder(o.opp).name">Opp</sort-arrow>
+            </th>
+          </tr>
+        </thead>
+        <tbody editable-tbody="editable-tbody">
+          <script type="text/html">
+            <td>{{$index + 1}}</td>
+            <td>{{namePlaceholder(o.room).name}}</td>
+            <td>{{namePlaceholder(o.prop).name}}</td>
+            <td>{{namePlaceholder(o.opp).name}}</td>
+          </script>
+        </tbody>
+      </table>
+    </div>
   </div>
   <div id="judges" class="tab-pane">
     <div class="control-group">
@@ -82,6 +116,37 @@
       </tbody>
     </table>
   </div>
+  <div id="rooms" class="tab-pane">
+    <div class="control-group">
+      <div class="btn-group inline">
+        <button ng-click="addAllRooms()" class="btn"><i class="icon-check"></i> all</button>
+        <button ng-click="removeAllRooms()" class="btn"><i class="icon-check-empty"></i> all</button>
+      </div>
+      <div class="inline small-margin">Check rooms that are available this round.</div>
+    </div>
+    <table editable-table="editable-table" model="round.rooms" visible="round.tableOpts.rooms" reorders="reorders" id="round-rooms-table">
+      <thead>
+        <tr>
+          <th data-auto-index='5'>#</th>
+          <th data-auto-index='4'>
+            <sort-arrow model="round.rooms" sort-by="o.rounds[round.id].participates" hide-arrows="hide-arrows"><i class="icon-check"></i></sort-arrow>
+          </th>
+          <th data-auto-index='2'>
+            <sort-arrow model="round.rooms" sort-by="o.name">Name</sort-arrow>
+          </th>
+        </tr>
+      </thead>
+      <tbody editable-tbody="editable-tbody">
+        <script type="text/html">
+          <td>{{$index + 1}}</td>
+          <td>
+            <input type="checkbox" ng-model="o.rounds[round.id].participates"/>
+          </td>
+          <td>{{o.name}}</td>
+        </script>
+      </tbody>
+    </table>
+  </div>
   <div id="settings" class="tab-pane">
     <div class="row-fluid">
       <div class="span6">
@@ -95,7 +160,10 @@
         <div class="well settings-group"><strong>Calculate pairing rank based on:</strong>
           <div>
             <label class="checkbox">
-              <input type="checkbox"/>All previous rounds
+              <input type="checkbox" ng-model="round.rankFrom.all"/>All previous rounds
+            </label>
+            <label ng-repeat="o in tournament.rounds" ng-show="o!=round &amp;&amp; !round.rankFrom.all" class="checkbox">
+              <input type="checkbox" ng-model="round.rankFrom[o.id]"/>Round {{$index+1}}
             </label>
           </div>
         </div>
@@ -121,6 +189,27 @@
   width: 10px;
 }
 #round-teams-table th:nth-child(3) {
-  width: 30%;
+  width: 40%;
+}
+#round-teams-table th:nth-child(3) {
+  width: 40%;
+}
+#round-pairings-table th:nth-child(1) {
+  width: 15px;
+}
+#round-pairings-table th:nth-child(2) {
+  width: 10%;
+}
+#round-pairings-table th:nth-child(3) {
+  width: 40%;
+}
+#round-pairings-table th:nth-child(3) {
+  width: 40%;
+}
+#round-rooms-table th:nth-child(1) {
+  width: 15px;
+}
+#round-rooms-table th:nth-child(2) {
+  width: 10px;
 }
 </style>

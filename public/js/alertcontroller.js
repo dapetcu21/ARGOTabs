@@ -3,7 +3,7 @@
     var AlertController;
     return AlertController = (function() {
       function AlertController(opts) {
-        var contents, jq, o;
+        var jq, mbody, o;
         this.opts = opts;
         if (this.opts == null) {
           this.opts = {};
@@ -24,9 +24,6 @@
         if (o.closeable == null) {
           o.closeable = true;
         }
-        if (o.id == null) {
-          o.id = 'modal' + (Math.round(Math.random() * 100000));
-        }
         if (o.cssClass == null) {
           o.cssClass = "";
         }
@@ -36,18 +33,17 @@
         if (o.animated) {
           o.cssClass = 'fade ' + o.cssClass;
         }
-        contents = "";
+        jq = $(templates.modal({
+          o: o
+        }));
+        mbody = jq.find('.modal-body');
         if (o.message) {
-          contents += '<p>' + o.message + '</p>';
+          mbody.append('<p>' + o.message + '</p>');
         }
         if (o.htmlMessage) {
-          contents += o.htmlMessage;
+          mbody.append(o.htmlMessage);
         }
-        $('body').append(templates.modal({
-          o: o,
-          contents: contents
-        }));
-        jq = $('#' + o.id);
+        $('body').append(jq);
         jq.find('.modal-button').click(function() {
           var button, buttonName;
           button = parseInt(this.dataset.count);

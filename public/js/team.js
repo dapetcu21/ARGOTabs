@@ -30,15 +30,36 @@
       }
 
       Team.prototype.unpackCycles = function() {
+        var id, opts, round, _i, _len, _ref, _results;
         this.club = Util.unpackCycle(this.club, this.tournament.clubs);
-        return Util.unpackCycles(this.players, this.tournament.players);
+        Util.unpackCycles(this.players, this.tournament.players);
+        _ref = this.rounds;
+        _results = [];
+        for (opts = _i = 0, _len = _ref.length; _i < _len; opts = ++_i) {
+          id = _ref[opts];
+          round = this.tournament.rounds[id];
+          if (round && opts.ballot) {
+            _results.push(opts.ballot = Util.unpackCycle(opts.ballot, round.ballots));
+          } else {
+            _results.push(void 0);
+          }
+        }
+        return _results;
       };
 
       Team.prototype.toJSON = function() {
-        var model;
+        var id, model, opts, round, _i, _len, _ref;
         model = Util.copyObject(this, ['tournament']);
         model.club = Util.packCycle(this.club, this.tournament.clubs);
         model.players = Util.packCycles(this.players, this.tournament.players);
+        _ref = this.rounds;
+        for (opts = _i = 0, _len = _ref.length; _i < _len; opts = ++_i) {
+          id = _ref[opts];
+          round = this.tournament.rounds[id];
+          if (round && opts.ballot) {
+            opts.ballot = Util.packCycle(opts.ballot, round.ballots);
+          }
+        }
         return model;
       };
 
