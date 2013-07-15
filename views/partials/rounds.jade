@@ -4,6 +4,8 @@ ul.nav.nav-tabs
   li
     a(href='#judges', data-toggle='tab') Judges
   li
+    a(href='#rooms', data-toggle='tab') Rooms
+  li
     a(href='#settings', data-toggle='tab') Settings
  
 div.tab-content
@@ -42,25 +44,25 @@ div.tab-content
     div#pairings(ng-show='round.paired')
       .control-group
         button(ng-click='assignJudges()').btn Reassign judges
-        button(ng-click='assignJudges()').btn Shuffle in chambers
+        button(ng-click='shuffleRooms()').btn Shuffle in chambers
         div.inline.small-margin You can manually drag judges to fine-tune
           
-      table(editable-table, model='round.ballots', visible='round.tableOpts.ballots', reorders)#round-teams-table
+      table(editable-table, model='round.ballots', visible='round.tableOpts.ballots', reorders)#round-pairings-table
         thead
           tr
             th(data-auto-index=5) #
             th(data-auto-index=4)
-              sort-arrow(model='round.ballots', sort-by='1', hide-arrows) Room
+              sort-arrow(model='round.ballots', sort-by='namePlaceholder(o.room.name)') Room
             th(data-auto-index=3)
-              sort-arrow(model='round.ballots', sort-by='teamPlaceholder(o.prop).name') Prop
+              sort-arrow(model='round.ballots', sort-by='namePlaceholder(o.prop).name') Prop
             th(data-auto-index=2)
-              sort-arrow(model='round.ballots', sort-by='teamPlaceholder(o.opp).name') Opp
+              sort-arrow(model='round.ballots', sort-by='namePlaceholder(o.opp).name') Opp
         tbody(editable-tbody)
           script(type='text/html')
             td {{$index + 1}}
-            td
-            td {{teamPlaceholder(o.prop).name}}
-            td {{teamPlaceholder(o.opp).name}}
+            td {{namePlaceholder(o.room).name}}
+            td {{namePlaceholder(o.prop).name}}
+            td {{namePlaceholder(o.opp).name}}
 
   div#judges.tab-pane
     .control-group
@@ -97,6 +99,33 @@ div.tab-content
           td {{o.name}}
           td: span(class='muted-{{o.club == null}}') {{nilPlaceholder(o.club, {name:"unaffiliated"}).name}}
           td {{rankStrings[o.rank]}}
+
+  div#rooms.tab-pane
+    .control-group
+      .btn-group.inline
+        button(ng-click='addAllRooms()').btn
+          i.icon-check
+          |  all
+        button(ng-click='removeAllRooms()').btn
+          i.icon-check-empty
+          |  all
+      div.inline.small-margin Check rooms that are available this round.
+
+    table(editable-table, model='round.rooms', visible='round.tableOpts.rooms', reorders)#round-rooms-table
+      thead
+        tr
+          th(data-auto-index=5) #
+          th(data-auto-index=4)
+            sort-arrow(model='round.rooms', sort-by='o.rounds[round.id].participates', hide-arrows)
+              i.icon-check
+          th(data-auto-index=2)
+            sort-arrow(model='round.rooms', sort-by='o.name') Name
+      tbody(editable-tbody)
+        script(type='text/html')
+          td {{$index + 1}}
+          td
+            input(type='checkbox', ng-model='o.rounds[round.id].participates')
+          td {{o.name}}
 
   div#settings.tab-pane
     .row-fluid
@@ -136,8 +165,22 @@ div.tab-content
   #round-teams-table th:nth-child(1)
     width: 15px
   #round-teams-table th:nth-child(2)
+    width: 10px
+  #round-teams-table th:nth-child(3)
+    width: 40%
+  #round-teams-table th:nth-child(3)
+    width: 40%
+
+  #round-pairings-table th:nth-child(1)
+    width: 15px
+  #round-pairings-table th:nth-child(2)
     width: 10%
-  #round-teams-table th:nth-child(3)
+  #round-pairings-table th:nth-child(3)
     width: 40%
-  #round-teams-table th:nth-child(3)
+  #round-pairings-table th:nth-child(3)
     width: 40%
+
+  #round-rooms-table th:nth-child(1)
+    width: 15px
+  #round-rooms-table th:nth-child(2)
+    width: 10px

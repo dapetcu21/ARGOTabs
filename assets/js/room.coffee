@@ -6,6 +6,10 @@ define ['util'], (Util)->
           this[key] = value
       @name ?= ""
       @floor ?= ""
+      @rounds ?= {}
+      if not other
+        for round in @tournament.rounds
+          round.registerRounds this
 
     unpackCycles: ->
 
@@ -14,3 +18,5 @@ define ['util'], (Util)->
       return model
 
     destroy: ->
+      for round in @tournament.rounds
+        round.unregisterRoom this

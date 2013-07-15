@@ -29,8 +29,19 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
             if judge.rank == Judge.shadowRank
               judge.rounds[round.id].participates = false
 
+        $scope.addAllRooms= ->
+          for room in $scope.tournament.rooms
+            room.rounds[round.id].participates = true
+
+        $scope.removeAllRooms = ->
+          for room in $scope.tournament.rooms
+            room.rounds[round.id].participates = false
+
         $scope.sortByRank = ->
           round.sortByRank round.teams
+
+        $scope.shuffleRooms = ->
+          round.shuffleRooms()
 
         $scope.pair = ->
           $scope.pairOpts =
@@ -62,7 +73,7 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
             return ''
           return a
 
-        $scope.teamPlaceholder = (a) ->
+        $scope.namePlaceholder = (a) ->
           if not a?
             return {name: ''}
           return a
