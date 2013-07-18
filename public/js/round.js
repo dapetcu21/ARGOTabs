@@ -172,8 +172,9 @@
       };
 
       Round.prototype.pair = function(opts) {
-        var i, id, pairTeams, rooms, roomsIdx, roomsL, teams, _i, _ref,
+        var balance, flip, i, id, o, pairTeams, rooms, roomsIdx, roomsL, teams, _i, _j, _len, _ref, _ref1,
           _this = this;
+        console.log(opts);
         teams = this.pairingTeams();
         if (opts.algorithm) {
           this.sortByRank(teams);
@@ -190,14 +191,23 @@
         console.log(rooms);
         roomsIdx = 0;
         roomsL = rooms.length;
-        pairTeams = function(a, b, balance) {
-          var ballot;
-          if (balance == null) {
-            balance = true;
-          }
+        flip = opts.shuffleSides || opts.algorithm !== 1;
+        balance = opts.balanceSides;
+        if (balance == null) {
+          balance = true;
+        }
+        pairTeams = function(a, b) {
+          var ballot, proportion;
           ballot = new Ballot(_this);
           ballot.prop = a;
           ballot.opp = b;
+          if (flip) {
+            proportion = 0.5;
+            if (Math.random() > proportion) {
+              ballot.prop = b;
+              ballot.opp = a;
+            }
+          }
           if (roomsIdx < roomsL) {
             ballot.room = rooms[roomsIdx];
           }
@@ -208,10 +218,20 @@
           case 0:
           case 3:
             for (i = _i = 0, _ref = teams.length; _i < _ref; i = _i += 2) {
-              pairTeams(teams[i], teams[i + 1], opts.balance);
+              pairTeams(teams[i], teams[i + 1]);
+            }
+            break;
+          case 1:
+            _ref1 = opts.manualPairing;
+            for (_j = 0, _len = _ref1.length; _j < _len; _j++) {
+              o = _ref1[_j];
+              pairTeams(o.prop, o.opp);
             }
         }
-        return this.paired = true;
+        this.paired = true;
+        if (opts.shuffleRooms) {
+          return this.shuffleRooms();
+        }
       };
 
       Round.prototype.shuffleRooms = function() {
