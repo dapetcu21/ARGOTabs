@@ -56,6 +56,7 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
             return 0 if s == ''
             return parseInt s
           $scope.pairingTeams = round.pairingTeams()
+          $scope.manualPairing = []
 
           new AlertController
             buttons: ['Cancel', 'Ok']
@@ -64,9 +65,55 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
             htmlMessage: $compile(templates.pairModal())($scope)
             onClick: (alert, button) ->
               if button == 1
+                opts = $scope.pairOpts
+                if opts.algorithm == 1
+                  if $scope.pairingTeams.length
+                    alert.find('.error-placeholder').html templates.errorAlert
+                      error: 'You must pair all the teams before continuing'
+                    return
+                  opts.manualPairing = $scope.manualPairing
                 alert.modal 'hide'
                 Util.safeApply $scope, ->
-                  round.pair $scope.pairOpts
+                  round.pair opts
+
+        $scope.addTeamToManualPairing = (team, index) ->
+          if $scope.incompletePairing
+            p = $scope.incompletePairing
+            $scope.incompletePairing = null
+            if not p.prop
+              p.prop = team
+            else if not p.opp
+              p.opp = team
+            else
+              return
+          else
+            p = $scope.incompletePairing = { prop: team }
+            $scope.manualPairing.push p
+            div = $('.manual-pairings .span8')
+            console.log div, div[0].scrollHeight
+            div.animate
+              scrollTop: div[0].scrollHeight
+            , 500
+
+          $scope.pairingTeams.splice index, 1
+          console.log 'plm'
+
+        $scope.removePairFromManualPairing = (pair, index) ->
+          if pair.prop
+            if pair.opp
+              $scope.pairingTeams.splice 0, 0, pair.prop, pair.opp
+            else
+              $scope.pairingTeams.splice 0, 0, pair.prop
+          else
+            $scope.pairingTeams.splice 0, 0, pair.opp
+          $scope.manualPairing.splice index, 1
+          if pair == $scope.incompletePairing
+            $scope.incompletePairing = null
+
+        $scope.reverseSidesInManualPairing = (pairing) ->
+          p = pairing.prop
+          pairing.prop = pairing.opp
+          pairing.opp = p
 
         $scope.eliminateNil = (a) ->
           if not a?

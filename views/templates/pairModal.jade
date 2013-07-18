@@ -5,14 +5,40 @@
     .small-margin.inline Algorithm:&nbsp;
     select(ng-model='pairOpts.algorithm', ng-options='algoName[algo] for algo in pairAlgorithms')
   label(ng-show='pairOpts.algorithm != 0').checkbox
-    | Shuffle rooms 
-    input(type='checkbox', ng-model='pairOpts.shuffle')
+    | Randomize room order
+    input(type='checkbox', ng-model='pairOpts.shuffleRooms')
+  label(ng-show='pairOpts.algorithm == 1').checkbox
+    | Randomize sides
+    input(type='checkbox', ng-model='pairOpts.shuffleSides')
+  label(ng-show='(pairOpts.algorithm != 1 || pairOpts.shuffleSides) && prevRounds.length').checkbox
+    | Balance sides
+    input(type='checkbox', ng-model='pairOpts.balanceSides')
   div(ng-show='pairOpts.algorithm == 2')
     span Number of brackets: 
     text-edit-cell(bind='pairOpts.brackets', editing, input-width='50', pattern='[0-9]*', setter='parseInt(o)')
-    
-  .container-fluid(ng-show='pairOpts.algorithm == 1')
-    .row-fluid
-      .span9
-      .span3
-        div(ng-repeat='o in pairingTeams') {{o.name}}
+
+  .error-placeholder
+
+  .manual-pairings(ng-show='pairOpts.algorithm == 1')
+    .row-fluid      
+      .span8
+        div(ng-show='!manualPairing.length').alert.alert-info.nopairs
+          strong No pairs defined! 
+          span To create the manual pairing, pick teams from 
+          span
+            span.hidden-phone the right.
+            span.visible-phone below.
+          i.icon-arrow-right.hidden-phone
+          i.icon-arrow-down.visible-phone
+        div(ng-repeat='pair in manualPairing').pairing.rounded-bullets
+          span(ng-show='pair.prop && !pairOpts.shuffleSides').prop {{pair.prop.name}}
+          span(ng-show='pair.prop && pairOpts.shuffleSides').prop-opp {{pair.prop.name}}
+          span(ng-show='!pair.prop') Bail
+          span &nbsp;vs.&nbsp;
+          span(ng-show='!pair.opp') Bail
+          span(ng-show='pair.opp && !pairOpts.shuffleSides').opp {{pair.opp.name}}
+          span(ng-show='pair.opp && pairOpts.shuffleSides').prop-opp {{pair.opp.name}}
+          i(ng-click='reverseSidesInManualPairing(pair)', ng-show='!pairOpts.shuffleSides').icon-exchange
+          i(ng-click='removePairFromManualPairing(pair, $index)').icon-remove-sign
+      .span4
+        div(ng-repeat='o in pairingTeams', ng-click='addTeamToManualPairing(o, $index)').rounded-bullets.red.pushable {{o.name}}

@@ -89,6 +89,8 @@ define ['util', 'ballot', 'underscore'], (Util, Ballot) ->
       teams = _.filter @teams, (o) -> o.rounds[id].participates
 
     pair: (opts) ->
+      console.log opts
+
       teams = @pairingTeams()
       
       if opts.algorithm
@@ -105,10 +107,21 @@ define ['util', 'ballot', 'underscore'], (Util, Ballot) ->
       roomsIdx = 0
       roomsL = rooms.length
 
-      pairTeams = (a, b, balance = true) =>
+      flip = opts.shuffleSides || opts.algorithm != 1
+      balance = opts.balanceSides
+      balance ?= true
+
+      pairTeams = (a, b) =>
         ballot = new Ballot this
         ballot.prop = a
         ballot.opp = b
+        if flip
+          proportion = 0.5
+          #if balance
+            #weighted coin flip
+          if Math.random() > proportion
+            ballot.prop = b
+            ballot.opp = a
         ballot.room = rooms[roomsIdx] if roomsIdx < roomsL
         roomsIdx++
         @ballots.push ballot
@@ -116,9 +129,15 @@ define ['util', 'ballot', 'underscore'], (Util, Ballot) ->
       switch opts.algorithm
         when 0, 3
           for i in [0...teams.length] by 2
-            pairTeams teams[i], teams[i+1], opts.balance
+            pairTeams teams[i], teams[i+1]
+        when 1
+          for o in opts.manualPairing
+            pairTeams o.prop, o.opp
 
       @paired = true
+
+      if opts.shuffleRooms
+        @shuffleRooms()
 
     shuffleRooms: ->
       ballots = _.shuffle @ballots

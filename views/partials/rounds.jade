@@ -44,7 +44,7 @@ div.tab-content
     div#pairings(ng-show='round.paired')
       .control-group
         button(ng-click='assignJudges()').btn Reassign judges
-        button(ng-click='shuffleRooms()').btn Shuffle in chambers
+        button(ng-click='shuffleRooms()').btn Shuffle in rooms
         div.inline.small-margin You can manually drag judges to fine-tune
           
       table(editable-table, model='round.ballots', visible='round.tableOpts.ballots', reorders)#round-pairings-table

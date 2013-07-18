@@ -25,6 +25,9 @@ body
     width: 100% !important
     margin: auto !important
 
+.full-width
+  width: 100%
+
 .loading-screen
   width: 200%
   height: 200%
@@ -170,3 +173,73 @@ li.active .remove-round
 
 li.active .remove-round:hover
   color: #005580
+
+.rounded-bullets
+  border-radius: 14px
+  background:linear-gradient(top, #ededed 5%, #dfdfdf 100%)
+  box-shadow:inset 0px 1px 0px 0px #ffffff, 0px 1px 0px 0px #bbbbbb
+  background-color:#ededed
+  border:1px solid #dcdcdc
+  color:#777777
+  position: relative
+
+  font-size:13px;
+  font-weight:normal;
+  padding:3px 10px;
+  text-decoration:none
+  text-shadow:0px 1px 0px #ffffff
+
+.rounded-bullets.pushable:hover
+  background:linear-gradient(bottom, #ededed 5%, #dfdfdf 100%)
+  background-color:#dfdfdf
+
+.rounded-bullets.red
+  background:linear-gradient(top, #d0451b 5%, #bc3315 100%)
+  background-color:#d0451b
+  border:1px solid #942911
+  box-shadow:inset 0px 1px 0px 0px #cf866c
+  text-shadow:0px 1px 0px #854629
+  color:#ffffff
+
+.rounded-bullets.red.pushable:hover
+  background:linear-gradient(bottom, #d0451b 5%, #bc3315 100%)
+  background-color:#bc3315
+
+.pairing i.icon-remove-sign
+  top:50%
+  right: 10px
+  position: absolute
+  margin-top: -7px
+
+.pairing i.icon-exchange
+  top:50%
+  right: 25px
+  position: absolute
+  margin-top: -7px
+
+.pairing .prop
+  color: #1e6917
+
+.pairing .opp
+  color: #a81313
+
+.pairing .prop-opp
+  color: #12588a
+
+.manual-pairings .nopairs
+  position: relative
+
+.manual-pairings .nopairs i
+  position: absolute
+  font-size: 20px
+  right: 10px
+  top: 50%
+  margin-top: -10px
+
+@media (min-width: 767px)
+  .manual-pairings .span4,
+  .manual-pairings .span8
+    overflow-y: scroll
+    height: 190px
+    padding-bottom: 5px
+
