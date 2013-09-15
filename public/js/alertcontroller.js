@@ -30,12 +30,14 @@
         if (o.animated == null) {
           o.animated = true;
         }
+        o.id = 'modalid' + Math.round(Math.random() * 10000);
         if (o.animated) {
           o.cssClass = 'fade ' + o.cssClass;
         }
         jq = $(templates.modal({
           o: o
         }));
+        jq.find('.modal-title').append(o.title);
         mbody = jq.find('.modal-body');
         if (o.message) {
           mbody.append('<p>' + o.message + '</p>');

@@ -73,6 +73,13 @@ body {
 .textedit-input {
   margin: 0px !important;
 }
+.textedit-cell .control-group {
+  margin: 0px;
+  display: inline;
+}
+.textedit-cell.invalid .textedit-label {
+  color: #b94a48;
+}
 .multi-input {
   margin: 0px !important;
 }
@@ -310,13 +317,13 @@ li.active .remove-round:hover {
   position: absolute;
   margin-top: -7px;
 }
-.pairing .prop {
+.prop {
   color: #1e6917;
 }
-.pairing .opp {
+.opp {
   color: #a81313;
 }
-.pairing .prop-opp {
+.prop-opp {
   color: #12588a;
 }
 .manual-pairings .nopairs {
@@ -328,6 +335,9 @@ li.active .remove-round:hover {
   right: 10px;
   top: 50%;
   margin-top: -10px;
+}
+.context-menu {
+  z-index: 1000000;
 }
 @media (min-width: 767px) {
   .manual-pairings .span4,

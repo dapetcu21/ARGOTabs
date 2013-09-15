@@ -31,8 +31,11 @@
             extra: '@',
             minWidth: '@inputWidth',
             pattern: '@pattern',
+            validator: '&',
+            softValidator: '&',
             getter: '&',
-            setter: '&'
+            setter: '&',
+            valid: '='
           },
           replace: true,
           transclude: true,
@@ -41,6 +44,24 @@
             scope.editing = false;
             label = element.find('.textedit-label');
             input = element.find('input');
+            scope.$watch(function() {
+              if (attrs.softValidator == null) {
+                return true;
+              } else {
+                return scope.softValidator({
+                  o: $parse(attrs.bind)(scope.$parent)
+                });
+              }
+            }, function(valid) {
+              scope.valid = valid;
+              if (valid) {
+                scope.labelClass = 'valid';
+                return scope.inputClass = '';
+              } else {
+                scope.labelClass = 'invalid';
+                return scope.inputClass = 'error';
+              }
+            });
             scope.$watch(function() {
               return $parse(attrs.bind)(scope.$parent);
             }, function(newValue) {
@@ -53,18 +74,21 @@
               }
             });
             scope.$watch('valueParsed', function(newValue, oldValue) {
-              if (scope.pattern && typeof newValue === 'string' && !newValue.match(new RegExp('^' + scope.pattern + '$'))) {
+              var nv;
+              nv = attrs.setter != null ? scope.setter({
+                o: newValue
+              }) : newValue;
+              if ((scope.pattern && typeof newValue === 'string' && !newValue.match(new RegExp('^' + scope.pattern + '$'))) || ((attrs.validator != null) && !scope.validator({
+                o: nv
+              }))) {
                 return scope.valueParsed = oldValue;
               } else {
-                return $parse(attrs.bind).assign(scope.$parent, attrs.setter != null ? scope.setter({
-                  o: newValue
-                }) : newValue);
+                return $parse(attrs.bind).assign(scope.$parent, nv);
               }
             });
             scope.$watch(function() {
               return attrs.editing;
             }, function(newValue, oldValue) {
-              console.log(newValue, oldValue);
               if (newValue != null) {
                 if (newValue && !oldValue) {
                   return scope.beginEdit();
@@ -74,9 +98,7 @@
               }
             });
             scope.beginEdit_ = function() {
-              console.log(attrs.editing);
               if (attrs.editing == null) {
-                console.log(attrs.editing);
                 return scope.beginEdit();
               }
             };
@@ -495,7 +517,9 @@
             removeItem_: '&removeItem',
             canRemoveItem_: '&canRemoveItem',
             visible_: '@visible',
-            reorders: '@reorders'
+            reorders: '@reorders',
+            tableClass_: '@tableClass',
+            rowClicked_: '&rowClicked'
           },
           link: {
             post: function(scope, element, attrs) {
@@ -506,6 +530,16 @@
                 id: scope.tableId,
                 n: n
               })).appendTo($('body'));
+              scope.$watch(function() {
+                return attrs.showGear;
+              }, function(value) {
+                return scope.showGear = value != null ? $parse(value)(scope.$parent) : true;
+              });
+              scope.$watch(function() {
+                return attrs.tableClass;
+              }, function(value) {
+                return scope.tableClass = value != null ? value : 'table table-striped table-bordered';
+              });
               scope.$on('$destroy', function() {
                 return context.remove();
               });
@@ -664,6 +698,9 @@
                   });
                   return scope.$watch(function() {
                     var j, _j, _ref, _ref1;
+                    if (!scope.rowHovered) {
+                      return 1;
+                    }
                     if (scope.hover) {
                       return 1;
                     }
@@ -689,6 +726,7 @@
               this.scope = $scope;
               $scope.tableId = 'tid' + Math.round(Math.random() * 10000);
               $scope.hover = false;
+              $scope.rowHovered = 0;
             }
           ]
         };
@@ -698,17 +736,21 @@
       return {
         require: '^editableTable',
         link: {
-          post: function(scope, element, attrs, controller) {
+          post: function(scope, element, attrs) {
             return element.find('thead').hover(function() {
               return Util.safeApply(scope, function() {
                 var el;
+                if (!scope.showGear) {
+                  return;
+                }
                 scope.hover = true;
+                scope.rowHovered++;
                 scope.headId = 'id' + Math.round(Math.random() * 10000);
                 el = element.find('th:visible:last');
                 el.addClass('squeezedElement');
                 return $(templates.editableTh({
                   id: scope.headId,
-                  tableId: controller.scope.tableId,
+                  tableId: scope.tableId,
                   width: el.width()
                 })).appendTo(element.find('thead tr')).find('i.close.icon-cog').click(function(e) {
                   return setTimeout(function() {
@@ -718,7 +760,11 @@
               });
             }, function() {
               return Util.safeApply(scope, function() {
-                controller.scope.hover = false;
+                if (!scope.hover) {
+                  return;
+                }
+                scope.hover = false;
+                scope.rowHovered--;
                 element.find('.controls').hide();
                 element.find('.squeezedElement').removeClass('squeezedElement');
                 return element.find('#' + scope.headId).remove();
@@ -761,7 +807,7 @@
           }, function() {
             return scope.addLabel = attr.addItemLabel;
           });
-          return scope.addItem = function() {
+          scope.addItem = function() {
             controller.scope.addItem_();
             return setTimeout(function() {
               var item;
@@ -769,6 +815,11 @@
                 return item.focus();
               }
             }, 1);
+          };
+          return scope.rowClicked = function($index) {
+            return controller.scope.rowClicked_({
+              $index: $index
+            });
           };
         }
       };
@@ -799,6 +850,9 @@
                 if (hover) {
                   return 1;
                 }
+                if (!controller.scope.rowHovered) {
+                  return 1;
+                }
                 el = elements[i];
                 if ($(el).css('display') === 'none') {
                   return 1;
@@ -826,6 +880,7 @@
                   return;
                 }
                 scope.hover = true;
+                controller.scope.rowHovered++;
                 scope.id = 'id' + Math.round(Math.random() * 10000);
                 el = element.find('td:visible:last');
                 el.addClass('squeezedElement');
@@ -844,6 +899,7 @@
                   return;
                 }
                 scope.hover = false;
+                controller.scope.rowHovered--;
                 element.find('.squeezedElement').removeClass('squeezedElement');
                 return element.find('#' + scope.id).remove();
               };
