@@ -1,0 +1,64 @@
+p Cute ballot sheet
+p {{votes}}
+table(editable-table, reorders, show-gear='false', model='votes')#votes-table
+  thead
+    tr
+      th(data-auto-index=5) #
+      th(data-auto-index=1) Judge
+      th(data-auto-index=3).prop P1
+      th(data-auto-index=3).prop P2
+      th(data-auto-index=3).prop P3
+      th(data-auto-index=3).prop PR
+      th(data-auto-index=4).prop Prop
+      th(data-auto-index=2) vs.
+      th(data-auto-index=4).opp Opp
+      th(data-auto-index=3).opp O1
+      th(data-auto-index=3).opp O2
+      th(data-auto-index=3).opp O3
+      th(data-auto-index=3).opp OR
+  tbody(editable-tbody)
+    script(type='text/html')
+      td {{$index + 1}}
+      td {{o.judge.name}}
+      - function sideCells(side) {
+        - for (var i = 0; i < 4; i++) {
+          td(class='valid-{{valid#{side}#{i}}}')
+            text-edit-cell(bind='o.scores[#{side}][#{i}]', valid='valid#{side}#{i}', input-width='17', pattern='[0-9.]*', setter='parseFloat(o)', getter='truncFloat(o, 2)', soft-validator='validateMinMax(o, #{i==3 ? 30 : 60}, #{i==3 ? 40 : 80})')
+        - } }
+      - function sideTotal(side) {
+        td {{truncFloat(o.scores[#{side}][0] + o.scores[#{side}][1] + o.scores[#{side}][2] + o.scores[#{side}][3])}}
+      - }
+      - sideCells(0)
+      - sideTotal(0)
+      td
+        span {{o.prop}} 
+        i.icon-trophy
+        span  {{o.opp}}
+      - sideTotal(1)
+      - sideCells(1)
+
+:stylus
+  #votes-table th:nth-child(1)
+    width: 20px
+  #votes-table th:nth-child(2)
+    width: 100px
+  #votes-table th:nth-child(3),
+  #votes-table th:nth-child(4),
+  #votes-table th:nth-child(5),
+  #votes-table th:nth-child(6),
+  #votes-table th:nth-child(10),
+  #votes-table th:nth-child(11),
+  #votes-table th:nth-child(12),
+  #votes-table th:nth-child(13)
+    width: 20px
+  #votes-table th:nth-child(7),
+  #votes-table th:nth-child(9)
+    width: 30px
+  #votes-table th:nth-child(8)
+    width: 40px
+
+  #votes-table td.valid-false
+    background-color: #b94a48
+
+  #votes-table td.valid-false .textedit-cell.invalid .textedit-label
+    color: #ffffff

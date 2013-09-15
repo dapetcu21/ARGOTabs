@@ -21,14 +21,31 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
       extra: '@'
       minWidth: '@inputWidth'
       pattern: '@pattern'
+      validator: '&'
+      softValidator: '&'
       getter: '&'
       setter: '&'
+      valid: '='
     replace: true
     transclude: true
     link: (scope, element, attrs) ->
       scope.editing = false
       label = element.find('.textedit-label')
       input = element.find('input')
+
+      scope.$watch ->
+        if not attrs.softValidator?
+          true
+        else
+          scope.softValidator {o: $parse(attrs.bind) scope.$parent}
+      , (valid) ->
+        scope.valid = valid
+        if valid
+          scope.labelClass = 'valid'
+          scope.inputClass = ''
+        else
+          scope.labelClass = 'invalid'
+          scope.inputClass = 'error'
 
       scope.$watch ->
         $parse(attrs.bind)(scope.$parent)
@@ -38,19 +55,19 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
         else
           scope.valueParsed = newValue
       scope.$watch 'valueParsed', (newValue, oldValue) ->
-        if scope.pattern and typeof(newValue) == 'string' and not newValue.match(new RegExp '^' + scope.pattern + '$')
+        nv = if attrs.setter?
+          scope.setter {o: newValue}
+        else
+          newValue
+        if (scope.pattern and typeof(newValue) == 'string' and not newValue.match(new RegExp '^' + scope.pattern + '$')) or
+           (attrs.validator? and not scope.validator {o: nv})
           scope.valueParsed = oldValue
         else
-          $parse(attrs.bind).assign scope.$parent,
-            if attrs.setter?
-              scope.setter {o: newValue}
-            else
-              newValue
+          $parse(attrs.bind).assign scope.$parent, nv
 
       scope.$watch ->
         attrs.editing
       , (newValue, oldValue) ->
-        console.log newValue, oldValue
         if newValue?
           if newValue and not oldValue
             scope.beginEdit()
@@ -58,9 +75,7 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
             scope.endEdit()
 
       scope.beginEdit_ = ->
-          console.log attrs.editing
           if not attrs.editing?
-            console.log attrs.editing
             scope.beginEdit()
 
       focusCallback = ->
@@ -382,6 +397,8 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
       canRemoveItem_: '&canRemoveItem'
       visible_: '@visible'
       reorders: '@reorders'
+      tableClass_: '@tableClass'
+      rowClicked_: '&rowClicked'
     link:
       post: (scope, element, attrs) ->
         elements = element.find('th').not('.controls')
@@ -392,6 +409,16 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
           id: scope.tableId
           n: n
         ).appendTo $('body')
+
+        scope.$watch ->
+          attrs.showGear
+        , (value) ->
+          scope.showGear = if value? then $parse(value) scope.$parent else true
+
+        scope.$watch ->
+          attrs.tableClass
+        , (value) ->
+          scope.tableClass = if value? then value else 'table table-striped table-bordered'
 
         scope.$on '$destroy', ->
           context.remove()
@@ -503,6 +530,7 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
                 $(el).addClass 'hidden-true'
               
             scope.$watch ->
+              return 1 if !scope.rowHovered
               return 1 if scope.hover
               return 1 if $(el).css('display') == 'none'
               for j in [i+1...elements.length]
@@ -516,6 +544,7 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
       this.scope = $scope
       $scope.tableId = 'tid' + Math.round( Math.random() * 10000 )
       $scope.hover = false
+      $scope.rowHovered = 0
       
       return
     ]
@@ -525,16 +554,18 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
     require: '^editableTable'
     link:
       post:
-        (scope, element, attrs, controller) ->
+        (scope, element, attrs) ->
           element.find('thead').hover ->
             Util.safeApply scope, ->
+              return if not scope.showGear
               scope.hover = true
+              scope.rowHovered++
               scope.headId = 'id' + Math.round( Math.random() * 10000)
               el = element.find('th:visible:last')
               el.addClass('squeezedElement')
               $(templates.editableTh
                 id: scope.headId
-                tableId: controller.scope.tableId
+                tableId: scope.tableId
                 width: el.width()
               )
                 .appendTo(element.find('thead tr'))
@@ -544,7 +575,9 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
                   , 1
           , ->
             Util.safeApply scope, ->
-              controller.scope.hover = false
+              return if not scope.hover
+              scope.hover = false
+              scope.rowHovered--
               element.find('.controls').hide()
               element.find('.squeezedElement').removeClass('squeezedElement')
               element.find('#'+scope.headId).remove()
@@ -583,6 +616,10 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
             item.focus()
         , 1
 
+      scope.rowClicked = ($index) ->
+        controller.scope.rowClicked_
+          $index: $index
+
   mod.directive 'editableScriptTransclude', ->
     require: '^editableTable'
     compile: (element, attrs, transcludeFn) ->
@@ -602,6 +639,7 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
 
         scope.noColumns = (hover, i) ->
           return 1 if hover
+          return 1 if !controller.scope.rowHovered
           el = elements[i]
           return 1 if $(el).css('display') == 'none'
           for j in [i+1...elements.length]
@@ -619,6 +657,7 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
           return if scope.hover
           return if not controller.scope.canRemoveItem scope.o
           scope.hover = true
+          controller.scope.rowHovered++
           scope.id = 'id' + Math.round( Math.random() * 10000)
           el = element.find('td:visible:last')
           el.addClass('squeezedElement')
@@ -634,6 +673,7 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
         scope.mouseLeave = ->
           return if not scope.hover
           scope.hover = false
+          controller.scope.rowHovered--
           element.find('.squeezedElement').removeClass('squeezedElement')
           element.find('#'+scope.id).remove()
 

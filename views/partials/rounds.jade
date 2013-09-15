@@ -47,7 +47,7 @@ div.tab-content
         button(ng-click='shuffleRooms()').btn Shuffle in rooms
         div.inline.small-margin You can manually drag judges to fine-tune
           
-      table(editable-table, model='round.ballots', visible='round.tableOpts.ballots', reorders)#round-pairings-table
+      table(editable-table, model='round.ballots', visible='round.tableOpts.ballots', table-class='table table-bordered table-hover', row-clicked='editBallot($index)', reorders)#round-pairings-table
         thead
           tr
             th(data-auto-index=5) #
@@ -57,12 +57,15 @@ div.tab-content
               sort-arrow(model='round.ballots', sort-by='namePlaceholder(o.prop).name') Prop
             th(data-auto-index=2)
               sort-arrow(model='round.ballots', sort-by='namePlaceholder(o.opp).name') Opp
+            th(data-auto-index=1)
+              | Judges
         tbody(editable-tbody)
           script(type='text/html')
             td {{$index + 1}}
             td {{namePlaceholder(o.room).name}}
             td {{namePlaceholder(o.prop).name}}
             td {{namePlaceholder(o.opp).name}}
+            td
 
   div#judges.tab-pane
     .control-group
@@ -176,9 +179,9 @@ div.tab-content
   #round-pairings-table th:nth-child(2)
     width: 10%
   #round-pairings-table th:nth-child(3)
-    width: 40%
-  #round-pairings-table th:nth-child(3)
-    width: 40%
+    width: 20%
+  #round-pairings-table th:nth-child(4)
+    width: 20%
 
   #round-rooms-table th:nth-child(1)
     width: 15px

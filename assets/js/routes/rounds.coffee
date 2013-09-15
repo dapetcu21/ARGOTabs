@@ -8,6 +8,20 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
         $scope.ranks = Judge.ranks
         $scope.rankStrings = Judge.rankStrings
 
+        $scope.parseInt = (s) ->
+          return 0 if s == ''
+          return parseInt s
+
+        $scope.parseFloat = (s) ->
+          return 0 if s == ''
+          return parseFloat s
+
+        $scope.truncFloat = (v, prec) ->
+          v.toFixed(prec).replace /\.?0*$/, ''
+
+        $scope.validateMinMax = (v, min, max) ->
+          return min <= v and v <= max
+
         $scope.addAllTeams = ->
           for team in $scope.tournament.teams
             team.rounds[round.id].participates = true
@@ -114,6 +128,62 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
           p = pairing.prop
           pairing.prop = pairing.opp
           pairing.opp = p
+
+        $scope.editBallot = (index) ->
+          sc = $scope.$new()
+          ballot = round.ballots[index]
+          noBallots = 3
+          sc.votes = ballot.getVotesForBallots noBallots
+          n = sc.votes.length
+          if n > 1
+            sc.votes.push total = {
+              judge:
+                name: "Total"
+              scores: [[70, 70, 70, 35], [70, 70, 70, 35]]
+              total: true
+            }
+            for i in [0...2]
+              for j in [0...4]
+                ((i, j) ->
+                  sc.$watch ->
+                    s = 0
+                    for vote in sc.votes
+                      if not vote.total
+                        s += vote.scores[i][j] * vote.ballots
+                    s / noBallots
+                  , (v) -> total.scores[i][j] = v
+                ) i, j
+
+            sc.$watch ->
+              s = 0
+              for vote in sc.votes
+                if not vote.total
+                  s += vote.prop
+              s
+            , (v) -> total.prop = v
+
+            sc.$watch ->
+              s = 0
+              for vote in sc.votes
+                if not vote.total
+                  s += vote.opp
+              s
+            , (v) -> total.opp = v
+
+          new AlertController
+            buttons: ['Cancel', 'Ok']
+            cancelButtonIndex: 0
+            width: 700
+            title: (if ballot.prop then '<span class="prop">'+ballot.prop.name+'</span>' else '<span>Bail</span>') +
+              '<span> vs. </span>' +
+              (if ballot.opp then '<span class="opp">'+ballot.opp.name+'</span>' else '<span>Bail</span>')
+            htmlMessage: $compile(templates.ballotSheet())(sc)
+            onClick: (alert, button) ->
+              if button == 1
+                console.log 'do shit'
+                alert.modal 'hide'
+            onDismissed: (alert) ->
+              sc.$destroy()
 
         $scope.eliminateNil = (a) ->
           if not a?
