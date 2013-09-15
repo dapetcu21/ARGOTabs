@@ -30,7 +30,9 @@
         if (o.animated == null) {
           o.animated = true;
         }
-        o.id = 'modalid' + Math.round(Math.random() * 10000);
+        if (o.id == null) {
+          o.id = 'modalid' + Math.round(Math.random() * 10000);
+        }
         if (o.animated) {
           o.cssClass = 'fade ' + o.cssClass;
         }

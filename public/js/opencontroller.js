@@ -106,8 +106,8 @@
           fl = this.fileLists[backend] = {};
         }
         fl[itemName] = true;
-        itemNode = this.openModal.find("#open-modal-add-tr").before(templates.openModalAddItem(item));
-        itemNode = itemNode.prev();
+        itemNode = $(templates.openModalAddItem(item));
+        itemNode.insertBefore(this.openModal.find("#open-modal-add-tr"));
         animDiv = itemNode.find('.omodal-edit-div');
         textBox = itemNode.find('.omodal-text');
         controlGroup = textBox.parent();
