@@ -76,8 +76,8 @@ define ['jquery', 'filereader', 'alertcontroller', 'tournament', 'backends', 'lo
       fl = @fileLists[backend] = {} if not fl?
       fl[itemName] = true
 
-      itemNode = @openModal.find("#open-modal-add-tr").before templates.openModalAddItem item
-      itemNode = itemNode.prev()
+      itemNode = $(templates.openModalAddItem item)
+      itemNode.insertBefore @openModal.find("#open-modal-add-tr")
 
       animDiv = itemNode.find('.omodal-edit-div')
       textBox = itemNode.find('.omodal-text')
