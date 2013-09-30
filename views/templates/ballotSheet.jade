@@ -1,6 +1,16 @@
-p Cute ballot sheet
-p {{votes}}
-table(editable-table, reorders, show-gear='false', model='votes')#votes-table
+div(ng-show='lockJudgesInfo').alert.alert-info
+  button(type='button', class='close', ng-click='lockJudgesInfo=false'): &times;
+  <strong>Warning!</strong> Once you submit this ballot sheet, the judges for this match are going to be locked in and can't be modified or reordered anymore.
+div(ng-show='noJudgesWarning').alert
+  button(type='button', class='close', ng-click='noJudgesWarning=false'): &times;
+  <strong>Warning!</strong> There are no judges assigned to this match. You can still enter scores for the teams, but since they aren't bound to any judge, they won't matter for the judges tab. Furthermore, you cannot assign judges after submitting this ballot sheet.
+div(ng-show='outOfRangeError').alert.alert-error
+  button(type='button', class='close', ng-click='outOfRangeError=false'): &times;
+  <strong>Error!</strong> The scores are not within the valid World Schools range.
+div(ng-show='drawsError').alert.alert-error
+  button(type='button', class='close', ng-click='drawsError=false'): &times;
+  <strong>Error!</strong> Draws are not valid in the World Schools format.
+table(editable-table, show-gear='false', model='votes')#votes-table
   thead
     tr
       th(data-auto-index=5) #
@@ -19,21 +29,31 @@ table(editable-table, reorders, show-gear='false', model='votes')#votes-table
   tbody(editable-tbody)
     script(type='text/html')
       td {{$index + 1}}
-      td {{o.judge.name}}
+      td 
+        span {{o.judge.name}}
+        span(ng-show='o.judge == null').muted-true Not assigned
       - function sideCells(side) {
         - for (var i = 0; i < 4; i++) {
-          td(class='valid-{{valid#{side}#{i}}}')
-            text-edit-cell(bind='o.scores[#{side}][#{i}]', valid='valid#{side}#{i}', input-width='17', pattern='[0-9.]*', setter='parseFloat(o)', getter='truncFloat(o, 2)', soft-validator='validateMinMax(o, #{i==3 ? 30 : 60}, #{i==3 ? 40 : 80})')
+          td(class='valid-{{valid#{side}#{i}}}').nowrap
+            text-edit-cell(bind='o.scores[#{side}][#{i}]', enabled='!o.total', valid='valid#{side}#{i}', input-width='17', pattern='[0-9.]*', setter='parseFloat(o)', getter='truncFloat(o, 2)', soft-validator='validateMinMax(o, #{i==3 ? 30 : 60}, #{i==3 ? 40 : 80})')
+            i(ng-show='valid#{side}#{i} && (o.scores[#{side}][#{i}] <= #{i==3 ? 30.5 : 61} || o.scores[#{side}][#{i}] >= #{i==3 ? 39.5 : 79})').icon-exclamation.icon-dobitoc
         - } }
       - function sideTotal(side) {
-        td {{truncFloat(o.scores[#{side}][0] + o.scores[#{side}][1] + o.scores[#{side}][2] + o.scores[#{side}][3])}}
+        td {{truncFloat(o.scores[#{side}][0] + o.scores[#{side}][1] + o.scores[#{side}][2] + o.scores[#{side}][3], 2)}}
       - }
       - sideCells(0)
       - sideTotal(0)
-      td
-        span {{o.prop}} 
-        i.icon-trophy
-        span  {{o.opp}}
+      td(class='valid-{{o.aux.decisionValid}}')
+        span(ng-show='o.aux.decisionValid').nowrap
+          multi-cell(bind='o.prop', enabled='!o.total && (o.aux.validSplits[o.aux.winner].length > 1)', input-width='41', choices='o.aux.validSplits[o.aux.winner]', choice-name='o')
+          span 
+          i(class='{{winner(o)}}').vote-trophy.icon-trophy
+          span 
+          multi-cell(bind='o.opp', enabled='!o.total && (o.aux.validSplits[1-o.aux.winner].length > 1)', input-width='41', choices='o.aux.validSplits[1-o.aux.winner]', choice-name='o')
+        span(ng-show='!o.aux.decisionValid && !o.total')
+          | Draw
+        span(ng-show='!o.aux.decisionValid && o.total')
+          | Invalid
       - sideTotal(1)
       - sideCells(1)
 
@@ -59,6 +79,11 @@ table(editable-table, reorders, show-gear='false', model='votes')#votes-table
 
   #votes-table td.valid-false
     background-color: #b94a48
+    color: #ffffff
 
   #votes-table td.valid-false .textedit-cell.invalid .textedit-label
     color: #ffffff
+
+  .icon-dobitoc
+    color: #b94a48
+    margin-left: 3px

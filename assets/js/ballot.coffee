@@ -12,8 +12,22 @@ define ['util', 'underscore'], (Util) ->
       @judges ?= []
 
     getVotesForBallots: (b) ->
+      deepCopy = (v) -> JSON.parse JSON.stringify v
       if @votes and @votes.length
-        return _.copy @votes
+        votes = []
+        for v in @votes
+          aux = {}
+          exceptions = ['judge']
+          for exp in exceptions
+            aux[exp] = eval 'v.' + exp
+            eval 'v.' + exp + '=null'
+          vv = JSON.parse JSON.stringify v
+          for exp in exceptions
+            caux = aux[exp]
+            eval 'v.' + exp + '=caux'
+            eval 'vv.' + exp + '=caux'
+          votes.push vv
+        return votes
       judges = _.filter @judges, (x) -> x.rank != Judge.shadowRank
       n = judges.length
       votes = []

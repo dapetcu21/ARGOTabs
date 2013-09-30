@@ -74,9 +74,16 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
           else if not newValue and oldValue
             scope.endEdit()
 
+      scope.$watch (-> not attrs.enabled? or scope.$parent.$eval(attrs.enabled)), (n, o) ->
+        scope._enabled = n
+        if n
+          label[0].tabIndex = 0
+        else
+          label[0].removeAttribute 'tabIndex'
+
       scope.beginEdit_ = ->
-          if not attrs.editing?
-            scope.beginEdit()
+        if not attrs.editing? and scope._enabled
+          scope.beginEdit()
 
       focusCallback = ->
         Util.safeApply scope, scope.beginEdit_
@@ -149,7 +156,7 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
             scope.endEdit()
         
         scope.beginEdit = ->
-          return if scope.editing
+          return if scope.editing or not scope._enabled
           scope.editing = true
 
           minW = parseInt scope.minWidth
@@ -166,6 +173,13 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
 
         scope.endEdit = ->
           scope.editing = false
+
+        scope.$watch (-> not attrs.enabled? or scope.$parent.$eval(attrs.enabled)), (n, o) ->
+          scope._enabled = n
+          if n
+            label[0].tabIndex = 0
+          else
+            label[0].removeAttribute 'tabIndex'
 
         scope.getChoiceName = (o) ->
           if o?

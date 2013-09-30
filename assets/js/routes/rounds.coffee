@@ -17,7 +17,11 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
           return parseFloat s
 
         $scope.truncFloat = (v, prec) ->
-          v.toFixed(prec).replace /\.?0*$/, ''
+          s = v.toFixed(prec)
+          if s.indexOf('.') != -1
+            s.replace /\.?0*$/, ''
+          else
+            s
 
         $scope.validateMinMax = (v, min, max) ->
           return min <= v and v <= max
@@ -104,13 +108,11 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
             p = $scope.incompletePairing = { prop: team }
             $scope.manualPairing.push p
             div = $('.manual-pairings .span8')
-            console.log div, div[0].scrollHeight
             div.animate
               scrollTop: div[0].scrollHeight
             , 500
 
           $scope.pairingTeams.splice index, 1
-          console.log 'plm'
 
         $scope.removePairFromManualPairing = (pair, index) ->
           if pair.prop
@@ -135,13 +137,63 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
           noBallots = 3
           sc.votes = ballot.getVotesForBallots noBallots
           n = sc.votes.length
+
+          sc.winner = (vote) ->
+            if vote.prop > vote.opp
+              "prop"
+            else
+              "opp"
+
+          noBallots = 0
+          for i in [0...n]
+            ((i) ->
+              vote = sc.votes[i]
+              nb = vote.ballots
+              noBallots += nb
+              if not vote.judge and not ballot.locked
+                sc.noJudgesWarning = true
+              vote.aux =
+                decisionValid: true
+                validSplits: [_.range((nb/2>>0)+1, nb+1), _.range((nb/2>>0)+1)]
+                winner: 0
+
+              sc.$watch (-> vote.prop), (v) ->
+                vote.opp = vote.ballots - vote.prop
+              sc.$watch (-> vote.opp), (v) ->
+                vote.prop = vote.ballots - vote.opp
+                
+              sc.$watch (-> pointsWinner vote), (v) ->
+                vote.aux.decisionValid = true
+                if vote.prop > vote.opp
+                  win = vote.prop
+                  loss = vote.opp
+                else
+                  win = vote.opp
+                  loss = vote.prop
+                if v == 0
+                  vote.prop = win
+                  vote.opp = loss
+                  vote.aux.winner = 0
+                else if v == 1
+                  vote.prop = loss
+                  vote.opp = win
+                  vote.aux.winner = 1
+                else
+                  vote.aux.decisionValid = false
+            ) i
+
+          sc.lockJudgesInfo = not ballot.locked and not sc.noJudgesWarning
+
           if n > 1
-            sc.votes.push total = {
+            sc.votes.push total =
               judge:
                 name: "Total"
               scores: [[70, 70, 70, 35], [70, 70, 70, 35]]
               total: true
-            }
+              aux:
+                decisionValid: true
+                validSplits: [_.range((noBallots/2>>0)+1, noBallots+1), _.range((noBallots/2>>0)+1)]
+                winner: 0
             for i in [0...2]
               for j in [0...4]
                 ((i, j) ->
@@ -170,6 +222,25 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
               s
             , (v) -> total.opp = v
 
+            sc.$watch ->
+              for k in [0...n]
+                if not sc.votes[k].aux.decisionValid
+                  return false
+              return true
+            , (v) -> sc.votes[n].aux.decisionValid = v
+
+          pointsWinner = (vote) ->
+            scp = vote.scores[0]
+            sco = vote.scores[1]
+            tp = scp[0] + scp[1] + scp[2] + scp[3]
+            to = sco[0] + sco[1] + sco[2] + sco[3]
+            if tp > to
+              0
+            else if tp < to
+              1
+            else
+              2
+
           new AlertController
             buttons: ['Cancel', 'Ok']
             cancelButtonIndex: 0
@@ -179,8 +250,29 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
               (if ballot.opp then '<span class="opp">'+ballot.opp.name+'</span>' else '<span>Bail</span>')
             htmlMessage: $compile(templates.ballotSheet())(sc)
             onClick: (alert, button) ->
+              sc.$apply ->
+                sc.drawsError = false
+                sc.outOfRangeError = false
               if button == 1
-                console.log 'do shit'
+                for vote in sc.votes
+                  continue if vote.total
+                  for i in [0..1]
+                    for j in [0..2]
+                      nr = vote.scores[i][j]
+                      if nr < 60 or nr > 80
+                        sc.$apply -> sc.outOfRangeError = true
+                        return
+                    nr = vote.scores[i][3]
+                    if nr < 30 or nr > 40
+                      sc.$apply -> sc.outOfRangeError = true
+                      return
+                  if not vote.aux.decisionValid
+                    sc.$apply -> sc.drawsError = true
+                    return
+                for vote in sc.votes
+                  delete vote.aux
+                ballot.votes = _.filter sc.votes, (x) -> !x.total
+                ballot.locked = true
                 alert.modal 'hide'
             onDismissed: (alert) ->
               sc.$destroy()
