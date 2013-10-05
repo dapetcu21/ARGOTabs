@@ -136,6 +136,7 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
           ballot = round.ballots[index]
           noBallots = 3
           sc.votes = ballot.getVotesForBallots noBallots
+          sc.speakers = [ballot.prop.players, ballot.opp.players]
           n = sc.votes.length
 
           sc.winner = (vote) ->
@@ -143,6 +144,16 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
               "prop"
             else
               "opp"
+
+          sc.roles = ballot.getSpeakerRoles()
+          sc.sides = ['Prop', 'Opp']
+          sc.sidesClass = ['prop', 'opp']
+          sc.validPlayer = (el, v) ->
+            c = 0
+            for i in [0..2]
+              c++ if v[i] == el
+            console.log c
+            return c
 
           noBallots = 0
           for i in [0...n]
@@ -269,13 +280,18 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
                   if not vote.aux.decisionValid
                     sc.$apply -> sc.drawsError = true
                     return
-                for vote in sc.votes
-                  delete vote.aux
                 ballot.votes = _.filter sc.votes, (x) -> !x.total
+                ballot.roles = [sc.roles[0].roles, sc.roles[1].roles]
+                sc.$destroy()
+                sc = null
+
+                for vote in ballot.votes
+                  delete vote.aux
                 ballot.locked = true
+
                 alert.modal 'hide'
             onDismissed: (alert) ->
-              sc.$destroy()
+              sc.$destroy() if sc?
 
         $scope.eliminateNil = (a) ->
           if not a?

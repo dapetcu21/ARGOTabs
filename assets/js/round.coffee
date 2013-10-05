@@ -82,7 +82,9 @@ define ['util', 'ballot', 'underscore'], (Util, Ballot) ->
         @rooms.splice idx, 1
     
     sortByRank: (array) ->
-      console.log "sorting by rank: ", array
+      for team in array
+        team.stats = team.getStats @previousRounds()
+      array.sort (a,b) -> a.stats.score > b.stats.score
 
     pairingTeams: ->
       id = @id
@@ -125,6 +127,8 @@ define ['util', 'ballot', 'underscore'], (Util, Ballot) ->
         ballot.room = rooms[roomsIdx] if roomsIdx < roomsL
         roomsIdx++
         @ballots.push ballot
+        a.rounds[id].ballot = ballot
+        b.rounds[id].ballot = ballot
 
       switch opts.algorithm
         when 0, 3

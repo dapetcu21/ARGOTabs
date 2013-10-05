@@ -10,6 +10,23 @@ div(ng-show='outOfRangeError').alert.alert-error
 div(ng-show='drawsError').alert.alert-error
   button(type='button', class='close', ng-click='drawsError=false'): &times;
   <strong>Error!</strong> Draws are not valid in the World Schools format.
+table(editable-table, show-gear='false', model='roles')#roles-table
+  thead
+    tr
+      th(data-auto-index=1) Side
+      th(data-auto-index=2) 1st Speaker
+      th(data-auto-index=3) 2nd Speaker
+      th(data-auto-index=4) 3rd Speaker
+      th(data-auto-index=5) Reply Speaker
+  tbody(editable-tbody)
+    script(type='text/html')
+      td: span(class="{{sidesClass[$index]}}").strong {{sides[$index]}}
+      - for (var i = 0; i < 4; i++) {
+        td.nowrap
+          multi-cell(bind='o.roles[#{i}]', input-width='120', choices='speakers[$index]', choice-name='o.name')
+          i(ng-show='#{(i==3) ? "o.roles[3] == o.roles[2]" : "validPlayer(o.roles["+i+"], o.roles) >= 2"}').icon-exclamation.icon-dobitoc
+      - }
+
 table(editable-table, show-gear='false', model='votes')#votes-table
   thead
     tr
@@ -58,6 +75,14 @@ table(editable-table, show-gear='false', model='votes')#votes-table
       - sideCells(1)
 
 :stylus
+  #roles-table th:nth-child(1)
+    width: 60px
+  #roles-table th:nth-child(2),
+  #roles-table th:nth-child(3),
+  #roles-table th:nth-child(4),
+  #roles-table th:nth-child(5)
+    width: 158px
+
   #votes-table th:nth-child(1)
     width: 20px
   #votes-table th:nth-child(2)

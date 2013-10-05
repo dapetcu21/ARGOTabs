@@ -10,23 +10,34 @@ define ['util', 'underscore'], (Util) ->
       @locked ?= false
       @votes ?= []
       @judges ?= []
+      @roles ?= null
+
+    getSpeakerRoles: ->
+      roles = [{roles:[]},{roles:[]}]
+      if @roles
+        for i in [0..1]
+          for j in [0..3]
+            roles[i].roles.push @roles[i][j]
+        return roles
+      pushRoles = (team, r) ->
+        n = team.players.length
+        if n
+          for l in [0..2]
+            r.push team.players[l%n]
+          r.push team.players[0]
+        else
+          for l in [0..3]
+            r.push null
+      pushRoles @prop, roles[0].roles
+      pushRoles @opp, roles[1].roles
+      return roles
 
     getVotesForBallots: (b) ->
       deepCopy = (v) -> JSON.parse JSON.stringify v
       if @votes and @votes.length
         votes = []
         for v in @votes
-          aux = {}
-          exceptions = ['judge']
-          for exp in exceptions
-            aux[exp] = eval 'v.' + exp
-            eval 'v.' + exp + '=null'
-          vv = JSON.parse JSON.stringify v
-          for exp in exceptions
-            caux = aux[exp]
-            eval 'v.' + exp + '=caux'
-            eval 'vv.' + exp + '=caux'
-          votes.push vv
+          votes.push Util.deepCopy v, ['judge']
         return votes
       judges = _.filter @judges, (x) -> x.rank != Judge.shadowRank
       n = judges.length

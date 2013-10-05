@@ -1,5 +1,16 @@
 define ->
   class Util
+    @deepCopy: (v, exceptions = []) ->
+      aux = {}
+      for exp in exceptions
+        aux[exp] = eval 'v.' + exp
+        eval 'v.' + exp + '=null'
+      vv = JSON.parse JSON.stringify v
+      for exp in exceptions
+        caux = aux[exp]
+        eval 'v.' + exp + '=caux'
+        eval 'vv.' + exp + '=caux'
+      return vv
     @unpackCycles: (a, index) ->
       for v, i in a
         if typeof(v) == 'number'

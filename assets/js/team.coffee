@@ -29,6 +29,21 @@ define ['util', 'player'], (Util, Player) ->
           opts.ballot = Util.packCycle opts.ballot, round.ballots
       return model
 
+    getStats: (rounds) ->
+      console.log "gettingStats: ", this, rounds
+      o =
+        score: 0
+        scoreHighLow: 0
+        ballots: 0
+        wins: 0
+        roundCount: 0
+        byeWins: 0
+      for round in rounds
+        round = round.id if typeof round == 'object'
+        ballot = @rounds[round].ballot
+        console.log ballot
+      return o
+
     addPlayer: ->
       pl = new Player @tournament
       @players.push pl
