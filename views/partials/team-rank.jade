@@ -1,23 +1,38 @@
-table(editable-table, model='teams', visible='tournament.tableOpts.teamRank')#team-rank-table
-  thead
-    tr
-      th(data-auto-index=4) #
-      th(data-auto-index=1) Team name
-      th(data-auto-index=2) Club
-      th(data-auto-index=3) Ballots
-      th(data-auto-index=3) Wins
-      th(data-auto-index=3) Score
-      th(data-auto-index=3) Reply
-  tbody(editable-tbody)
-    script(type='text/html')
-      td {{$index + 1}}
-      td {{o.name}}
-      td {{o.club.name}}
-      td {{o.stats.ballots}}
-      td {{o.stats.wins}}
-      td {{o.stats.score}}
-      td {{o.stats.reply}}
-          
+.row-fluid
+  .span9
+    table(editable-table, model='teams', visible='tournament.tableOpts.teamRank')#team-rank-table
+      thead
+        tr
+          th(data-auto-index=4) #
+          th(data-auto-index=1) Team name
+          th(data-auto-index=2) Club
+          th(data-auto-index=3) Ballots
+          th(data-auto-index=3) Wins
+          th(data-auto-index=3) Score
+          th(data-auto-index=3) Reply
+      tbody(editable-tbody)
+        script(type='text/html')
+          td {{$index + 1}}
+          td {{o.name}}
+          td {{o.club.name}}
+          td {{o.stats.ballots}}
+          td {{o.stats.wins}}
+          td {{o.stats.score}}
+          td {{o.stats.reply}}
+            
+
+  .span3
+    .well.settings-group
+      strong Take into account:
+      div
+        label.checkbox
+          input(type='checkbox', ng-model='tournament.rankFromTeams.all')
+          | All rounds
+        label.checkbox(ng-repeat='o in tournament.rounds', ng-show='!tournament.rankFromTeams.all')
+          input(type='checkbox', ng-model='tournament.rankFromTeams[o.id]')
+          | Round {{$index+1}}
+    .well.settings-group
+      strong Ranking criteria
 :stylus
   #teams-table th:nth-child(1)
     width: 35px

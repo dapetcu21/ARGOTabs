@@ -151,7 +151,7 @@ div.tab-content
               input(type='checkbox', ng-model='round.rankFrom.all')
               | All previous rounds
             label.checkbox(ng-repeat='o in tournament.rounds', ng-show='o!=round && !round.rankFrom.all')
-              input(type='checkbox', , ng-model='round.rankFrom[o.id]')
+              input(type='checkbox', ng-model='round.rankFrom[o.id]')
               | Round {{$index+1}}
 
 

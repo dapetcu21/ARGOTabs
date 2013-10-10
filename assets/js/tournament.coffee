@@ -16,6 +16,7 @@ define ['util', 'club', 'team', 'judge', 'room', 'player', 'round'], (Util, Club
         @tableOpts = {}
         @ballotsPerMatch = 1
         @minPlayed = 1
+        @rankFromTeams ?= {all:true}
 
         for key, value of model
           this[key] = value
