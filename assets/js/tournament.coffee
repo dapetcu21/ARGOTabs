@@ -50,6 +50,14 @@ define ['util', 'club', 'team', 'judge', 'room', 'player', 'round'], (Util, Club
         fn()
         return
 
+    roundWithId: (id) ->
+      if typeof id == 'string'
+        id = parseInt id
+      for round in @rounds
+        if round.id == id
+          return round
+      null
+
     toJSON: ->
       Util.copyObject this, ['backend', 'lastData']
 

@@ -10,6 +10,7 @@ define ['util', 'ballot', 'underscore'], (Util, Ballot) ->
       @teams ?= []
       @rooms ?= []
       @ballots ?= []
+      @ballotsPerMatch ?= null
       @rankFrom ?= {all:true}
       if other
         for ballot, i in @ballots
@@ -21,6 +22,12 @@ define ['util', 'ballot', 'underscore'], (Util, Ballot) ->
           @registerJudge judge
         for room in @tournament.rooms
           @registerRoom room
+
+    ballotsPerMatchSolved: ->
+      if @ballotsPerMatch?
+        @ballotsPerMatch
+      else
+        @tournament.ballotsPerMatch
 
     unpackCycles: ->
       Util.unpackCycles @teams, @tournament.teams
@@ -82,8 +89,9 @@ define ['util', 'ballot', 'underscore'], (Util, Ballot) ->
         @rooms.splice idx, 1
     
     sortByRank: (array) ->
+      rounds = @previousRounds()
       for team in array
-        team.stats = team.getStats @previousRounds()
+        team.stats = team.getStats rounds
       array.sort (a,b) -> a.stats.score > b.stats.score
 
     pairingTeams: ->

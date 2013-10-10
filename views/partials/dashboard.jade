@@ -15,7 +15,7 @@
       strong Global settings
       div
         span Ballots per match: 
-        text-edit-cell(bind='tournament.ballotsPerMatch', input-width='50', pattern='[0-9]*', setter='parseInt(o)')
+        multi-cell(bind='tournament.ballotsPerMatch', input-width='50', choices='ballotsPerMatchOptions', choice-name='o')
           i.icon-edit.bottom-line
       div
         span Min. played rounds to reach speaker tab: 

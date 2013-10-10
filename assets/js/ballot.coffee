@@ -5,6 +5,7 @@ define ['util', 'underscore'], (Util) ->
         for key, value of other
           this[key] = value
       @teams ?= [null, null]
+      @presence ?= [true, true]
       @room ?= null
       @locked ?= false
       @votes ?= []
@@ -72,8 +73,8 @@ define ['util', 'underscore'], (Util) ->
     toJSON: ->
       model = Util.copyObject this, ['round']
       model.teams = [
-        Util.packCycle @teams[0], @round.tournament.teams,
-        Util.packCycle @teams[1], @round.tournament.teams ]
+        Util.packCycle(@teams[0], @round.tournament.teams),
+        Util.packCycle(@teams[1], @round.tournament.teams) ]
       model.room = Util.packCycle @room, @round.tournament.rooms
       return model
 

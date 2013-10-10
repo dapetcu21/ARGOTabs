@@ -39,7 +39,8 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
         else
           scope.softValidator {o: $parse(attrs.bind) scope.$parent}
       , (valid) ->
-        scope.valid = valid
+        if attrs.valid?
+          scope.valid = valid
         if valid
           scope.labelClass = 'valid'
           scope.inputClass = ''

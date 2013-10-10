@@ -137,6 +137,8 @@ div.tab-content
           strong Settings
           div
             span Ballots per match:
+              multi-cell(bind='round.ballotsPerMatch', nil-placeholder='{{tournament.ballotsPerMatch}} (inherited)', input-width='120', choices='ballotsPerMatchOptions', choice-name='o')
+                i.icon-edit.bottom-line
         .well
           strong Judge assignment rules
       .span6

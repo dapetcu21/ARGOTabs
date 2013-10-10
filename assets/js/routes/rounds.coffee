@@ -7,6 +7,7 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
         round = $scope.round = $scope.tournament.rounds[index]
         $scope.ranks = Judge.ranks
         $scope.rankStrings = Judge.rankStrings
+        $scope.ballotsPerMatchOptions = [1, 3, 5, 7, 9]
 
         $scope.parseInt = (s) ->
           return 0 if s == ''
@@ -134,7 +135,7 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
         $scope.editBallot = (index) ->
           sc = $scope.$new()
           ballot = round.ballots[index]
-          noBallots = 3
+          noBallots = round.ballotsPerMatchSolved()
           sc.votes = ballot.getVotesForBallots noBallots
           sc.speakers = [ballot.teams[0].players, ballot.teams[1].players]
           n = sc.votes.length
@@ -152,7 +153,6 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
             c = 0
             for i in [0..2]
               c++ if v[i] == el
-            console.log c
             return c
 
           noBallots = 0
