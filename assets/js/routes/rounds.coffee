@@ -136,7 +136,7 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
           ballot = round.ballots[index]
           noBallots = 3
           sc.votes = ballot.getVotesForBallots noBallots
-          sc.speakers = [ballot.prop.players, ballot.opp.players]
+          sc.speakers = [ballot.teams[0].players, ballot.teams[1].players]
           n = sc.votes.length
 
           sc.winner = (vote) ->
@@ -256,9 +256,9 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
             buttons: ['Cancel', 'Ok']
             cancelButtonIndex: 0
             width: 700
-            title: (if ballot.prop then '<span class="prop">'+ballot.prop.name+'</span>' else '<span>Bail</span>') +
+            title: (if ballot.prop then '<span class="prop">'+ballot.teams[0].name+'</span>' else '<span>Bail</span>') +
               '<span> vs. </span>' +
-              (if ballot.opp then '<span class="opp">'+ballot.opp.name+'</span>' else '<span>Bail</span>')
+              (if ballot.opp then '<span class="opp">'+ballot.teams[1].name+'</span>' else '<span>Bail</span>')
             htmlMessage: $compile(templates.ballotSheet())(sc)
             onClick: (alert, button) ->
               sc.$apply ->

@@ -54,17 +54,17 @@ div.tab-content
             th(data-auto-index=4)
               sort-arrow(model='round.ballots', sort-by='namePlaceholder(o.room.name)') Room
             th(data-auto-index=3)
-              sort-arrow(model='round.ballots', sort-by='namePlaceholder(o.prop).name') Prop
+              sort-arrow(model='round.ballots', sort-by='namePlaceholder(o.teams[0]).name') Prop
             th(data-auto-index=2)
-              sort-arrow(model='round.ballots', sort-by='namePlaceholder(o.opp).name') Opp
+              sort-arrow(model='round.ballots', sort-by='namePlaceholder(o.teams[1]).name') Opp
             th(data-auto-index=1)
               | Judges
         tbody(editable-tbody)
           script(type='text/html')
             td {{$index + 1}}
             td {{namePlaceholder(o.room).name}}
-            td {{namePlaceholder(o.prop).name}}
-            td {{namePlaceholder(o.opp).name}}
+            td {{namePlaceholder(o.teams[0]).name}}
+            td {{namePlaceholder(o.teams[1]).name}}
             td
 
   div#judges.tab-pane

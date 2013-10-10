@@ -20,13 +20,15 @@ define ['util', 'player'], (Util, Player) ->
           opts.ballot = Util.unpackCycle opts.ballot, round.ballots
     
     toJSON: ->
-      model = Util.copyObject this, ['tournament']
+      model = Util.copyObject this, ['tournament', 'rounds']
       model.club = Util.packCycle @club, @tournament.clubs
       model.players = Util.packCycles @players, @tournament.players
+      model.rounds = {}
       for id, opts in @rounds
         round = @tournament.rounds[id]
+        model.rounds[id] = mopts = Util.copyObject opts
         if round and opts.ballot
-          opts.ballot = Util.packCycle opts.ballot, round.ballots
+          mopts.ballot = Util.packCycle opts.ballot, round.ballots
       return model
 
     getStats: (rounds) ->

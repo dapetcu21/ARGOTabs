@@ -4,8 +4,7 @@ define ['util', 'underscore'], (Util) ->
       if other
         for key, value of other
           this[key] = value
-      @prop ?= null
-      @opp ?= null
+      @teams ?= [null, null]
       @room ?= null
       @locked ?= false
       @votes ?= []
@@ -28,8 +27,8 @@ define ['util', 'underscore'], (Util) ->
         else
           for l in [0..3]
             r.push null
-      pushRoles @prop, roles[0].roles
-      pushRoles @opp, roles[1].roles
+      pushRoles @teams[0], roles[0].roles
+      pushRoles @teams[1], roles[1].roles
       return roles
 
     getVotesForBallots: (b) ->
@@ -66,14 +65,15 @@ define ['util', 'underscore'], (Util) ->
       return votes
 
     unpackCycles: ->
-      @prop = Util.unpackCycle @prop, @round.tournament.teams
-      @opp = Util.unpackCycle @opp, @round.tournament.teams
+      @teams[0] = Util.unpackCycle @teams[0], @round.tournament.teams
+      @teams[1] = Util.unpackCycle @teams[1], @round.tournament.teams
       @room = Util.unpackCycle @room, @round.tournament.rooms
     
     toJSON: ->
       model = Util.copyObject this, ['round']
-      model.prop = Util.packCycle @prop, @round.tournament.teams
-      model.opp = Util.packCycle @opp, @round.tournament.teams
+      model.teams = [
+        Util.packCycle @teams[0], @round.tournament.teams,
+        Util.packCycle @teams[1], @round.tournament.teams ]
       model.room = Util.packCycle @room, @round.tournament.rooms
       return model
 

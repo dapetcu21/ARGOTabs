@@ -91,7 +91,6 @@ define ['util', 'ballot', 'underscore'], (Util, Ballot) ->
       teams = _.filter @teams, (o) -> o.rounds[id].participates
 
     pair: (opts) ->
-      console.log opts
 
       teams = @pairingTeams()
       
@@ -105,7 +104,6 @@ define ['util', 'ballot', 'underscore'], (Util, Ballot) ->
 
       id = @id
       rooms = _.filter @rooms, (o) -> o.rounds[id].participates
-      console.log rooms
       roomsIdx = 0
       roomsL = rooms.length
 
@@ -115,15 +113,15 @@ define ['util', 'ballot', 'underscore'], (Util, Ballot) ->
 
       pairTeams = (a, b) =>
         ballot = new Ballot this
-        ballot.prop = a
-        ballot.opp = b
+        ballot.teams[0] = a
+        ballot.teams[1] = b
         if flip
           proportion = 0.5
           #if balance
             #weighted coin flip
           if Math.random() > proportion
-            ballot.prop = b
-            ballot.opp = a
+            ballot.teams[0] = b
+            ballot.teams[1] = a
         ballot.room = rooms[roomsIdx] if roomsIdx < roomsL
         roomsIdx++
         @ballots.push ballot
