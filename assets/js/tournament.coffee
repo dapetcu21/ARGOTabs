@@ -1,4 +1,4 @@
-define ['util', 'club', 'team', 'judge', 'room', 'player', 'round'], (Util, Club, Team, Judge, Room, Player, Round) ->
+define ['util', 'club', 'team', 'judge', 'room', 'player', 'round', 'sorter'], (Util, Club, Team, Judge, Room, Player, Round, Sorter) ->
   class Tournament
     constructor: (@backend) ->
       @clubs = []
@@ -17,6 +17,7 @@ define ['util', 'club', 'team', 'judge', 'room', 'player', 'round'], (Util, Club
         @ballotsPerMatch = 1
         @minPlayed = 1
         @rankFromTeams ?= {all:true}
+        @teamRankSorter = Sorter.teamRankSorter(@teamRankSorter)
 
         for key, value of model
           this[key] = value

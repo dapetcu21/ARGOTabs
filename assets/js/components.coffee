@@ -14,6 +14,13 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
     ]
     template: templates.navLi()
 
+  mod.directive "sorterCriteria", [->
+    template: templates.sorterCriteria()
+    restrict: 'E'
+    scope:
+      model: '=bind'
+  ]
+
   mod.directive "textEditCell", ['$parse', ($parse) ->
     template: templates.textEditCell()
     restrict: 'E'

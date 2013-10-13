@@ -256,9 +256,9 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
             buttons: ['Cancel', 'Ok']
             cancelButtonIndex: 0
             width: 700
-            title: (if ballot.prop then '<span class="prop">'+ballot.teams[0].name+'</span>' else '<span>Bail</span>') +
+            title: (if ballot.teams[0] then '<span class="prop">'+ballot.teams[0].name+'</span>' else '<span>Bail</span>') +
               '<span> vs. </span>' +
-              (if ballot.opp then '<span class="opp">'+ballot.teams[1].name+'</span>' else '<span>Bail</span>')
+              (if ballot.teams[1] then '<span class="opp">'+ballot.teams[1].name+'</span>' else '<span>Bail</span>')
             htmlMessage: $compile(templates.ballotSheet())(sc)
             onClick: (alert, button) ->
               sc.$apply ->

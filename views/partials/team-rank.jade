@@ -33,6 +33,7 @@
           | Round {{$index+1}}
     .well.settings-group
       strong Ranking criteria
+      sorter-criteria(bind='tournament.teamRankSorter')
 :stylus
   #teams-table th:nth-child(1)
     width: 35px

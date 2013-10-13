@@ -69,12 +69,26 @@ define ['util', 'underscore'], (Util) ->
       @teams[0] = Util.unpackCycle @teams[0], @round.tournament.teams
       @teams[1] = Util.unpackCycle @teams[1], @round.tournament.teams
       @room = Util.unpackCycle @room, @round.tournament.rooms
+      if @roles?
+        for i in [0..1]
+          continue if not @teams[i]?
+          v = @roles[i]
+          for j in [0...v.length]
+            v[j] = Util.unpackCycle v[j], @teams[i].players
     
     toJSON: ->
       model = Util.copyObject this, ['round']
       model.teams = [
         Util.packCycle(@teams[0], @round.tournament.teams),
         Util.packCycle(@teams[1], @round.tournament.teams) ]
+      if @roles?
+        model.roles = [[],[]]
+        for i in [0..1]
+          continue if not @teams[i]?
+          v = model.roles[i]
+          vv = @roles[i]
+          for o in vv
+            v.push Util.packCycle o, @teams[i].players
       model.room = Util.packCycle @room, @round.tournament.rooms
       return model
 
