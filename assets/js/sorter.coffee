@@ -1,6 +1,10 @@
 define [], ->
-  newCrit = (name, crit, operand = '<') ->
-    funcString = '(function(a,b) { return a.'+crit+operand+'b.'+crit+'; })'
+  newCrit = (name, crit, operand = '>', equality = '==') ->
+    funcString = '(function(a,b) { 
+      if (a.'+crit+operand+'b.'+crit+') return -1;
+      if (a.'+crit+equality+'b.'+crit+') return 0;
+      return 1;
+    })'
     return {
       name: name
       func: eval funcString
@@ -24,8 +28,8 @@ define [], ->
         return false if r > 0
       return true
 
-    @teamRankSorter: ->
-      new Sorter [
+    @teamRankSorter: (o) ->
+      new Sorter if o? then o else [
         newCrit('Ballots', 'ballots'),
         newCrit('Points', 'score'),
         newCrit('H/L Points', 'scoreHighLow'),

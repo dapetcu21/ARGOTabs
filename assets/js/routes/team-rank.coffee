@@ -31,7 +31,8 @@ define ["underscore"], ->
           rounds ?= baseRounds()
           for team in teams
             team.stats = team.getStats rounds
-          teams.sort (a,b) -> a.stats.score < b.stats.score
+          sorter = tournament.teamRankSorter.compareObjects
+          teams.sort (a,b) -> sorter a.stats, b.stats
 
         roundIds = null
         $scope.$watch (-> JSON.stringify roundIds = baseRoundIds()), (v) ->

@@ -123,18 +123,27 @@ define ['util', 'ballot', 'underscore'], (Util, Ballot) ->
         ballot = new Ballot this
         ballot.teams[0] = a
         ballot.teams[1] = b
-        if flip
-          proportion = 0.5
-          #if balance
-            #weighted coin flip
-          if Math.random() > proportion
-            ballot.teams[0] = b
-            ballot.teams[1] = a
+        if not a? or not b?
+          if not a?
+            aux = a
+            a = b
+            b = aux
+            ballot.teams[0] = a
+            ballot.teams[1] = b
+          ballot.locked = true
+        else
+          if flip
+            proportion = 0.5
+            #if balance
+              #weighted coin flip
+            if Math.random() > proportion
+              ballot.teams[0] = b
+              ballot.teams[1] = a
         ballot.room = rooms[roomsIdx] if roomsIdx < roomsL
         roomsIdx++
         @ballots.push ballot
-        a.rounds[id].ballot = ballot
-        b.rounds[id].ballot = ballot
+        a.rounds[id].ballot = ballot if a?
+        b.rounds[id].ballot = ballot if b?
 
       switch opts.algorithm
         when 0, 3

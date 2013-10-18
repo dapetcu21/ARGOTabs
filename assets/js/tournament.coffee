@@ -17,7 +17,6 @@ define ['util', 'club', 'team', 'judge', 'room', 'player', 'round', 'sorter'], (
         @ballotsPerMatch = 1
         @minPlayed = 1
         @rankFromTeams ?= {all:true}
-        @teamRankSorter = Sorter.teamRankSorter(@teamRankSorter)
 
         for key, value of model
           this[key] = value
@@ -47,6 +46,8 @@ define ['util', 'club', 'team', 'judge', 'room', 'player', 'round', 'sorter'], (
           player.unpackCycles()
         for round in @rounds
           round.unpackCycles()
+
+        @teamRankSorter = Sorter.teamRankSorter model.teamRankSorter
 
         @lastData = @toFile()
         fn()

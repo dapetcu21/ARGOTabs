@@ -13,75 +13,80 @@ div(ng-show='drawsError').alert.alert-error
 table(editable-table, show-gear='false', model='roles')#roles-table
   thead
     tr
-      th(data-auto-index=1) Side
-      th(data-auto-index=2) 1st Speaker
+      th(data-auto-index=5) Side
+      th(data-auto-index=4) 1st Speaker
       th(data-auto-index=3) 2nd Speaker
-      th(data-auto-index=4) 3rd Speaker
-      th(data-auto-index=5) Reply Speaker
+      th(data-auto-index=2) 3rd Speaker
+      th(data-auto-index=1) Reply Speaker
   tbody(editable-tbody)
     script(type='text/html')
-      td: span(class="{{sidesClass[$index]}}").strong {{sides[$index]}}
+      td.nowrap
+        input(type='checkbox', ng-model='presence[$index]').presence-check
+        span(class="{{sidesClass[$index]}}").strong {{sides[$index]}}
       - for (var i = 0; i < 4; i++) {
         td.nowrap
-          multi-cell(bind='o.roles[#{i}]', input-width='120', choices='speakers[$index]', choice-name='o.name')
-          i(ng-show='#{(i==3) ? "o.roles[3] == o.roles[2]" : "validPlayer(o.roles["+i+"], o.roles) >= 2"}').icon-exclamation.icon-dobitoc
+          span(ng-show='!presence[$index]').muted-true not present
+          span(ng-show='presence[$index]')
+            multi-cell(bind='o.roles[#{i}]', input-width='120', choices='speakers[$index]', choice-name='o.name')
+            i(ng-show='#{(i==3) ? "o.roles[3] == o.roles[2]" : "validPlayer(o.roles["+i+"], o.roles) >= 2"}').icon-exclamation.icon-dobitoc
       - }
 
-table(editable-table, show-gear='false', model='votes')#votes-table
-  thead
-    tr
-      th(data-auto-index=5) #
-      th(data-auto-index=1) Judge
-      th(data-auto-index=3).prop P1
-      th(data-auto-index=3).prop P2
-      th(data-auto-index=3).prop P3
-      th(data-auto-index=3).prop PR
-      th(data-auto-index=4).prop Prop
-      th(data-auto-index=2) vs.
-      th(data-auto-index=4).opp Opp
-      th(data-auto-index=3).opp O1
-      th(data-auto-index=3).opp O2
-      th(data-auto-index=3).opp O3
-      th(data-auto-index=3).opp OR
-  tbody(editable-tbody)
-    script(type='text/html')
-      td {{$index + 1}}
-      td 
-        span {{o.judge.name}}
-        span(ng-show='o.judge == null').muted-true Not assigned
-      - function sideCells(side) {
-        - for (var i = 0; i < 4; i++) {
-          td(class='valid-{{valid#{side}#{i}}}').nowrap
-            text-edit-cell(bind='o.scores[#{side}][#{i}]', enabled='!o.total', valid='valid#{side}#{i}', input-width='17', pattern='[0-9.]*', setter='parseFloat(o)', getter='truncFloat(o, 2)', soft-validator='validateMinMax(o, #{i==3 ? 30 : 60}, #{i==3 ? 40 : 80})')
-            i(ng-show='valid#{side}#{i} && (o.scores[#{side}][#{i}] <= #{i==3 ? 30.5 : 61} || o.scores[#{side}][#{i}] >= #{i==3 ? 39.5 : 79})').icon-exclamation.icon-dobitoc
-        - } }
-      - function sideTotal(side) {
-        td {{truncFloat(o.scores[#{side}][0] + o.scores[#{side}][1] + o.scores[#{side}][2] + o.scores[#{side}][3], 2)}}
-      - }
-      - sideCells(0)
-      - sideTotal(0)
-      td(class='valid-{{o.aux.decisionValid}}')
-        span(ng-show='o.aux.decisionValid').nowrap
-          multi-cell(bind='o.prop', enabled='!o.total && (o.aux.validSplits[o.aux.winner].length > 1)', input-width='41', choices='o.aux.validSplits[o.aux.winner]', choice-name='o')
-          span 
-          i(class='{{winner(o)}}').vote-trophy.icon-trophy
-          span 
-          multi-cell(bind='o.opp', enabled='!o.total && (o.aux.validSplits[1-o.aux.winner].length > 1)', input-width='41', choices='o.aux.validSplits[1-o.aux.winner]', choice-name='o')
-        span(ng-show='!o.aux.decisionValid && !o.total')
-          | Draw
-        span(ng-show='!o.aux.decisionValid && o.total')
-          | Invalid
-      - sideTotal(1)
-      - sideCells(1)
+div(ng-show='presence[0] && presence[1]')
+  table(editable-table, show-gear='false', model='votes')#votes-table
+    thead
+      tr
+        th(data-auto-index=5) #
+        th(data-auto-index=1) Judge
+        th(data-auto-index=3).prop P1
+        th(data-auto-index=3).prop P2
+        th(data-auto-index=3).prop P3
+        th(data-auto-index=3).prop PR
+        th(data-auto-index=4).prop Prop
+        th(data-auto-index=2) vs.
+        th(data-auto-index=4).opp Opp
+        th(data-auto-index=3).opp O1
+        th(data-auto-index=3).opp O2
+        th(data-auto-index=3).opp O3
+        th(data-auto-index=3).opp OR
+    tbody(editable-tbody)
+      script(type='text/html')
+        td {{$index + 1}}
+        td 
+          span {{o.judge.name}}
+          span(ng-show='o.judge == null').muted-true Not assigned
+        - function sideCells(side) {
+          - for (var i = 0; i < 4; i++) {
+            td(class='valid-{{valid#{side}#{i}}}').nowrap
+              text-edit-cell(bind='o.scores[#{side}][#{i}]', enabled='!o.total', valid='valid#{side}#{i}', input-width='17', pattern='[0-9.]*', setter='parseFloat(o)', getter='truncFloat(o, 2)', soft-validator='validateMinMax(o, #{i==3 ? 30 : 60}, #{i==3 ? 40 : 80})')
+              i(ng-show='valid#{side}#{i} && (o.scores[#{side}][#{i}] <= #{i==3 ? 30.5 : 61} || o.scores[#{side}][#{i}] >= #{i==3 ? 39.5 : 79})').icon-exclamation.icon-dobitoc
+          - } }
+        - function sideTotal(side) {
+          td {{truncFloat(o.scores[#{side}][0] + o.scores[#{side}][1] + o.scores[#{side}][2] + o.scores[#{side}][3], 2)}}
+        - }
+        - sideCells(0)
+        - sideTotal(0)
+        td(class='valid-{{o.aux.decisionValid}}')
+          span(ng-show='o.aux.decisionValid').nowrap
+            multi-cell(bind='o.prop', enabled='!o.total && (o.aux.validSplits[o.aux.winner].length > 1)', input-width='41', choices='o.aux.validSplits[o.aux.winner]', choice-name='o')
+            span 
+            i(class='{{winner(o)}}').vote-trophy.icon-trophy
+            span 
+            multi-cell(bind='o.opp', enabled='!o.total && (o.aux.validSplits[1-o.aux.winner].length > 1)', input-width='41', choices='o.aux.validSplits[1-o.aux.winner]', choice-name='o')
+          span(ng-show='!o.aux.decisionValid && !o.total')
+            | Draw
+          span(ng-show='!o.aux.decisionValid && o.total')
+            | Invalid
+        - sideTotal(1)
+        - sideCells(1)
 
 :stylus
   #roles-table th:nth-child(1)
-    width: 60px
+    width: 50px
   #roles-table th:nth-child(2),
   #roles-table th:nth-child(3),
   #roles-table th:nth-child(4),
   #roles-table th:nth-child(5)
-    width: 158px
+    width: 127px
 
   #votes-table th:nth-child(1)
     width: 20px
@@ -108,6 +113,9 @@ table(editable-table, show-gear='false', model='votes')#votes-table
 
   #votes-table td.valid-false .textedit-cell.invalid .textedit-label
     color: #ffffff
+
+  input[type="checkbox"].presence-check
+    margin: 0px 5px 0px 0px
 
   .icon-dobitoc
     color: #b94a48

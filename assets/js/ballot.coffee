@@ -77,7 +77,7 @@ define ['util', 'underscore'], (Util) ->
             v[j] = Util.unpackCycle v[j], @teams[i].players
     
     toJSON: ->
-      model = Util.copyObject this, ['round']
+      model = Util.copyObject this, ['round', 'stats']
       model.teams = [
         Util.packCycle(@teams[0], @round.tournament.teams),
         Util.packCycle(@teams[1], @round.tournament.teams) ]

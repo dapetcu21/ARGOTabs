@@ -62,6 +62,47 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
         $scope.shuffleRooms = ->
           round.shuffleRooms()
 
+        updateStats = (ballot) ->
+          pres0 = ballot.teams[0]? and ballot.presence[0]
+          pres1 = ballot.teams[1]? and ballot.presence[1]
+          if not pres0 and not pres1
+            ballot.stats =
+              scores: ['not played', '']
+              winClass: 'hidden-true'
+              classes: ['', 'hidden-true']
+          else if not pres0 or not pres1
+            ballot.stats =
+              scores: ['default win', '']
+              winClass: 'hidden-true'
+              classes: [(if pres0 then 'prop' else 'opp'), 'hidden-true']
+          else if ballot.locked
+            s = [0, 0]
+            w = [0, 0]
+            for side in [0..1]
+              ballots = 0
+              for vote in ballot.votes
+                for i in [0...4]
+                  s[side] += vote.scores[side][i] * vote.ballots
+                w[side] += if side then vote.opp else vote.prop
+                ballots += vote.ballots
+              s[side] /= ballots
+
+            ballot.stats =
+              scores: s
+              winClass: if w[0]>w[1] then 'prop' else 'opp'
+              classes: ['', '']
+          else
+            ballot.stats =
+              scores: ['unfilled', '']
+              winClass: 'hidden-true'
+              classes: ['muted-true', '']
+          return
+
+
+
+        for b in round.ballots
+          updateStats b
+
         $scope.pair = ->
           $scope.pairOpts =
             algorithm: 0
@@ -94,6 +135,8 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
                 alert.modal 'hide'
                 Util.safeApply $scope, ->
                   round.pair opts
+                  for b in round.ballots
+                    updateStats b
 
         $scope.addTeamToManualPairing = (team, index) ->
           if $scope.incompletePairing
@@ -147,6 +190,7 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
               "opp"
 
           sc.roles = ballot.getSpeakerRoles()
+          sc.presence = [ballot.presence[0], ballot.presence[1]]
           sc.sides = ['Prop', 'Opp']
           sc.sidesClass = ['prop', 'opp']
           sc.validPlayer = (el, v) ->
@@ -264,6 +308,8 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
               sc.$apply ->
                 sc.drawsError = false
                 sc.outOfRangeError = false
+              voteError = false
+              pres = sc.presence[0] and sc.presence[1]
               if button == 1
                 for vote in sc.votes
                   continue if vote.total
@@ -271,17 +317,25 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
                     for j in [0..2]
                       nr = vote.scores[i][j]
                       if nr < 60 or nr > 80
-                        sc.$apply -> sc.outOfRangeError = true
-                        return
+                        voteError = true
+                        if pres
+                          sc.$apply -> sc.outOfRangeError = true
+                          return
                     nr = vote.scores[i][3]
                     if nr < 30 or nr > 40
-                      sc.$apply -> sc.outOfRangeError = true
-                      return
+                      voteError = true
+                      if pres
+                        sc.$apply -> sc.outOfRangeError = true
+                        return
                   if not vote.aux.decisionValid
-                    sc.$apply -> sc.drawsError = true
-                    return
-                ballot.votes = _.filter sc.votes, (x) -> !x.total
+                    voteError = true
+                    if pres
+                      sc.$apply -> sc.drawsError = true
+                      return
+                if not voteError
+                  ballot.votes = _.filter sc.votes, (x) -> !x.total
                 ballot.roles = [sc.roles[0].roles, sc.roles[1].roles]
+                ballot.presence = [sc.presence[0], sc.presence[1]]
                 sc.$destroy()
                 sc = null
 
@@ -289,6 +343,8 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
                   delete vote.aux
                 ballot.locked = true
 
+                $scope.$apply ->
+                  updateStats ballot
                 alert.modal 'hide'
             onDismissed: (alert) ->
               sc.$destroy() if sc?
@@ -298,9 +354,9 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
             return ''
           return a
 
-        $scope.namePlaceholder = (a) ->
+        $scope.namePlaceholder = (a, p='') ->
           if not a?
-            return {name: ''}
+            return {name: p}
           return a
 
         $scope.nilPlaceholder = (a, p) ->

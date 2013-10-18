@@ -52,6 +52,7 @@ define ['util', 'player'], (Util, Player) ->
       for round in rounds
         round = round.id if typeof round == 'object'
         ballot = @rounds[round].ballot
+        continue if not ballot.locked
         if this == ballot.teams[0]
           side = 0
         else if this == ballot.teams[1]
@@ -86,8 +87,10 @@ define ['util', 'player'], (Util, Player) ->
       o.wins = o.rawWins + o.byeWins
       o.ballots = o.rawBallots + o.byeBallots
       rp = o.roundsPlayed + o.roundsBotched
-      o.score = o.rawScore + o.byeWins * if rp then (o.rawScore / rp) else 245
-      o.reply = o.rawReply + o.byeWins * if rp then (o.rawReply / rp) else 35
+      averageScore = 245
+      averageReply = 35
+      o.score = o.rawScore + o.byeWins * if rp then (o.rawScore / rp) else averageScore
+      o.reply = o.rawReply + o.byeWins * if rp then (o.rawReply / rp) else averageReply
       rp = o.rawHLRounds
       o.scoreHighLow = o.rawHLScore + o.byeHLRounds * if rp then (o.rawHLScore / rp) else 245
       o.wins = o.rawWins + o.byeWins

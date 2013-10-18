@@ -23,49 +23,59 @@ div.tab-content
         button(ng-click='pair()').btn.btn-danger Pair
         div.inline.small-margin Check teams that are to play this round.
 
-      table(editable-table, model='round.teams', visible='round.tableOpts.teams', reorders)#round-teams-table
-        thead
-          tr
-            th(data-auto-index=5) #
-            th(data-auto-index=4)
-              sort-arrow(model='round.teams', sort-by='o.rounds[round.id].participates', hide-arrows)
-                i.icon-check
-            th(data-auto-index=3)
-              sort-arrow(model='round.teams', sort-by='o.name') Team name
-            th(data-auto-index=2)
-              sort-arrow(model='round.teams', sort-by='eliminateNil(o.club.name)') Club
-        tbody(editable-tbody)
-          script(type='text/html')
-            td {{$index + 1}}
-            td
-              input(type='checkbox', ng-model='o.rounds[round.id].participates')
-            td {{o.name}}
-            td: span(class='muted-{{o.club == null}}') {{nilPlaceholder(o.club, {name:"unaffiliated"}).name}}
+        table(editable-table, model='round.teams', visible='round.tableOpts.teams', reorders)#round-teams-table
+          thead
+            tr
+              th(data-auto-index=5) #
+              th(data-auto-index=4)
+                sort-arrow(model='round.teams', sort-by='o.rounds[round.id].participates', hide-arrows)
+                  i.icon-check
+              th(data-auto-index=3)
+                sort-arrow(model='round.teams', sort-by='o.name') Team name
+              th(data-auto-index=2)
+                sort-arrow(model='round.teams', sort-by='eliminateNil(o.club.name)') Club
+          tbody(editable-tbody)
+            script(type='text/html')
+              td {{$index + 1}}
+              td
+                input(type='checkbox', ng-model='o.rounds[round.id].participates')
+              td {{o.name}}
+              td: span(class='muted-{{o.club == null}}') {{nilPlaceholder(o.club, {name:"unaffiliated"}).name}}
+
     div#pairings(ng-show='round.paired')
       .control-group
         button(ng-click='assignJudges()').btn Reassign judges
         button(ng-click='shuffleRooms()').btn Shuffle in rooms
         div.inline.small-margin You can manually drag judges to fine-tune
-          
-      table(editable-table, model='round.ballots', visible='round.tableOpts.ballots', table-class='table table-bordered table-hover', row-clicked='editBallot($index)', reorders)#round-pairings-table
-        thead
-          tr
-            th(data-auto-index=5) #
-            th(data-auto-index=4)
-              sort-arrow(model='round.ballots', sort-by='namePlaceholder(o.room.name)') Room
-            th(data-auto-index=3)
-              sort-arrow(model='round.ballots', sort-by='namePlaceholder(o.teams[0]).name') Prop
-            th(data-auto-index=2)
-              sort-arrow(model='round.ballots', sort-by='namePlaceholder(o.teams[1]).name') Opp
-            th(data-auto-index=1)
-              | Judges
-        tbody(editable-tbody)
-          script(type='text/html')
-            td {{$index + 1}}
-            td {{namePlaceholder(o.room).name}}
-            td {{namePlaceholder(o.teams[0]).name}}
-            td {{namePlaceholder(o.teams[1]).name}}
-            td
+
+      .row-fluid
+        .span10
+          table(editable-table, model='round.ballots', visible='round.tableOpts.ballots', table-class='table table-bordered table-hover', row-clicked='editBallot($index)', reorders)#round-pairings-table
+            thead
+              tr
+                th(data-auto-index=6) #
+                th(data-auto-index=4)
+                  sort-arrow(model='round.ballots', sort-by='namePlaceholder(o.room.name)') Room
+                th(data-auto-index=3)
+                  sort-arrow(model='round.ballots', sort-by='namePlaceholder(o.teams[0]).name') Prop
+                th(data-auto-index=2)
+                  sort-arrow(model='round.ballots', sort-by='namePlaceholder(o.teams[1]).name') Opp
+                th(data-auto-index=1) Judges
+                th(data-auto-index=5) Win
+            tbody(editable-tbody)
+              script(type='text/html')
+                td {{$index + 1}}
+                td {{namePlaceholder(o.room).name}}
+                td: span(class='muted-{{o.teams[0] == null}}') {{namePlaceholder(o.teams[0],'Bye').name}}
+                td: span(class='muted-{{o.teams[1] == null}}') {{namePlaceholder(o.teams[1],'Bye').name}}
+                td
+                td.nowrap
+                  span(class="{{o.stats.classes[0]}}") {{o.stats.scores[0]}} 
+                  span(class="{{o.stats.winClass}}"): i.icon-trophy
+                  span(class="{{o.stats.classes[1]}}")  {{o.stats.scores[1]}}
+        .span2
+          .well.settings-group
+            strong Free judges
 
   div#judges.tab-pane
     .control-group
@@ -184,6 +194,8 @@ div.tab-content
     width: 20%
   #round-pairings-table th:nth-child(4)
     width: 20%
+  #round-pairings-table th:nth-child(6)
+    width: 70px
 
   #round-rooms-table th:nth-child(1)
     width: 15px
