@@ -57,9 +57,9 @@ div.tab-content
                 th(data-auto-index=4)
                   sort-arrow(model='round.ballots', sort-by='namePlaceholder(o.room.name)') Room
                 th(data-auto-index=3)
-                  sort-arrow(model='round.ballots', sort-by='namePlaceholder(o.teams[0]).name') Prop
+                  sort-arrow(model='round.ballots', sort-by='namePlaceholder(o.teams[0]).name').prop Prop
                 th(data-auto-index=2)
-                  sort-arrow(model='round.ballots', sort-by='namePlaceholder(o.teams[1]).name') Opp
+                  sort-arrow(model='round.ballots', sort-by='namePlaceholder(o.teams[1]).name').opp Opp
                 th(data-auto-index=1) Judges
                 th(data-auto-index=5) Win
             tbody(editable-tbody)

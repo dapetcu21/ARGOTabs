@@ -178,6 +178,7 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
         $scope.editBallot = (index) ->
           sc = $scope.$new()
           ballot = round.ballots[index]
+          return if ballot.prop == null or ballot.opp == null
           noBallots = round.ballotsPerMatchSolved()
           sc.votes = ballot.getVotesForBallots noBallots
           sc.speakers = [ballot.teams[0].players, ballot.teams[1].players]
@@ -300,9 +301,7 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
             buttons: ['Cancel', 'Ok']
             cancelButtonIndex: 0
             width: 700
-            title: (if ballot.teams[0] then '<span class="prop">'+ballot.teams[0].name+'</span>' else '<span>Bail</span>') +
-              '<span> vs. </span>' +
-              (if ballot.teams[1] then '<span class="opp">'+ballot.teams[1].name+'</span>' else '<span>Bail</span>')
+            title: '<span class="prop">'+ballot.teams[0].name+'</span><span> vs. </span><span class="opp">'+ballot.teams[1].name+'</span>'
             htmlMessage: $compile(templates.ballotSheet())(sc)
             onClick: (alert, button) ->
               sc.$apply ->
