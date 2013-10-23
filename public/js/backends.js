@@ -1,1 +1,1 @@
-!function(){define(["localbackend"],function(n){return[n]})}.call(this);
+(function(){define(["localbackend"],function(n){return[n]})}).call(this);

@@ -1,1 +1,1 @@
-!function(){define(function(){return function(t,e){return e.when("/json",{template:"<p>{{text}}</p>",controller:["$scope",function(t){return t.$watch("tournament",function(e){return null!=e?t.text=e.toFile():void 0})}]})}})}.call(this);
+(function(){define(function(){return function(t,e){return e.when("/json",{template:"<p>{{text}}</p>",controller:["$scope",function(t){return t.$watch("tournament",function(e){return null!=e?t.text=e.toFile():void 0})}]})}})}).call(this);
