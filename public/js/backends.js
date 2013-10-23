@@ -1,6 +1,1 @@
-(function() {
-  define(['localbackend'], function(LocalBackend) {
-    return [LocalBackend];
-  });
-
-}).call(this);
+!function(){define(["localbackend"],function(n){return[n]})}.call(this);
