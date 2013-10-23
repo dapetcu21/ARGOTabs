@@ -4,6 +4,8 @@ define ['backend'], (Backend) ->
       @loadDate = new Date()
       @date = this.modifiedDate()
 
+    @icon = '<i class="icon-file"></i>'
+
     modifiedDate: ->
       date = localStorage.getItem(@fName + '.mdate')
       if date? then new Date(parseInt(date.match(/\d+/)[0])) else @loadDate
