@@ -10,6 +10,7 @@ define ['util', 'underscore'], (Util) ->
       @locked ?= false
       @votes ?= []
       @judges ?= []
+      @shadows ?= []
       @roles ?= null
 
     getSpeakerRoles: ->
@@ -39,7 +40,7 @@ define ['util', 'underscore'], (Util) ->
         for v in @votes
           votes.push Util.deepCopy v, ['judge']
         return votes
-      judges = _.filter @judges, (x) -> x.rank != Judge.shadowRank
+      judges = @judges
       n = judges.length
       votes = []
       newVote = (judge, bal = 1) ->
@@ -69,6 +70,8 @@ define ['util', 'underscore'], (Util) ->
       @teams[0] = Util.unpackCycle @teams[0], @round.tournament.teams
       @teams[1] = Util.unpackCycle @teams[1], @round.tournament.teams
       @room = Util.unpackCycle @room, @round.tournament.rooms
+      Util.unpackCycles @judges, @round.tournament.judges
+      Util.unpackCycles @shadows, @round.tournament.judges
       if @roles?
         for i in [0..1]
           continue if not @teams[i]?
@@ -90,6 +93,8 @@ define ['util', 'underscore'], (Util) ->
           for o in vv
             v.push Util.packCycle o, @teams[i].players
       model.room = Util.packCycle @room, @round.tournament.rooms
+      model.judges = Util.packCycles @judges, @round.tournament.judges
+      model.shadows = Util.packCycles @shadows, @round.tournament.judges
       return model
 
     destroy: ->

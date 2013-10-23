@@ -23,24 +23,24 @@ div.tab-content
         button(ng-click='pair()').btn.btn-danger Pair
         div.inline.small-margin Check teams that are to play this round.
 
-        table(editable-table, model='round.teams', visible='round.tableOpts.teams', reorders)#round-teams-table
-          thead
-            tr
-              th(data-auto-index=5) #
-              th(data-auto-index=4)
-                sort-arrow(model='round.teams', sort-by='o.rounds[round.id].participates', hide-arrows)
-                  i.icon-check
-              th(data-auto-index=3)
-                sort-arrow(model='round.teams', sort-by='o.name') Team name
-              th(data-auto-index=2)
-                sort-arrow(model='round.teams', sort-by='eliminateNil(o.club.name)') Club
-          tbody(editable-tbody)
-            script(type='text/html')
-              td {{$index + 1}}
-              td
-                input(type='checkbox', ng-model='o.rounds[round.id].participates')
-              td {{o.name}}
-              td: span(class='muted-{{o.club == null}}') {{nilPlaceholder(o.club, {name:"unaffiliated"}).name}}
+      table(editable-table, model='round.teams', visible='round.tableOpts.teams', reorders)#round-teams-table
+        thead
+          tr
+            th(data-auto-index=5) #
+            th(data-auto-index=4)
+              sort-arrow(model='round.teams', sort-by='o.rounds[round.id].participates', hide-arrows)
+                i.icon-check
+            th(data-auto-index=3)
+              sort-arrow(model='round.teams', sort-by='o.name') Team name
+            th(data-auto-index=2)
+              sort-arrow(model='round.teams', sort-by='eliminateNil(o.club.name)') Club
+        tbody(editable-tbody)
+          script(type='text/html')
+            td {{$index + 1}}
+            td
+              input(type='checkbox', ng-model='o.rounds[round.id].participates')
+            td {{o.name}}
+            td: span(class='muted-{{o.club == null}}') {{nilPlaceholder(o.club, {name:"unaffiliated"}).name}}
 
     div#pairings(ng-show='round.paired')
       .control-group
@@ -69,6 +69,8 @@ div.tab-content
                 td: span(class='muted-{{o.teams[0] == null}}') {{namePlaceholder(o.teams[0],'Bye').name}}
                 td: span(class='muted-{{o.teams[1] == null}}') {{namePlaceholder(o.teams[1],'Bye').name}}
                 td
+                  span(ng-repeat='j in o.judges'): {{j.name}}, 
+                  span(ng-repeat='j in o.shadows'): {{j.name}}, 
                 td.nowrap
                   span(class="{{o.stats.classes[0]}}") {{o.stats.scores[0]}} 
                   span(class="{{o.stats.winClass}}"): i.icon-trophy
@@ -149,11 +151,29 @@ div.tab-content
             span Ballots per match:
               multi-cell(bind='round.ballotsPerMatch', nil-placeholder='{{tournament.ballotsPerMatch}} (inherited)', input-width='120', choices='ballotsPerMatchOptions', choice-name='o')
                 i.icon-edit.bottom-line
-        .well
+        .well.settings-group
           strong Judge assignment rules
+          div
+            span Max. main judges:
+              multi-cell(bind='round.maxMainJudges', nil-placeholder='{{infinityName(tournament.maxMainJudges,infinity,"Unlimited")}} (inherited)', input-width='170', choices='maxPanelChoices', choice-name='infinityName(o,infinity,"Unlimited")')
+                i.icon-edit.bottom-line
+          div
+            span Max. shadow judges:
+              multi-cell(bind='round.maxShadowJudges', nil-placeholder='{{infinityName(tournament.maxShadowJudges,infinity,"Unlimited")}} (inherited)', input-width='170', choices='maxPanelChoices', choice-name='infinityName(o,infinity,"Unlimited")')
+                i.icon-edit.bottom-line
+          div
+            span Max. panel size:
+              multi-cell(bind='round.maxPanelSize', nil-placeholder='{{infinityName(tournament.maxPanelSize,infinity,"Unlimited")}} (inherited)', input-width='170', choices='maxPanelChoices', choice-name='infinityName(o,infinity,"Unlimited")')
+                i.icon-edit.bottom-line
       .span6
         .well.settings-group
           strong Pairing rank criteria
+          div
+            label.checkbox
+              input(type='checkbox', ng-model='round.inheritPairRank')
+              | Inherit from tournament settings
+          div(ng-show='!round.inheritPairRank')
+            sorter-criteria(bind='round.pairRankSorter')
         .well.settings-group
           strong Calculate pairing rank based on:
           div

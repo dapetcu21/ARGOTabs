@@ -15,6 +15,9 @@ define ['util', 'club', 'team', 'judge', 'room', 'player', 'round', 'sorter'], (
         @rounds =[]
         @tableOpts = {}
         @ballotsPerMatch = 1
+        @maxMainJudges = 10000
+        @maxShadowJudges = 10000
+        @maxPanelSize = 10000
         @minPlayed = 1
         @rankFromTeams ?= {all:true}
 
@@ -48,6 +51,7 @@ define ['util', 'club', 'team', 'judge', 'room', 'player', 'round', 'sorter'], (
           round.unpackCycles()
 
         @teamRankSorter = Sorter.teamRankSorter model.teamRankSorter
+        @pairRankSorter = Sorter.teamRankSorter model.pairRankSorter
 
         @lastData = @toFile()
         fn()

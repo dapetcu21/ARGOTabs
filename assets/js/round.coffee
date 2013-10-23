@@ -1,5 +1,5 @@
-define ['util', 'ballot', 'underscore'], (Util, Ballot) ->
-  class Round
+define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballot, Judge, Sorter, Team) ->
+ class Round
     constructor: (@tournament, other) ->
       if other
         for key, value of other
@@ -11,6 +11,11 @@ define ['util', 'ballot', 'underscore'], (Util, Ballot) ->
       @rooms ?= []
       @ballots ?= []
       @ballotsPerMatch ?= null
+      @maxMainJudges ?= null
+      @maxShadowJudges ?= null
+      @maxPanelSize ?= null
+      @inheritPairRank ?= true
+      @pairRankSorter = Sorter.teamRankSorter @pairRankSorter
       @rankFrom ?= {all:true}
       if other
         for ballot, i in @ballots
@@ -23,11 +28,11 @@ define ['util', 'ballot', 'underscore'], (Util, Ballot) ->
         for room in @tournament.rooms
           @registerRoom room
 
-    ballotsPerMatchSolved: ->
-      if @ballotsPerMatch?
-        @ballotsPerMatch
-      else
-        @tournament.ballotsPerMatch
+    ballotsPerMatchSolved: -> if @ballotsPerMatch? then @ballotsPerMatch else @tournament.ballotsPerMatch
+    maxMainJudgesSolved: -> if @maxMainJudges? then @maxMainJudges else @tournament.maxMainJudges
+    maxShadowJudgesSolved: -> if @maxShadowJudges? then @maxShadowJudges else @tournament.maxShadowJudges
+    maxPanelSizeSolved: -> if @maxPanelSize? then @maxPanelSize else @tournament.maxPanelSize
+    pairRankSorterSolved: -> if @pairRankSorter? then @pairRankSorter else @tournament.pairRankSorter
 
     unpackCycles: ->
       Util.unpackCycles @teams, @tournament.teams
@@ -89,10 +94,9 @@ define ['util', 'ballot', 'underscore'], (Util, Ballot) ->
         @rooms.splice idx, 1
     
     sortByRank: (array) ->
-      rounds = @previousRounds()
-      for team in array
-        team.stats = team.getStats rounds
-      array.sort (a,b) -> a.stats.score > b.stats.score
+      Team.calculateStats array, @previousRounds()
+      sorter = @pairRankSorterSolved().compareObjects
+      array.sort (a,b) -> sorter a.stats, b.stats
 
     pairingTeams: ->
       id = @id
@@ -119,10 +123,11 @@ define ['util', 'ballot', 'underscore'], (Util, Ballot) ->
       balance = opts.balanceSides
       balance ?= true
 
-      pairTeams = (a, b) =>
+      pairTeams = (a, b, skillIndex = 0) =>
         ballot = new Ballot this
         ballot.teams[0] = a
         ballot.teams[1] = b
+        ballot.skillIndex = skillIndex
         if not a? or not b?
           if not a?
             aux = a
@@ -145,18 +150,71 @@ define ['util', 'ballot', 'underscore'], (Util, Ballot) ->
         a.rounds[id].ballot = ballot if a?
         b.rounds[id].ballot = ballot if b?
 
+      skillIndex = 0
       switch opts.algorithm
-        when 0, 3
+        when 0 #random
           for i in [0...teams.length] by 2
             pairTeams teams[i], teams[i+1]
-        when 1
+        when 1 #manual
           for o in opts.manualPairing
             pairTeams o.prop, o.opp
-
+        when 3 #high-high
+          for i in [0...teams.length] by 2
+            pairTeams teams[i], teams[i+1], skillIndex++
       @paired = true
 
       if opts.shuffleRooms
         @shuffleRooms()
+
+      @assignJudges()
+
+    assignJudges: ->
+      id = @id
+      judges = _.shuffle _.filter @judges, (o) -> o.rounds[id].participates && o.rank != Judge.shadowRank
+      judges.sort (a,b) -> a.rank < b.rank
+      shadowJudges = _.shuffle _.filter @judges, (o) -> o.rounds[id].participates && o.rank == Judge.shadowRank
+      ballots = _.sortBy _.shuffle _.filter @ballots, ((o)-> o.teams[0] && o.teams[1]), (o) -> o.skillIndex
+
+      for b in ballots
+        b.judges = []
+        b.shadows = []
+
+      noBallots = ballots.length
+      noJudges = judges.length
+
+      if noJudges < noBallots
+        split = noBallots - noJudges
+        if shadowJudges.length < split
+          split = shadowJudges.length
+        for i in [0...split]
+          judges.push shadowJudges[i]
+        shadowJudges.splice 0, split
+
+      ballotPerMatch = @ballotsPerMatchSolved()
+      panelSize = @maxPanelSizeSolved()
+      maxShadows = @maxShadowJudgesSolved()
+      maxJudges = @maxMainJudgesSolved()
+
+      #to be changed
+      i = 0
+      for j in judges
+        ballot = ballots[i]
+        jc = ballot.judges.length
+        sc = ballot.shadows.length
+        continue if jc + sc >= panelSize
+        if jc < ballotPerMatch && jc < maxJudges
+          ballot.judges.push j
+        else if sc < maxShadows
+          ballot.shadows.push j
+        i = 0 if ++i >= noBallots
+
+      for j in shadowJudges
+        ballot = ballots[i]
+        jc = ballot.judges.length
+        sc = ballot.shadows.length
+        if jc + sc < panelSize && sc < maxShadows
+          ballot.shadows.push j
+        i = 0 if ++i >= noBallots
 
     shuffleRooms: ->
       ballots = _.shuffle @ballots

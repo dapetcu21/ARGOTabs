@@ -31,6 +31,10 @@ define ['util', 'player'], (Util, Player) ->
           mopts.ballot = Util.packCycle opts.ballot, round.ballots
       return model
 
+    @calculateStats: (teams, rounds) ->
+      for team in teams
+        team.stats = team.getStats rounds
+
     getStats: (rounds) ->
       o =
         rawWins: 0

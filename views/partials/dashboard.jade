@@ -21,8 +21,22 @@
         span Min. played rounds to reach speaker tab: 
         text-edit-cell(bind='tournament.minPlayed', input-width='50', pattern='[0-9]*', setter='parseInt(o)')
           i.icon-edit.bottom-line
-    .well.pair-rules-group
+    .well.pair-rules-group.settings-group
       strong Pairing rank criteria
+      sorter-criteria(bind='tournament.pairRankSorter')
+  .span6
+    .well.judge-rules-group.settings-group
+      strong Judging assignment rules 
+      div
+        span Max. main judges:
+          multi-cell(bind='tournament.maxMainJudges', input-width='100', choices='maxPanelChoices', choice-name='infinityName(o,infinity,"Unlimited")')
+            i.icon-edit.bottom-line
+      div
+        span Max. shadow judges:
+          multi-cell(bind='tournament.maxShadowJudges', input-width='100', choices='maxPanelChoices', choice-name='infinityName(o,infinity,"Unlimited")')
+            i.icon-edit.bottom-line
+      div
+        span Max. panel size:
+          multi-cell(bind='tournament.maxPanelSize', input-width='100', choices='maxPanelChoices', choice-name='infinityName(o,infinity,"Unlimited")')
+            i.icon-edit.bottom-line
 
-  .well.judge-rules-group.span6
-    strong Judging assignment rules 

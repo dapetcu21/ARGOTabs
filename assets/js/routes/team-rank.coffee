@@ -1,4 +1,4 @@
-define ["underscore"], ->
+define ["team", "underscore"], (Team) ->
   (ui, $routeProvider) ->
     $routeProvider.when '/team-rank',
       templateUrl: 'partials/team-rank.html'
@@ -29,8 +29,7 @@ define ["underscore"], ->
           tournament = $scope.tournament
           teams = $scope.teams = tournament.teams.slice(0)
           rounds ?= baseRounds()
-          for team in teams
-            team.stats = team.getStats rounds
+          Team.calculateStats teams, rounds
           sorter = tournament.teamRankSorter.compareObjects
           teams.sort (a,b) -> sorter a.stats, b.stats
 
