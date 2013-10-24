@@ -1,5 +1,5 @@
 div.hlist.inline
-  div(ng-repeat='hlo in model', class='moveable-{{reorders && (edit || reordersAlways) && model.length > 1}}').inline.item.valign-middle
+  div(ng-repeat='hlo in model', class='moveable-{{_reorders && (edit || reordersAlways) && model.length > 1}}').inline.item.valign-middle
     div(class='enabled-{{edit}}').item-controls.valign-middle
       i(ng-click='remove($index)').icon-remove-sign.highlight-button
     div(ng-transclude).inline.valign-middle

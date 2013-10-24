@@ -182,7 +182,7 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
         $scope.editBallot = (index) ->
           sc = $scope.$new()
           ballot = round.ballots[index]
-          return if ballot.prop == null or ballot.opp == null
+          return if not ballot.teams[0]? or not ballot.teams[1]?
           noBallots = round.ballotsPerMatchSolved()
           sc.votes = ballot.getVotesForBallots noBallots
           sc.speakers = [ballot.teams[0].players, ballot.teams[1].players]

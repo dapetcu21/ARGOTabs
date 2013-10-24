@@ -76,7 +76,7 @@ div.tab-content
                 td
                   hlist-cell(bind='o.judges', separator=',', edit-hidden='true', reorders-always, reorders='!o.locked')
                     span {{hlo.name}}
-                  hlist-cell(bind='o.shadows', separator=',', edit-hidden='true', reorders-always, reorders)
+                  hlist-cell(bind='o.shadows', separator=',', edit-hidden='true', reorders-always, reorders='!o.locked')
                     span {{hlo.name}}
                 td.nowrap
                   span(class="{{o.stats.classes[0]}}") {{o.stats.scores[0]}} 

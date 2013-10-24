@@ -21,10 +21,21 @@ define ['util'], (Util) ->
 
     unpackCycles: ->
       @club = Util.unpackCycle @club, @tournament.clubs
+      for round in @tournament.rounds
+        opts = @rounds[round.id]
+        if opts?
+          Util.unpackCycle opts.ballot, round.ballots
     
     toJSON: ->
       model = Util.copyObject this, ['tournament']
       model.club = Util.packCycle @club, @tournament.clubs
+      model.rounds = {}
+      for round in @tournament.rounds
+        opts = @rounds[round.id]
+        if opts?
+          mopts = Util.copyObject opts, []
+          mopts.ballot = Util.packCycle mopts.ballot, round.ballots
+        model.rounds[round.id] = mopts
       return model
 
     destroy: ->

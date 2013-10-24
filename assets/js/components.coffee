@@ -204,8 +204,8 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
       removeItem: '&removeItem'
       editHidden: '=editHidden'
       separator: '@separator'
-      reorders: '@reorders'
-      reordersAlways: '@'
+      reorders: '&reorders'
+      reordersAlways: '@reordersAlways'
     transclude: true
     link: (scope, element, attrs) ->
       scope.edit = false
@@ -227,6 +227,8 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
           ''
 
       scope.$watch (-> attrs.addItem?), (v) -> scope.canAddItem = v
+      scope.$watch (-> attrs.reorders? && scope.reorders(scope.$parent)), (v) ->
+        scope._reorders = v
 
       currentPoint = null
       dragElement = null

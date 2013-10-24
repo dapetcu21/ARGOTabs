@@ -170,14 +170,23 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
 
     assignJudges: ->
       id = @id
-      judges = _.shuffle _.filter @judges, (o) -> o.rounds[id].participates && o.rank != Judge.shadowRank
-      judges.sort (a,b) -> a.rank < b.rank
-      shadowJudges = _.shuffle _.filter @judges, (o) -> o.rounds[id].participates && o.rank == Judge.shadowRank
-      ballots = _.sortBy _.shuffle _.filter @ballots, ((o)-> o.teams[0] && o.teams[1]), (o) -> o.skillIndex
+      ballots = _.sortBy _.shuffle _.filter @ballots, ((o)-> !o.locked && o.teams[0] && o.teams[1]), (o) -> o.skillIndex
 
       for b in ballots
+        for j in b.judges
+          j.rounds[id].ballot = null
+        for j in b.shadows
+          j.rounds[id].ballot = null
         b.judges = []
         b.shadows = []
+
+      judges = _.shuffle _.filter @judges, (o) ->
+        ropts = o.rounds[id]
+        ropts.participates && !ropts.ballot && o.rank != Judge.shadowRank
+      shadowJudges = _.shuffle _.filter @judges, (o) ->
+        ropts = o.rounds[id]
+        ropts.participates && !ropts.ballot && o.rank == Judge.shadowRank
+      judges.sort (a,b) -> a.rank < b.rank
 
       noBallots = ballots.length
       noJudges = judges.length
@@ -195,6 +204,15 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
       maxShadows = @maxShadowJudgesSolved()
       maxJudges = @maxMainJudgesSolved()
 
+      addJudge = (j, b, sh = false) ->
+        if sh
+          b.shadows.push j
+        else
+          b.judges.push j
+        ropts = j.rounds[id]
+        ropts.ballot = b
+        ropts.shadow = sh
+
       #to be changed
       i = 0
       for j in judges
@@ -203,9 +221,9 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
         sc = ballot.shadows.length
         continue if jc + sc >= panelSize
         if jc < ballotPerMatch && jc < maxJudges
-          ballot.judges.push j
+          addJudge j, ballot
         else if sc < maxShadows
-          ballot.shadows.push j
+          addJudge j, ballot, true
         i = 0 if ++i >= noBallots
 
       for j in shadowJudges
@@ -213,7 +231,7 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
         jc = ballot.judges.length
         sc = ballot.shadows.length
         if jc + sc < panelSize && sc < maxShadows
-          ballot.shadows.push j
+          addJudge j, ballot, true
         i = 0 if ++i >= noBallots
 
     shuffleRooms: ->
