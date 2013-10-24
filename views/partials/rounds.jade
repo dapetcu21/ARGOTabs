@@ -11,7 +11,7 @@ ul.nav.nav-tabs
 div.tab-content
   div#teams.tab-pane.active
     div#team-list(ng-show='!round.paired')
-      .control-group
+      .control-group 
         .btn-group.inline
           button(ng-click='addAllTeams()').btn
             i.icon-check
@@ -19,8 +19,11 @@ div.tab-content
           button(ng-click='removeAllTeams()').btn
             i.icon-check-empty
             |  all
+        = ' '
         button(ng-click='sortByRank()').btn Sort by pairing rank
+        = ' '
         button(ng-click='pair()').btn.btn-danger Pair
+        = ' '
         div.inline.small-margin Check teams that are to play this round.
 
       table(editable-table, model='round.teams', visible='round.tableOpts.teams', reorders)#round-teams-table
@@ -45,7 +48,9 @@ div.tab-content
     div#pairings(ng-show='round.paired')
       .control-group
         button(ng-click='assignJudges()').btn Reassign judges
+        = ' '
         button(ng-click='shuffleRooms()').btn Shuffle in rooms
+        = ' '
         div.inline.small-margin You can manually drag judges to fine-tune
 
       .row-fluid
@@ -91,6 +96,7 @@ div.tab-content
         button(ng-click='removeShadows()').btn 
           i.icon-check-empty
           |  shadows
+      = ' '
       div.inline.small-margin Check judges that are available to judge this round.
 
     table(editable-table, model='round.judges', visible='round.tableOpts.judges', reorders)#round-judges-table
@@ -124,6 +130,7 @@ div.tab-content
         button(ng-click='removeAllRooms()').btn
           i.icon-check-empty
           |  all
+      = ' '
       div.inline.small-margin Check rooms that are available this round.
 
     table(editable-table, model='round.rooms', visible='round.tableOpts.rooms', reorders)#round-rooms-table
