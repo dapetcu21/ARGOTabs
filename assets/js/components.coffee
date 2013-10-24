@@ -205,6 +205,7 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
       editHidden: '=editHidden'
       separator: '@separator'
       reorders: '@reorders'
+      reordersAlways: '@'
     transclude: true
     link: (scope, element, attrs) ->
       scope.edit = false
@@ -224,6 +225,8 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
           ','
         else
           ''
+
+      scope.$watch (-> attrs.addItem?), (v) -> scope.canAddItem = v
 
       currentPoint = null
       dragElement = null

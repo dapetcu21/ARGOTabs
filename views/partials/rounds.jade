@@ -74,8 +74,10 @@ div.tab-content
                 td: span(class='muted-{{o.teams[0] == null}}') {{namePlaceholder(o.teams[0],'Bye').name}}
                 td: span(class='muted-{{o.teams[1] == null}}') {{namePlaceholder(o.teams[1],'Bye').name}}
                 td
-                  span(ng-repeat='j in o.judges'): {{j.name}}, 
-                  span(ng-repeat='j in o.shadows'): {{j.name}}, 
+                  hlist-cell(bind='o.judges', separator=',', edit-hidden='true', reorders-always, reorders='!o.locked')
+                    span {{hlo.name}}
+                  hlist-cell(bind='o.shadows', separator=',', edit-hidden='true', reorders-always, reorders)
+                    span {{hlo.name}}
                 td.nowrap
                   span(class="{{o.stats.classes[0]}}") {{o.stats.scores[0]}} 
                   span(class="{{o.stats.winClass}}"): i.icon-trophy
