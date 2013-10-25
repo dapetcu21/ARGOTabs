@@ -28,7 +28,7 @@ table(editable-table, show-gear='false', model='roles')#roles-table
           span(ng-show='!presence[$index]').muted-true not present
           span(ng-show='presence[$index]')
             multi-cell(bind='o.roles[#{i}]', input-width='120', choices='speakers[$index]', choice-name='o.name')
-            i(ng-show='#{(i==3) ? "o.roles[3] == o.roles[2]" : "validPlayer(o.roles["+i+"], o.roles) >= 2"}').icon-exclamation.icon-dobitoc
+            i(ng-show='#{(i==3) ? "o.roles[3] == o.roles[2]" : "validPlayer(o.roles["+i+"], o.roles) >= 2"}').fa.fa-exclamation.icon-dobitoc
       - }
 
 div(ng-show='presence[0] && presence[1]')
@@ -58,7 +58,7 @@ div(ng-show='presence[0] && presence[1]')
           - for (var i = 0; i < 4; i++) {
             td(class='valid-{{valid#{side}#{i}}}').nowrap
               text-edit-cell(bind='o.scores[#{side}][#{i}]', enabled='!o.total', valid='valid#{side}#{i}', input-width='17', pattern='[0-9.]*', setter='parseFloat(o)', getter='truncFloat(o, 2)', soft-validator='validateMinMax(o, #{i==3 ? 30 : 60}, #{i==3 ? 40 : 80})')
-              i(ng-show='valid#{side}#{i} && (o.scores[#{side}][#{i}] <= #{i==3 ? 30.5 : 61} || o.scores[#{side}][#{i}] >= #{i==3 ? 39.5 : 79})').icon-exclamation.icon-dobitoc
+              i(ng-show='valid#{side}#{i} && (o.scores[#{side}][#{i}] <= #{i==3 ? 30.5 : 61} || o.scores[#{side}][#{i}] >= #{i==3 ? 39.5 : 79})').fa.fa-exclamation.icon-dobitoc
           - } }
         - function sideTotal(side) {
           td {{truncFloat(o.scores[#{side}][0] + o.scores[#{side}][1] + o.scores[#{side}][2] + o.scores[#{side}][3], 2)}}
@@ -69,7 +69,7 @@ div(ng-show='presence[0] && presence[1]')
           span(ng-show='o.aux.decisionValid').nowrap
             multi-cell(bind='o.prop', enabled='!o.total && (o.aux.validSplits[o.aux.winner].length > 1)', input-width='41', choices='o.aux.validSplits[o.aux.winner]', choice-name='o')
             span 
-            i(class='{{winner(o)}}').vote-trophy.icon-trophy
+            i(class='{{winner(o)}}').vote-trophy.fa.fa-trophy
             span 
             multi-cell(bind='o.opp', enabled='!o.total && (o.aux.validSplits[1-o.aux.winner].length > 1)', input-width='41', choices='o.aux.validSplits[1-o.aux.winner]', choice-name='o')
           span(ng-show='!o.aux.decisionValid && !o.total')

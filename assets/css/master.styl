@@ -31,6 +31,9 @@ body
 
 .nowrap
   white-space: nowrap
+ 
+.wrap
+  white-space: normal
 
 .strong
   font-weight: bold
@@ -78,11 +81,14 @@ body
 .multi-input
   margin: 0px !important
 
-.sortarrow i.arrow
+.sortarrow .arrow
   display: none
+  height: 1em
+  width: 1.5em
+  line-height: 1em
 
-th:hover .sortarrow i.arrow, .sortarrow:hover i.arrow
-  opacity: 0.5
+th:hover .sortarrow .arrow,
+.sortarrow:hover .arrow
   display: inline-block
 
 .muted-true
@@ -93,7 +99,7 @@ th:hover .sortarrow i.arrow, .sortarrow:hover i.arrow
 
 .editable-table td.controls, 
 .editable-table th.controls
-  width: 15px
+  width: 24px
   vertical-align: middle
 .editable-table .controls i
   font-size: 130%
@@ -131,6 +137,9 @@ th:hover .sortarrow i.arrow, .sortarrow:hover i.arrow
   cursor: move
 
 .inline
+  display: inline
+
+.inline-block
   display: inline-block
 
 .valign-middle
@@ -141,6 +150,12 @@ th:hover .sortarrow i.arrow, .sortarrow:hover i.arrow
 
 .pre-space-true
   margin-left: 3px
+
+
+i.highlight-button
+  width: 1em
+  text-align: center
+
 
 a.unstyled-link
   color: #000
@@ -156,7 +171,7 @@ a.unstyled-link:hover
 i.bottom-line
   position: relative
   bottom: -1px
-  margin-left: 10px
+  margin-left: 5px
   opacity: 0.6
 
 i.bottom-line:hover
@@ -219,13 +234,13 @@ li.active .remove-round:hover
   background:linear-gradient(bottom, #d0451b 5%, #bc3315 100%)
   background-color:#bc3315
 
-.pairing i.icon-remove-sign
+.pairing i.fa-times
   top:50%
   right: 10px
   position: absolute
   margin-top: -7px
 
-.pairing i.icon-exchange
+.pairing i.fa-exchange
   top:50%
   right: 25px
   position: absolute
@@ -250,8 +265,32 @@ li.active .remove-round:hover
   top: 50%
   margin-top: -10px
 
+.judge-box
+  background-color: #f5f5f5
+  border: 1px solid #d9d9d9
+  border-radius: 3px
+  height: 20px
+  white-space: nowrap
+  padding: 2px 5px
+  font-size: 13px
+
+.judge-list .hlist
+  white-space: normal
+
 .context-menu
   z-index: 1000000
+
+i.judge-icon
+  opacity: 0.7
+  font-size: 80%
+
+i.judge-icon:after
+  content: ": "
+  opacity: 0.7
+
+i.judge-icon.fa-eye
+  margin-left: 5px
+
 
 @media (min-width: 767px)
   .manual-pairings .span4,

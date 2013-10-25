@@ -1,6 +1,6 @@
 div(ng-controller='LoadingCtrl', ng-show="!loaded").loading-screen
     h3
-      i.icon-spinner.icon-spin.icon-large
+      i.fa.fa-spinner.fa.fa-spin.fa.fa-large
       | &nbsp; Loading...
 
 .navbar.navbar-fixed-top.dont-print
@@ -8,7 +8,7 @@ div(ng-controller='LoadingCtrl', ng-show="!loaded").loading-screen
     .container-fluid
       ul.nav
         li.arrow-nav: a.action-open.brand
-          i.icon-arrow-left.view-arrow
+          i.fa.fa-arrow-left.view-arrow
           span.view-brand ARGO Tabs
         li.divider-vertical
           li: a(href="#").brand.view-title {{tournament.name}}
@@ -44,10 +44,10 @@ div(ng-controller='LoadingCtrl', ng-show="!loaded").loading-screen
           nav-li(ng-repeat='round in tournament.rounds', href='/rounds/{{$index+1}}') 
             | Round {{$index+1}} 
             a(href='', ng-click='removeRound($index)').pull-right.unstyled.remove-round
-              i.icon-remove-sign.pull-right
+              i.fa.fa-fw.fa-times-circle.pull-right
           li
             a(href='', ng-click='addRound()')
-              i.icon-plus
+              i.fa.fa-fw.fa-plus
               |  New round
           
     div(ng-view).span10.print-full-width

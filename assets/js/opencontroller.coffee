@@ -70,7 +70,7 @@ define ['jquery', 'filereader', 'alertcontroller', 'tournament', 'backends', 'lo
     addItem: (itemName, backend) ->
       item =
         name: itemName
-        icon: backend.icon or '<i class="icon-question"></i>'
+        icon: backend.icon or '<i class="fa fa-fw fa-question"></i>'
 
       fl = @fileLists[backend]
       fl = @fileLists[backend] = {} if not fl?

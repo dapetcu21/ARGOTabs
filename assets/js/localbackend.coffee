@@ -4,7 +4,7 @@ define ['backend'], (Backend) ->
       @loadDate = new Date()
       @date = this.modifiedDate()
 
-    @icon = '<i class="icon-file"></i>'
+    @icon = '<i class="fa fa-fw fa-file"></i>'
 
     modifiedDate: ->
       date = localStorage.getItem(@fName + '.mdate')

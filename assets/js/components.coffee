@@ -484,11 +484,11 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
               el.find('.item-label').html nm[i]
               icon = el.find('i')
               if scope.visible[i]
-                icon.removeClass 'icon-check-empty'
-                icon.addClass 'icon-check'
+                icon.removeClass 'fa-square-o'
+                icon.addClass 'fa-check-square-o'
               else
-                icon.removeClass 'icon-check'
-                icon.addClass 'icon-check-empty'
+                icon.removeClass 'fa-check-square-o'
+                icon.addClass 'fa-square-o'
             return true
           onItem: (e, item) ->
             i = parseInt item.data 'index'
@@ -589,6 +589,7 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
               scope.rowHovered++
               scope.headId = 'id' + Math.round( Math.random() * 10000)
               el = element.find('th:visible:last')
+              console.log el.width()
               el.addClass('squeezedElement')
               $(templates.editableTh
                 id: scope.headId
