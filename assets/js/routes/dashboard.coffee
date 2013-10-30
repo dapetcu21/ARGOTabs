@@ -11,5 +11,10 @@ define ->
         $scope.parseInt = (s) ->
           return 0 if s == ''
           return parseInt s
+        $scope.yesNo = (v,y,n) ->
+          if v
+            y
+          else
+            n
       ]
         

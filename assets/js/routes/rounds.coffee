@@ -12,6 +12,21 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
         $scope.maxPanelChoices = [$scope.infinity, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         $scope.infinityName = (o, inf, name) -> if o == inf then name else o
 
+        $scope.yesNoInherit = (v,y,n,i) ->
+          if v == null
+            i
+          else
+            if v
+              y
+            else
+              n
+
+        $scope.yesNo = (v,y,n) ->
+          if v
+            y
+          else
+            n
+
         $scope.parseInt = (s) ->
           return 0 if s == ''
           return parseInt s
@@ -64,6 +79,24 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
 
         $scope.shuffleRooms = ->
           round.shuffleRooms()
+
+        $scope.judgeUd = (ballot, shadow) ->
+          {ballot: ballot, shadow: shadow}
+
+        $scope.judgeGroupTest = (fromList, toList) ->
+          ballot = toList.ud.ballot
+          return true if fromList == toList
+          return false if ballot.locked or not ballot.teams[0] or not ballot.teams[1]
+          toList.ud.shadow or ballot.judges.length < round.ballotsPerMatchSolved()
+
+        $scope.judgeMove = (fromList, fromIndex, toList, toIndex) ->
+          if fromList == toList and toIndex > fromIndex
+            toIndex--
+          el = fromList.model.splice(fromIndex, 1)[0]
+          toList.model.splice toIndex, 0, el
+          opts = el.rounds[round.id]
+          opts.ballot = toList.ud.ballot
+          opts.shadow = toList.ud.shadow
 
         updateStats = (ballot) ->
           pres0 = ballot.teams[0]? and ballot.presence[0]

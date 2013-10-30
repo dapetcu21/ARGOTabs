@@ -15,6 +15,7 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
       @maxShadowJudges ?= null
       @maxPanelSize ?= null
       @inheritPairRank ?= true
+      @allowShadows ?= null
       @pairRankSorter = Sorter.teamRankSorter @pairRankSorter
       @rankFrom ?= {all:true}
       if other
@@ -30,9 +31,10 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
 
     ballotsPerMatchSolved: -> if @ballotsPerMatch? then @ballotsPerMatch else @tournament.ballotsPerMatch
     maxMainJudgesSolved: -> if @maxMainJudges? then @maxMainJudges else @tournament.maxMainJudges
-    maxShadowJudgesSolved: -> if @maxShadowJudges? then @maxShadowJudges else @tournament.maxShadowJudges
+    maxShadowJudgesSolved: -> if @maxShadowJudges? then @maxShadowJudages else @tournament.maxShadowJudges
     maxPanelSizeSolved: -> if @maxPanelSize? then @maxPanelSize else @tournament.maxPanelSize
     pairRankSorterSolved: -> if @pairRankSorter? then @pairRankSorter else @tournament.pairRankSorter
+    allowShadowsSolved: -> if @allowShadows? then @allowShadows else @tournament.allowShadows
 
     unpackCycles: ->
       Util.unpackCycles @teams, @tournament.teams

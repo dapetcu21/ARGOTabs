@@ -19,6 +19,7 @@ define ['util', 'club', 'team', 'judge', 'room', 'player', 'round', 'sorter'], (
         @maxShadowJudges = 10000
         @maxPanelSize = 10000
         @minPlayed = 1
+        @allowShadows ?= true
         @rankFromTeams ?= {all:true}
 
         for key, value of model

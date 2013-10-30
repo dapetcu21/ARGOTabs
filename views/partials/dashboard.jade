@@ -21,6 +21,11 @@
         span Min. played rounds to reach speaker tab: 
         text-edit-cell(bind='tournament.minPlayed', input-width='50', pattern='[0-9]*', setter='parseInt(o)')
           i.fa.fa-fw.fa-edit.bottom-line
+      div
+        span Allow shadow judges:
+        label.checkbox.inline
+          input(type='checkbox' ng-model='tournament.allowShadows')
+          span {{yesNo(tournament.allowShadows, "Yes", "No")}}
     .well.pair-rules-group.settings-group
       strong Pairing rank criteria
       sorter-criteria(bind='tournament.pairRankSorter')

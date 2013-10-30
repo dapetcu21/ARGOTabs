@@ -21,6 +21,31 @@ define ['jquery', 'util', 'underscore', 'templates', 'angular', 'jquery.event.dr
       model: '=bind'
   ]
 
+  mod.directive "tristateCheckbox", ['$parse', ($parse) ->
+    link: (scope, element, attrs) ->
+      scope.$watch ->
+        $parse(attrs["tristateCheckbox"])(scope)
+      , (v) ->
+        if v == null
+          element.prop 'indeterminate', true
+          element.prop 'checked', true
+        else
+          element.prop 'indeterminate', false
+          element.prop 'checked', v
+      element.bind 'change', ->
+        model = $parse(attrs["tristateCheckbox"])
+        indet = element.prop 'indeterminate'
+        check = element.prop 'checked'
+        if not indet and not check and model(scope)
+          element.prop 'indeterminate', indet = true
+          element.prop 'checked', check = true
+        scope.$apply ->
+          if indet
+            model.assign scope, null
+          else
+            model.assign scope, check
+  ]
+
   mod.directive "textEditCell", ['$parse', ($parse) ->
     template: templates.textEditCell()
     restrict: 'E'
@@ -206,6 +231,11 @@ define ['jquery', 'util', 'underscore', 'templates', 'angular', 'jquery.event.dr
       separator: '@separator'
       reorders: '&reorders'
       reordersAlways: '@reordersAlways'
+      userdata: '&userdata'
+      dropGroup: '@dropGroup'
+      groupTest: '&groupTest'
+      dropTest: '&dropTest' #not implemented
+      manualMove: '&manualMove'
     transclude: true
     link: (scope, element, attrs) ->
       scope.edit = false
@@ -225,7 +255,7 @@ define ['jquery', 'util', 'underscore', 'templates', 'angular', 'jquery.event.dr
           ','
         else
           ''
-
+      scope.$watch (-> attrs.dropGroup?), (v) -> scope.hasGroup = v
       scope.$watch (-> attrs.addItem?), (v) -> scope.canAddItem = v
       scope.$watch (-> attrs.reorders? && scope.reorders(scope.$parent)), (v) ->
         scope._reorders = v
@@ -237,20 +267,53 @@ define ['jquery', 'util', 'underscore', 'templates', 'angular', 'jquery.event.dr
       dragPointX = dragPointY = 0
       dragStart = null
 
+      buildRectangleList = ->
+        rl = scope.rectangleList = []
+
+        makeInstance = (s) -> {ud:s.userdata(), model: s.model}
+        scope.fromInstance = fromInstance = makeInstance scope
+
+        if not attrs.dropGroup?
+          lists = [element[0]]
+        else
+          lists = $ 'hlist-cell'
+
+        for list in lists
+          sc = $(list).scope()
+          instance = if sc == scope then fromInstance else makeInstance sc
+          continue if attrs.dropGroup? and sc.dropGroup != scope.dropGroup
+          continue if attrs.groupTest? and not scope.groupTest({fromList: fromInstance, toList:instance})
+
+          items = $(list).find('.item')
+          if not items.length
+            items.push $(list).find('.placeholder')[0]
+          for item, i in items
+            $item = $ item
+            offs = $item.offset()
+            rl.push
+              top: offs.top
+              left: offs.left
+              width: $item.outerWidth()
+              height: $item.outerHeight()
+              index: i
+              instance: instance
+          if $(items[0]).hasClass('placeholder')
+            rl[rl.length-1].empty = true
+
       getCurrentPoint = (x,y) ->
-        items = element.find('.item')
-        for item, i in items
-          $item = $(item)
-          offs = $item.offset()
-          w = $item.outerWidth()
-          h = $item.outerHeight()
-          continue if y < offs.top or y > offs.top + h or x < offs.left or x > offs.left + w
-          m = offs.left + w/2
+        for rect in scope.rectangleList
+          w = rect.width
+          h = rect.height
+          t = rect.top
+          l = rect.left
+          continue if y < t or y > t + h or x < l or x > l + w
+          m = if rect.empty then l + w else l + w/2
           return {
-            x: if x < m then offs.left else offs.left + w
-            y: offs.top
+            x: if x < m then l else l + w
+            y: t
             height: h
-            index: if x < m then i else i + 1
+            index: rect.index + (if x < m then 0 else 1)
+            instance: rect.instance
           }
         return null
 
@@ -260,7 +323,7 @@ define ['jquery', 'util', 'underscore', 'templates', 'angular', 'jquery.event.dr
           $canvas.css 'top', e.pageY - dragPointY
         if $line
           pnt = getCurrentPoint e.pageX, e.pageY
-          if pnt and (pnt.index == dragStart or pnt.index == dragStart+1)
+          if pnt and pnt.instance == scope.fromInstance and (pnt.index == dragStart or pnt.index == dragStart+1)
             pnt = null
           if currentPoint and not pnt
             $line.css 'display', 'none'
@@ -287,6 +350,7 @@ define ['jquery', 'util', 'underscore', 'templates', 'angular', 'jquery.event.dr
         dragStart = dragElement.index()
         scrollX = window.pageXOffset
         scrollY = window.pageYOffset
+        buildRectangleList()
         html2canvas dragElement[0],
           scale: if window.devicePixelRatio then window.devicePixelRatio else 1
           onrendered: (canvas) ->
@@ -336,13 +400,21 @@ define ['jquery', 'util', 'underscore', 'templates', 'angular', 'jquery.event.dr
           $line.remove()
           $line = null
         if currentPoint
-          idx = currentPoint.index
-          idx-- if idx > dragStart
-          if idx != dragStart
+          if attrs.manualMove?
             Util.safeApply scope, ->
-              arr = scope.model
-              el = arr.splice(dragStart, 1)[0]
-              arr.splice idx, 0, el
+              scope.manualMove
+                fromList: scope.fromInstance
+                toList: currentPoint.instance
+                fromIndex: dragStart
+                toIndex: currentPoint.index
+          else
+            idx = currentPoint.index
+            same = currentPoint == scope.fromInstance
+            idx-- if same and idx > dragStart
+            if not same or idx != dragStart
+              Util.safeApply scope, ->
+                el = scope.model.splice(dragStart, 1)[0]
+                currentPoint.instance.model.splice idx, 0, el
         return
   ]
 

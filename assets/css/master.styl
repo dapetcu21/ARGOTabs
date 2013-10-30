@@ -274,8 +274,20 @@ li.active .remove-round:hover
   padding: 2px 5px
   font-size: 13px
 
+.judge-list .hlist-content
+  display: inline;
+
 .judge-list .hlist
   white-space: normal
+
+.hlist-empty-true
+  display: inline-block
+  vertical-align: middle
+  width: 15px
+  height: 20px
+
+.hlist-empty-false
+  display: none
 
 .context-menu
   z-index: 1000000
@@ -287,6 +299,13 @@ i.judge-icon
 i.judge-icon:after
   content: ": "
   opacity: 0.7
+
+label.checkbox.inline
+  position:relative
+  top: -1px
+  padding-top: 0px
+  margin-left: 5px
+  margin-top: 0px
 
 @media (min-width: 767px)
   .manual-pairings .span4,
