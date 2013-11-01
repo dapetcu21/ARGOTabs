@@ -12,38 +12,40 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
         $scope.maxPanelChoices = [$scope.infinity, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         $scope.infinityName = (o, inf, name) -> if o == inf then name else o
 
-        $scope.yesNoInherit = (v,y,n,i) ->
-          if v == null
-            i
+        Util.installScopeUtils $scope
+
+        _tf = $scope.truncFloat
+        $scope.truncFloatN = (v, prec) ->
+          if typeof v == 'number'
+            _tf v, prec
           else
-            if v
-              y
-            else
-              n
+            v
 
-        $scope.yesNo = (v,y,n) ->
-          if v
-            y
-          else
-            n
-
-        $scope.parseInt = (s) ->
-          return 0 if s == ''
-          return parseInt s
-
-        $scope.parseFloat = (s) ->
-          return 0 if s == ''
-          return parseFloat s
-
-        $scope.truncFloat = (v, prec) ->
-          s = v.toFixed(prec)
-          if s.indexOf('.') != -1
-            s.replace /\.?0*$/, ''
-          else
-            s
-
-        $scope.validateMinMax = (v, min, max) ->
-          return min <= v and v <= max
+        for judge in round.judges
+          ((judge) ->
+            $scope.$watch ->
+              ropts = judge.rounds[round.id]
+              if ropts?
+                ropts.participates
+              else
+                null
+            , (v, o) ->
+              return if not v?
+              return if v == o
+              if v
+                round.freeJudges.push judge
+              else
+                ropts = judge.rounds[round.id]
+                if ropts? and ropts.ballot and not ropts.ballot.locked
+                  if ropts.shadow
+                    Util.arrayRemove ropts.ballot.shadows, judge
+                  else
+                    Util.arrayRemove ropts.ballot.judges, judge
+                  ropts.ballot = null
+                else
+                  Util.arrayRemove round.freeJudges, judge
+              return
+          ) (judge)
 
         $scope.addAllTeams = ->
           for team in $scope.tournament.teams
@@ -85,6 +87,7 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
 
         $scope.judgeGroupTest = (fromList, toList) ->
           ballot = toList.ud.ballot
+          return true if  not ballot?
           return true if fromList == toList
           return false if ballot.locked or not ballot.teams[0] or not ballot.teams[1]
           toList.ud.shadow or ballot.judges.length < round.ballotsPerMatchSolved()
@@ -98,7 +101,58 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
           opts.ballot = toList.ud.ballot
           opts.shadow = toList.ud.shadow
 
-        updateStats = (ballot) ->
+        updateDecimals = (scores) ->
+          $scope.scoreDecimals ?= 0
+          sd = $scope.scoreDecimals
+
+          decimalsOf = (v) ->
+            s = v.toFixed 2
+            n = s.length
+            dec = 2
+            while n and dec and s[n-1] == '0'
+              dec--
+              n--
+            return dec
+
+          maxScoreDec = (s) ->
+            d1 = decimalsOf s[0]
+            d2 = decimalsOf s[1]
+            if d2 > d1
+              d2
+            else
+              d1
+
+          shouldUpdate = true
+          shouldSearch = true
+          if scores
+            d = maxScoreDec scores
+            if d == sd
+              shouldUpdate = false
+              shouldSearch = false
+            else if d > sd
+              $scope.scoreDecimals = sd = d
+              shouldSearch = false
+
+          if shouldSearch
+            max = 0
+            for ballot in round.ballots
+              rs = ballot.stats.rawScores
+              continue if not rs?
+              d = maxScoreDec rs
+              if d > max
+                max = d
+            if sd == max
+              shouldUpdate = false
+            else
+              $scope.scoreDecimals = sd = max
+
+          if shouldUpdate
+            for ballot in round.ballots
+              st = ballot.stats
+              continue if not st.rawScores?
+              st.scores = [st.rawScores[0].toFixed(sd), st.rawScores[1].toFixed(sd)]
+
+        updateStats = (ballot, dec = true) ->
           pres0 = ballot.teams[0]? and ballot.presence[0]
           pres1 = ballot.teams[1]? and ballot.presence[1]
           if not pres0 and not pres1
@@ -123,10 +177,14 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
                 ballots += vote.ballots
               s[side] /= ballots
 
+            dc = $scope.scoreDecimals
             ballot.stats =
-              scores: s
+              scores: [s[0].toFixed(dc), s[1].toFixed(dc)]
+              rawScores: s
               winClass: if w[0]>w[1] then 'prop' else 'opp'
               classes: ['', '']
+
+            updateDecimals(s) if dec
           else
             ballot.stats =
               scores: ['unfilled', '']
@@ -135,7 +193,8 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
           return
 
         for b in round.ballots
-          updateStats b
+          updateStats b, false
+        updateDecimals()
 
         $scope.assignJudges = ->
           round.assignJudges()
@@ -149,9 +208,6 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
           prev = $scope.prevRounds = round.previousRounds()
           $scope.pairAlgorithms = if prev.length then Round.allAlgos else Round.initialAlgos
           $scope.algoName = Round.algoName
-          $scope.parseInt = (s) ->
-            return 0 if s == ''
-            return parseInt s
           $scope.pairingTeams = round.pairingTeams()
           $scope.manualPairing = []
 
@@ -237,6 +293,9 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
               c++ if v[i] == el
             return c
 
+          splitsForBallots = (nb) ->
+            [_.range((nb/2>>0)+1, nb+1), _.range((nb/2>>0)+(nb&1))]
+
           noBallots = 0
           for i in [0...n]
             ((i) ->
@@ -247,7 +306,7 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
                 sc.noJudgesWarning = true
               vote.aux =
                 decisionValid: true
-                validSplits: [_.range((nb/2>>0)+1, nb+1), _.range((nb/2>>0)+1)]
+                validSplits: splitsForBallots nb
                 winner: 0
 
               sc.$watch (-> vote.prop), (v) ->
@@ -285,7 +344,7 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
               total: true
               aux:
                 decisionValid: true
-                validSplits: [_.range((noBallots/2>>0)+1, noBallots+1), _.range((noBallots/2>>0)+1)]
+                validSplits: splitsForBallots noBallots
                 winner: 0
             for i in [0...2]
               for j in [0...4]
@@ -385,18 +444,4 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
             onDismissed: (alert) ->
               sc.$destroy() if sc?
 
-        $scope.eliminateNil = (a) ->
-          if not a?
-            return ''
-          return a
-
-        $scope.namePlaceholder = (a, p='') ->
-          if not a?
-            return {name: p}
-          return a
-
-        $scope.nilPlaceholder = (a, p) ->
-          if not a?
-            return p
-          return a
       ]

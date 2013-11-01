@@ -56,7 +56,7 @@ define ['util', 'underscore'], (Util) ->
           for i in [0...b]
             votes.push newVote judges[i]
         else
-          dv = b/n
+          dv = (b/n) | 0
           md = b%n
           for i in [0...n]
             votes.push newVote judges[i], dv + if i<md then 1 else 0

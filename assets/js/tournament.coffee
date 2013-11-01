@@ -69,8 +69,11 @@ define ['util', 'club', 'team', 'judge', 'room', 'player', 'round', 'sorter'], (
     toJSON: ->
       Util.copyObject this, ['backend', 'lastData']
 
-    toFile: ->
-      JSON.stringify this
+    toFile: (pretty = false) ->
+      if pretty
+        JSON.stringify this, null, 2
+      else
+        JSON.stringify this
 
     save: (fn, force = false) ->
       @saveData @toFile(), fn, force

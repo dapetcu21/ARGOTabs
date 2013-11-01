@@ -14,6 +14,7 @@ require.config
     html2canvas: '/components/html2canvas/html2canvas'
     'jquery.bootstrap.contextmenu': '/components/sydcanem-bootstrap-contextmenu/bootstrap-contextmenu'
     'jquery.event.drag': '/components/jquery.event.drag/jquery.event.drag'
+    rainbow: '/components/rainbow/rainbow'
   shim:
     'jquery.bootstrap': ['jquery']
     'jquery.transit': ['jquery']

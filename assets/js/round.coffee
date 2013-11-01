@@ -7,6 +7,7 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
       @id ?= Math.floor(Math.random() * 100000000)
       @tableOpts ?= {}
       @judges ?= []
+      @freeJudges ?= []
       @teams ?= []
       @rooms ?= []
       @ballots ?= []
@@ -39,6 +40,7 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
     unpackCycles: ->
       Util.unpackCycles @teams, @tournament.teams
       Util.unpackCycles @judges, @tournament.judges
+      Util.unpackCycles @freeJudges, @tournament.judges
       Util.unpackCycles @rooms, @tournament.rooms
       for ballot in @ballots
         ballot.unpackCycles()
@@ -63,11 +65,13 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
           participates: true
           locked: false
         @judges.push judge
+        @freeJudges.push judge
 
     unregisterJudge: (judge) ->
       idx = @judges.indexOf judge
-      if idx != -1
-        @judges.splice idx, 1
+      @judges.splice idx, 1 if idx != -1
+      idx = @freeJudges.indexOf judge
+      @freeJudges.splice idx, 1 if idx != -1
 
     registerTeam: (team) ->
       id = @id
@@ -188,6 +192,7 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
       shadowJudges = _.shuffle _.filter @judges, (o) ->
         ropts = o.rounds[id]
         ropts.participates && !ropts.ballot && o.rank == Judge.shadowRank
+      @freeJudges = []
       judges.sort (a,b) -> a.rank < b.rank
 
       noBallots = ballots.length
@@ -226,6 +231,8 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
           addJudge j, ballot
         else if sc < maxShadows
           addJudge j, ballot, true
+        else
+          @freeJudges.push j
         i = 0 if ++i >= noBallots
 
       for j in shadowJudges
@@ -234,6 +241,8 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
         sc = ballot.shadows.length
         if jc + sc < panelSize && sc < maxShadows
           addJudge j, ballot, true
+        else
+          @freeJudges.push j
         i = 0 if ++i >= noBallots
 
     shuffleRooms: ->
@@ -247,6 +256,7 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
       model = Util.copyObject this, ['tournament']
       model.teams = Util.packCycles @teams, @tournament.teams
       model.judges = Util.packCycles @judges, @tournament.judges
+      model.freeJudges = Util.packCycles @freeJudges, @tournament.judges
       model.rooms = Util.packCycles @rooms, @tournament.rooms
       return model
 

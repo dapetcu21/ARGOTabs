@@ -236,6 +236,8 @@ define ['jquery', 'util', 'underscore', 'templates', 'angular', 'jquery.event.dr
       groupTest: '&groupTest'
       dropTest: '&dropTest' #not implemented
       manualMove: '&manualMove'
+      extensionElement: '@'
+      extensionElementLast: '@'
     transclude: true
     link: (scope, element, attrs) ->
       scope.edit = false
@@ -284,9 +286,12 @@ define ['jquery', 'util', 'underscore', 'templates', 'angular', 'jquery.event.dr
           continue if attrs.dropGroup? and sc.dropGroup != scope.dropGroup
           continue if attrs.groupTest? and not scope.groupTest({fromList: fromInstance, toList:instance})
 
+          init = rl.length
+
           items = $(list).find('.item')
           if not items.length
             items.push $(list).find('.placeholder')[0]
+
           for item, i in items
             $item = $ item
             offs = $item.offset()
@@ -297,8 +302,48 @@ define ['jquery', 'util', 'underscore', 'templates', 'angular', 'jquery.event.dr
               height: $item.outerHeight()
               index: i
               instance: instance
+
+          init = rl[init]
+          lastIndex = rl.length - 1
+          last = rl[lastIndex]
+
           if $(items[0]).hasClass('placeholder')
-            rl[rl.length-1].empty = true
+            init.empty = true
+
+          if sc.extensionElement? and sc.extensionElement != ""
+            a = $(sc.extensionElement)
+            for item in a
+              $item = $ item
+              offs = $item.offset()
+              rl.push
+                top: offs.top
+                left: offs.left
+                width: $item.outerWidth()
+                height: $item.outerHeight()
+                lineTop: init.top
+                lineLeft: init.left
+                lineHeight: init.height
+                empty: true
+                index: 0
+                instance: instance
+
+          if sc.extensionElementLast? and sc.extensionElementLast != ""
+            a = $(sc.extensionElementLast)
+            for item in a
+              $item = $ item
+              offs = $item.offset()
+              left = if last.empty then last.left else last.left + last.width
+              rl.push
+                top: offs.top
+                left: offs.left
+                width: $item.outerWidth()
+                height: $item.outerHeight()
+                lineTop: last.top
+                lineLeft: left
+                lineHeight: last.height
+                empty: true
+                index: lastIndex
+                instance: instance
 
       getCurrentPoint = (x,y) ->
         for rect in scope.rectangleList
@@ -308,13 +353,19 @@ define ['jquery', 'util', 'underscore', 'templates', 'angular', 'jquery.event.dr
           l = rect.left
           continue if y < t or y > t + h or x < l or x > l + w
           m = if rect.empty then l + w else l + w/2
-          return {
+          r =
             x: if x < m then l else l + w
             y: t
             height: h
             index: rect.index + (if x < m then 0 else 1)
             instance: rect.instance
-          }
+          if rect.lineTop?
+            r.y = rect.lineTop
+          if rect.lineLeft?
+            r.x = rect.lineLeft
+          if rect.lineHeight?
+            r.height = rect.lineHeight
+          return r
         return null
 
       updateCanvas = (e) ->

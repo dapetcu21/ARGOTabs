@@ -1,9 +1,11 @@
-define ->
+define ['rainbow'], ->
   (ui, $routeProvider) ->
     $routeProvider.when '/json',
-      template: '<p>{{text}}</p>'
+      template: '<div id="json-view"></div>'
       controller: [ '$scope', ($scope) ->
         $scope.$watch 'tournament', (value) ->
           if value?
-            $scope.text = value.toFile()
+            el = $('#json-view')
+            el.html "<pre><code data-language='javascript'>var tournament = " + value.toFile(true) + "</pre></code>"
+            Rainbow.color(el[0])
       ]

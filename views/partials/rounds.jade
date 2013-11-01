@@ -12,7 +12,7 @@ div.tab-content
   div#teams.tab-pane.active
     div#team-list(ng-show='!round.paired')
       .control-group 
-        .btn-group.inline
+        .btn-group.inline-block
           button(ng-click='addAllTeams()').btn
             i.fa.fa-fw.fa-check-square-o
             |  all
@@ -54,7 +54,7 @@ div.tab-content
         div.inline.small-margin You can manually drag judges to fine-tune
 
       .row-fluid
-        .span10
+        .span9
           table(editable-table, model='round.ballots', visible='round.tableOpts.ballots', table-class='table table-bordered table-hover', row-clicked='editBallot($index)', reorders)#round-pairings-table
             thead
               tr
@@ -74,22 +74,27 @@ div.tab-content
                 td: span(class='muted-{{o.teams[0] == null}}') {{namePlaceholder(o.teams[0],'Bye').name}}
                 td: span(class='muted-{{o.teams[1] == null}}') {{namePlaceholder(o.teams[1],'Bye').name}}
                 td
-                  div(ng-show='o.teams[0] && o.teams[1]')
-                    div.nowrap.inline-block
+                  div(ng-show='o.teams[0] && o.teams[1]', class='ballot-{{$index}}')
+                    div.nowrap.inline-block.main-judges
                       i.fa.fa-gavel.judge-icon
-                      hlist-cell(bind='o.judges', edit-hidden='true', reorders-always, reorders='!o.locked', userdata='judgeUd(o, false)', drop-group='judge-drop', group-test='judgeGroupTest(fromList, toList)', manual-move='judgeMove(fromList, fromIndex, toList, toIndex)').judge-list
+                      hlist-cell(bind='o.judges', extension-element='.ballot-{{$index}} .main-judges', extension-element-last='{{yesNo(o.shadows.length || round.allowShadowsSolved(), "", ".ballot-" + $index)}}', edit-hidden='true', reorders-always, reorders='!o.locked', userdata='judgeUd(o, false)', drop-group='judge-drop', group-test='judgeGroupTest(fromList, toList)', manual-move='judgeMove(fromList, fromIndex, toList, toIndex)').judge-list
                         span.judge-box {{hlo.name}}
-                    div(ng-show='o.shadows.length || round.allowShadowsSolved()').nowrap.inline-block
+                    div(ng-show='o.shadows.length || round.allowShadowsSolved()').nowrap.inline-block.shadow-judges
                       i.fa.fa-eye.judge-icon
-                      hlist-cell(bind='o.shadows', edit-hidden='true', reorders-always, reorders='!o.locked', userdata='judgeUd(o, true)', drop-group='judge-drop', group-test='judgeGroupTest(fromList, toList)', manual-move='judgeMove(fromList, fromIndex, toList, toIndex)').judge-list
+                      hlist-cell(bind='o.shadows', extension-element='.ballot-{{$index}} .shadow-judges', extension-element-last='{{yesNo(o.shadows.length || round.allowShadowsSolved(), ".ballot-" + $index, "")}}', edit-hidden='true', reorders-always, reorders='!o.locked', userdata='judgeUd(o, true)', drop-group='judge-drop', group-test='judgeGroupTest(fromList, toList)', manual-move='judgeMove(fromList, fromIndex, toList, toIndex)').judge-list
                         span.judge-box {{hlo.name}}
                 td.nowrap
                   span(class="{{o.stats.classes[0]}}") {{o.stats.scores[0]}} 
                   span(class="{{o.stats.winClass}}"): i.fa.fa-trophy
                   span(class="{{o.stats.classes[1]}}")  {{o.stats.scores[1]}}
-        .span2
-          .well.settings-group
+        .span3
+          .well.settings-group.free-judges
             strong Free judges
+            div(ng-show='!round.freeJudges.length')
+              | All judges have been assigned
+            div(ng-show='round.freeJudges.length')
+              hlist-cell(bind='round.freeJudges', extension-element='.well.settings-group.free-judges', edit-hidden='true', reorders-always, reorders='true', userdata='judgeUd(null, false)', drop-group='judge-drop', group-test='judgeGroupTest(fromList, toList)', manual-move='judgeMove(fromList, fromIndex, toList, toIndex)').judge-list
+                span.judge-box {{hlo.name}}
 
   div#judges.tab-pane
     .control-group

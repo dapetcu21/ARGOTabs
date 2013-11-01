@@ -34,6 +34,12 @@ define ->
         r.push index.indexOf(v)
       r
 
+    @arrayRemove: (a, obj) ->
+      idx = a.indexOf obj
+      if idx != -1
+        a.splice idx, 1
+      return
+
     @getObjectClass: (obj) ->
       if obj and obj.constructor and obj.constructor.toString
         arr = obj.constructor.toString().match /function\s*(\w+)/
@@ -63,6 +69,57 @@ define ->
         fn()
       else
         scope.$apply fn
+      return
+
+    @installScopeUtils: (scope) ->
+      scope.yesNoInherit = (v,y,n,i) ->
+        if v == null
+          i
+        else
+          if v
+            y
+          else
+            n
+
+      scope.yesNo = (v,y,n) ->
+        if v
+          y
+        else
+          n
+
+      scope.parseInt = (s) ->
+        return 0 if s == ''
+        return parseInt s
+
+      scope.parseFloat = (s) ->
+        return 0 if s == ''
+        return parseFloat s
+
+      scope.truncFloat = (v, prec) ->
+        s = v.toFixed(prec)
+        if s.indexOf('.') != -1
+          s.replace /\.?0*$/, ''
+        else
+          s
+
+      scope.validateMinMax = (v, min, max) ->
+        return min <= v and v <= max
+
+      scope.eliminateNil = (a) ->
+        if not a?
+          return ''
+        return a
+
+      scope.namePlaceholder = (a, p='') ->
+        if not a?
+          return {name: p}
+        return a
+
+      scope.nilPlaceholder = (a, p) ->
+        if not a?
+          return p
+        return a
+
       return
 
     @focusableElement: (element, first = true) ->

@@ -24,7 +24,7 @@ define ['util'], (Util) ->
       for round in @tournament.rounds
         opts = @rounds[round.id]
         if opts?
-          Util.unpackCycle opts.ballot, round.ballots
+          opts.ballot = Util.unpackCycle opts.ballot, round.ballots
     
     toJSON: ->
       model = Util.copyObject this, ['tournament']
