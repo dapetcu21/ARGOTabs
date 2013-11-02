@@ -102,6 +102,9 @@ define ->
         else
           s
 
+      scope.toFixed = (v, prec) ->
+        v.toFixed prec
+
       scope.validateMinMax = (v, min, max) ->
         return min <= v and v <= max
 

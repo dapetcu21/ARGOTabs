@@ -67,7 +67,13 @@ define ['util', 'club', 'team', 'judge', 'room', 'player', 'round', 'sorter'], (
       null
 
     toJSON: ->
-      Util.copyObject this, ['backend', 'lastData']
+      model = Util.copyObject this, ['backend', 'lastData']
+      model.rankFromTeams = {all:@rankFromTeams.all}
+      for r in @rounds
+        v = @rankFromTeams[r.id]
+        if v?
+          model.rankFromTeams[id] = v
+      return model
 
     toFile: (pretty = false) ->
       if pretty

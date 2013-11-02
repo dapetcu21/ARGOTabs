@@ -47,6 +47,30 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
               return
           ) (judge)
 
+
+        for room in round.rooms
+          ((room) ->
+            $scope.$watch ->
+              ropts = room.rounds[round.id]
+              if ropts?
+                ropts.participates
+              else
+                null
+            , (v, o) ->
+              return if not v?
+              return if v == o
+              if v
+                round.freeRooms.push room
+              else
+                ropts = room.rounds[round.id]
+                if ropts? and ropts.ballot
+                  ropts.ballot.room = null
+                  ropts.ballot = null
+                else
+                  Util.arrayRemove round.freeRooms, room
+              return
+          ) (room)
+
         $scope.addAllTeams = ->
           for team in $scope.tournament.teams
             team.rounds[round.id].participates = true
@@ -204,6 +228,9 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
 
         $scope.assignJudges = ->
           round.assignJudges()
+
+        $scope.assignRooms = ->
+          round.assignRooms()
 
         $scope.pair = ->
           $scope.pairOpts =

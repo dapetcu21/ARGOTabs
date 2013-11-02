@@ -26,9 +26,10 @@ define ['util', 'player'], (Util, Player) ->
       model.rounds = {}
       for id, opts of @rounds
         round = @tournament.roundWithId id
-        model.rounds[id] = mopts = Util.copyObject opts
-        if round and opts.ballot
-          mopts.ballot = Util.packCycle opts.ballot, round.ballots
+        if round
+          model.rounds[id] = mopts = Util.copyObject opts
+          if opts.ballot
+            mopts.ballot = Util.packCycle opts.ballot, round.ballots
       return model
 
     @calculateStats: (teams, rounds) ->
@@ -53,9 +54,10 @@ define ['util', 'player'], (Util, Player) ->
         ballots: 0
         roundsPlayed: 0
         roundsBotched: 0 #zeros
-      for round in rounds
-        round = round.id if typeof round == 'object'
-        ballot = @rounds[round].ballot
+      for roundId in rounds
+        roundId = roundId.id if typeof roundId == 'object'
+        round = @tournament.roundWithId roundId
+        ballot = @rounds[roundId].ballot
         continue if not ballot.locked
         if this == ballot.teams[0]
           side = 0

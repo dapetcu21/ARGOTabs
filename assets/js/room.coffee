@@ -12,9 +12,20 @@ define ['util'], (Util)->
           round.registerRounds this
 
     unpackCycles: ->
+      for round in @tournament.rounds
+        opts = @rounds[round.id]
+        if opts?
+          opts.ballot = Util.unpackCycle opts.ballot, round.ballots
 
     toJSON: ->
       model = Util.copyObject this, ['tournament']
+      model.rounds = {}
+      for round in @tournament.rounds
+        opts = @rounds[round.id]
+        if opts?
+          mopts = Util.copyObject opts, []
+          mopts.ballot = Util.packCycle mopts.ballot, round.ballots
+        model.rounds[round.id] = mopts
       return model
 
     destroy: ->

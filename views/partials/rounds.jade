@@ -49,9 +49,11 @@ div.tab-content
       .control-group
         button(ng-click='assignJudges()').btn Reassign judges
         = ' '
+        button(ng-click='assignRooms()').btn Reassign rooms
+        = ' '
         button(ng-click='shuffleRooms()').btn Shuffle in rooms
         = ' '
-        div.inline.small-margin You can manually drag judges to fine-tune
+        div.inline.small-margin You can manually drag judges and rooms to fine-tune
 
       .row-fluid
         .span9
@@ -70,10 +72,13 @@ div.tab-content
             tbody(editable-tbody)
               script(type='text/html')
                 td {{$index + 1}}
-                td {{namePlaceholder(o.room).name}}
+                td
+                  span(class='notavailable-{{o.room == null}}') 
+                  span(ng-show='o.room != null').judge-box {{o.room.name}}
                 td: span(class='muted-{{o.teams[0] == null}}') {{namePlaceholder(o.teams[0],'Bye').name}}
                 td: span(class='muted-{{o.teams[1] == null}}') {{namePlaceholder(o.teams[1],'Bye').name}}
                 td
+                  span(class="notavailable-{{!o.teams[0] || !o.teams[1]}}")
                   div(ng-show='o.teams[0] && o.teams[1]', class='ballot-{{$index}}')
                     div.nowrap.inline-block.main-judges
                       i.fa.fa-gavel.judge-icon
@@ -95,6 +100,13 @@ div.tab-content
             div(ng-show='round.freeJudges.length')
               hlist-cell(bind='round.freeJudges', extension-element='.well.settings-group.free-judges', edit-hidden='true', reorders-always, reorders='true', userdata='judgeUd(null, false)', drop-group='judge-drop', group-test='judgeGroupTest(fromList, toList)', manual-move='judgeMove(fromList, fromIndex, toList, toIndex)').judge-list
                 span.judge-box {{hlo.name}}
+          .well.settings-group.free-rooms
+            strong Free rooms
+            div(ng-show='!round.freeRooms.length')
+              | All judges have been assigned
+            div(ng-show='round.freeRooms.length')
+              hlist-cell(bind='round.freeRooms', extension-element='.well.settings-group.free-rooms', edit-hidden='true', reorders-always, reorders='true', drop-group='rooms-drop', manual-move='roomMove(fromList, fromIndex, toList, toIndex)').judge-list
+                span.room-box {{hlo.name}}
 
   div#judges.tab-pane
     .control-group

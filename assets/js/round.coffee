@@ -6,10 +6,11 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
           this[key] = value
       @id ?= Math.floor(Math.random() * 100000000)
       @tableOpts ?= {}
+      @teams ?= []
       @judges ?= []
       @freeJudges ?= []
-      @teams ?= []
       @rooms ?= []
+      @freeRooms ?= []
       @ballots ?= []
       @ballotsPerMatch ?= null
       @maxMainJudges ?= null
@@ -44,6 +45,7 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
       Util.unpackCycles @judges, @tournament.judges
       Util.unpackCycles @freeJudges, @tournament.judges
       Util.unpackCycles @rooms, @tournament.rooms
+      Util.unpackCycles @freeRooms, @tournament.rooms
       for ballot in @ballots
         ballot.unpackCycles()
 
@@ -82,7 +84,6 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
       if not team.rounds[id]?
         team.rounds[id] =
           participates: true
-          locked: false
         @teams.push team
         
     unregisterTeam: (team) ->
@@ -93,11 +94,15 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
       if not room.rounds[id]?
         room.rounds[id] =
           participates: true
-          locked: false
         @rooms.push room
+        @freeRooms.push room
 
     unregisterRoom: (room) ->
+      ropts = room.rounds[@id]
+      if ropts? and ropts.ballot?
+        ropts.ballot.room = null
       Util.arrayRemove @rooms, room
+      Util.arrayRemove @freeRooms, room
     
     sortByRank: (array) ->
       Team.calculateStats array, @previousRounds()
@@ -121,7 +126,10 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
 
 
       id = @id
-      rooms = _.filter @rooms, (o) -> o.rounds[id].participates
+      rooms = _.filter @rooms, (o) ->
+        ropts = o.rounds[id]
+        ropts.ballot = null
+        ropts.participates
       roomsIdx = 0
       roomsL = rooms.length
 
@@ -150,8 +158,10 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
             if Math.random() > proportion
               ballot.teams[0] = b
               ballot.teams[1] = a
-        ballot.room = rooms[roomsIdx] if roomsIdx < roomsL
-        roomsIdx++
+        if roomsIdx < roomsL and not ballot.locked
+          ballot.room = rooms[roomsIdx]
+          ballot.room.rounds[id].ballot = ballot
+          roomsIdx++
         @ballots.push ballot
         a.rounds[id].ballot = ballot if a?
         b.rounds[id].ballot = ballot if b?
@@ -169,6 +179,8 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
             pairTeams teams[i], teams[i+1], skillIndex++
       @paired = true
 
+      rooms.splice 0, roomsIdx
+      @freeRooms = rooms
       if opts.shuffleRooms
         @shuffleRooms()
 
@@ -245,12 +257,36 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
           @freeJudges.push j
         i = 0 if ++i >= noBallots
 
+    assignRooms: ->
+      ballots = _.filter @ballots, (o) -> !o.locked
+      rooms = []
+      for ballot in ballots
+        if ballot.room?
+          rooms.push ballot.room
+      rooms = rooms.concat @freeRooms
+      n = rooms.length
+      id = @id
+      for ballot, i in ballots
+        break if i >= n
+        room = rooms[i]
+        room.rounds[id].ballot = ballot
+        ballot.room = room
+      rooms.splice 0, ballots.length
+      @freeRooms = rooms
+
     shuffleRooms: ->
-      ballots = _.shuffle @ballots
-      rooms = _.map @ballots, (o) -> o.room
+      id = @id
+      lockedBallots = _.filter @ballots, (o) -> o.locked
+      ballots = _.shuffle _.filter @ballots, (o) -> !o.locked
+      rooms = _.map ballots, (o) -> o.room
       for ballot,i in ballots
-        ballot.room = rooms[i]
+        room = rooms[i]
+        room.rounds[id].ballot = ballot
+        ballot.room = room
         @ballots[i] = ballot
+      n = ballots.length
+      for ballot, i in lockedBallots
+        @ballots[i + n] = ballot
 
     toJSON: ->
       model = Util.copyObject this, ['tournament']
@@ -258,6 +294,12 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
       model.judges = Util.packCycles @judges, @tournament.judges
       model.freeJudges = Util.packCycles @freeJudges, @tournament.judges
       model.rooms = Util.packCycles @rooms, @tournament.rooms
+      model.freeRooms = Util.packCycles @freeRooms, @tournament.rooms
+      model.rankFrom = {all:@rankFrom.all}
+      for r in @tournament.rounds
+        v = @rankFrom[r.id]
+        if v?
+          model.rankFrom[id] = v
       return model
 
     destroy: ->

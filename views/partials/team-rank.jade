@@ -15,10 +15,10 @@
           td {{$index + 1}}
           td {{o.name}}
           td {{o.club.name}}
-          td {{o.stats.ballots}}
-          td {{o.stats.wins}}
-          td {{o.stats.score}}
-          td {{o.stats.reply}}
+          td: span.right {{o.stats.ballots}}
+          td: span.right {{o.stats.wins}}
+          td: span.right {{toFixed(o.stats.score, 2)}}
+          td: span.right {{toFixed(o.stats.reply, 2)}}
             
 
   .span2

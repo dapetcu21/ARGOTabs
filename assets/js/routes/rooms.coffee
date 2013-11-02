@@ -12,4 +12,11 @@ define ['room'], (Room) ->
           array = ui.tournament.rooms
           array[index].destroy()
           array.splice(index, 1)
+
+        $scope.canRemoveRoom = (room) ->
+          for round in ui.tournament.rounds
+            ropts = room.rounds[round.id]
+            if ropts? and ropts.ballot?
+              return false
+          return true
       ]

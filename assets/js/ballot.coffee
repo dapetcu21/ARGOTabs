@@ -34,7 +34,6 @@ define ['util', 'underscore'], (Util) ->
       return roles
 
     getVotesForBallots: (b) ->
-      deepCopy = (v) -> JSON.parse JSON.stringify v
       if @votes and @votes.length
         votes = []
         for v in @votes
@@ -78,6 +77,8 @@ define ['util', 'underscore'], (Util) ->
           v = @roles[i]
           for j in [0...v.length]
             v[j] = Util.unpackCycle v[j], @teams[i].players
+      for vote in @votes
+        vote.judge = Util.unpackCycle vote.judge, @round.tournament.judges
     
     toJSON: ->
       model = Util.copyObject this, ['round', 'stats']
@@ -92,6 +93,11 @@ define ['util', 'underscore'], (Util) ->
           vv = @roles[i]
           for o in vv
             v.push Util.packCycle o, @teams[i].players
+      model.votes = []
+      for v in @votes
+        vote = Util.copyObject v
+        vote.judge = Util.packCycle vote.judge, @round.tournament.judges
+        model.votes.push vote
       model.room = Util.packCycle @room, @round.tournament.rooms
       model.judges = Util.packCycles @judges, @round.tournament.judges
       model.shadows = Util.packCycles @shadows, @round.tournament.judges

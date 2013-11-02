@@ -1,4 +1,4 @@
-define ["team", "underscore"], (Team) ->
+define ["team", "util", "underscore"], (Team, Util) ->
   (ui, $routeProvider) ->
     $routeProvider.when '/team-rank',
       templateUrl: 'partials/team-rank.html'
@@ -34,6 +34,9 @@ define ["team", "underscore"], (Team) ->
           teams.sort (a,b) -> sorter a.stats, b.stats
 
         roundIds = null
+        Util.installScopeUtils $scope
+        console.log $scope.truncFloat
+
         $scope.$watch (-> JSON.stringify roundIds = baseRoundIds()), (v) ->
           refreshStats baseRounds roundIds
       ]
