@@ -13,6 +13,25 @@ define ['team'], (Team) ->
           array[index].destroy()
           array.splice(index, 1)
 
+        $scope.canRemoveTeam = (team) ->
+          for round in ui.tournament.rounds
+            ropts = team.rounds[round.id]
+            if ropts? and ropts.ballot?
+              return false
+          return true
+
+        $scope.canRemovePlayer = (player) ->
+          team = player.team
+          for round in ui.tournament.rounds
+            ropts = team.rounds[round.id]
+            console.log ropts.ballot.roles
+            if ropts? and ropts.ballot? and ropts.ballot.locked and ropts.ballot.roles?
+              for i in [0...2]
+                for j in [0...4]
+                  if ropts.ballot.roles[i][j] == player
+                    return false
+          return true
+
         $scope.initRepeat = (iScope) ->
           iScope.$watch ->
             iScope.o.club

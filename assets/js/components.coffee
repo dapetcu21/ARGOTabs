@@ -226,7 +226,9 @@ define ['jquery', 'util', 'underscore', 'templates', 'angular', 'jquery.event.dr
     scope:
       model: '=bind'
       addItem: '&addItem'
+      _addItemHidden: '&addItemHidden'
       removeItem: '&removeItem'
+      _removeItemHidden: '&removeItemHidden'
       editHidden: '=editHidden'
       separator: '@separator'
       reorders: '&reorders'
@@ -258,9 +260,17 @@ define ['jquery', 'util', 'underscore', 'templates', 'angular', 'jquery.event.dr
         else
           ''
       scope.$watch (-> attrs.dropGroup?), (v) -> scope.hasGroup = v
-      scope.$watch (-> attrs.addItem?), (v) -> scope.canAddItem = v
+      scope.$watch (-> attrs.addItem? and not (attrs.addItemHidden? and scope._addItemHidden())), (v) -> scope.canAddItem = v
       scope.$watch (-> attrs.reorders? && scope.reorders(scope.$parent)), (v) ->
         scope._reorders = v
+
+      scope.removeItemHidden = (hlo, index) ->
+        if attrs.removeItemHidden?
+          scope._removeItemHidden
+            hlo: hlo
+            $index: index
+        else
+          false
 
       currentPoint = null
       dragElement = null

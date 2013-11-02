@@ -1,6 +1,6 @@
 div(class='hlist-empty').hlist.inline
   div(ng-repeat='hlo in model', class='moveable-{{_reorders && (edit || reordersAlways) && (model.length > 1 || hasGroup)}}').inline-block.item.valign-middle
-    div(class='enabled-{{edit}}').item-controls.valign-middle
+    div(class='enabled-{{edit}}', ng-show='!removeItemHidden(hlo, $index)').item-controls.valign-middle
       i(ng-click='remove($index)').fa.fa-times-circle.highlight-button
     div(ng-transclude).inline-block.valign-middle.hlist-content
     span(ng-show='!$last') {{separator}}&nbsp;
