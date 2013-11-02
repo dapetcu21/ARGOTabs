@@ -57,16 +57,22 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
 
         $scope.addAllJudges= ->
           for judge in $scope.tournament.judges
-            judge.rounds[round.id].participates = true
+            ropts = judge.rounds[round.id]
+            continue if ropts.ballot? and ropts.ballot.locked
+            ropts.participates = true
 
         $scope.removeAllJudges = ->
           for judge in $scope.tournament.judges
-            judge.rounds[round.id].participates = false
+            ropts = judge.rounds[round.id]
+            continue if ropts.ballot? and ropts.ballot.locked
+            ropts.participates = false
 
         $scope.removeShadows = ->
           for judge in $scope.tournament.judges
             if judge.rank == Judge.shadowRank
-              judge.rounds[round.id].participates = false
+              ropts = judge.rounds[round.id]
+              continue if ropts.ballot? and ropts.ballot.locked
+              ropts.participates = false
 
         $scope.addAllRooms= ->
           for room in $scope.tournament.rooms

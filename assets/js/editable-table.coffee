@@ -104,11 +104,12 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
         scope.$on '$destroy', ->
           context.remove()
 
-        scope.canRemoveItem = (o) ->
+        scope.canRemoveItem = (o, index) ->
           if not attrs.canRemoveItem?
             return attrs.removeItem?
           return scope.canRemoveItem_
             o: o
+            index: index
 
         exportCSV = ->
           csv = []
@@ -336,7 +337,7 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
 
         scope.mouseEnter = ->
           return if scope.hover
-          return if not controller.scope.canRemoveItem scope.o
+          return if not controller.scope.canRemoveItem scope.o, scope.$index
           scope.hover = true
           controller.scope.rowHovered++
           scope.id = 'id' + Math.round( Math.random() * 10000)

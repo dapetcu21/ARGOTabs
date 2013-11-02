@@ -27,6 +27,13 @@ define ['judge'], (Judge) ->
             if newValue
               newValue.addJudge(judge)
 
+        $scope.canRemoveJudge = (judge) ->
+          for round in ui.tournament.rounds
+            ropts = judge.rounds[round.id]
+            if ropts? and ropts.ballot? and ropts.ballot.locked
+              return false
+          return true
+
         $scope.eliminateNil = (a) ->
           if not a?
             return ''

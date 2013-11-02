@@ -27,6 +27,8 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
           @registerTeam team
         for judge in @tournament.judges
           @registerJudge judge
+          judge.rounds[@id].participates = true
+          @freeJudges.push judge
         for room in @tournament.rooms
           @registerRoom room
 
@@ -62,16 +64,18 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
       id = @id
       if not judge.rounds[id]?
         judge.rounds[id] =
-          participates: true
-          locked: false
+          participates: false
         @judges.push judge
-        @freeJudges.push judge
 
     unregisterJudge: (judge) ->
-      idx = @judges.indexOf judge
-      @judges.splice idx, 1 if idx != -1
-      idx = @freeJudges.indexOf judge
-      @freeJudges.splice idx, 1 if idx != -1
+      ropts = judge.rounds[@id]
+      if ropts? and ropts.ballot?
+        if ropts.shadow
+          Util.arrayRemove ropts.ballot.shadows, judge
+        else
+          Util.arrayRemove ropts.ballot.judges, judge
+      Util.arrayRemove @judges, judge
+      Util.arrayRemove @freeJudges, judge
 
     registerTeam: (team) ->
       id = @id
@@ -82,9 +86,7 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
         @teams.push team
         
     unregisterTeam: (team) ->
-      idx = @teams.indexOf team
-      if idx != -1
-        @teams.splice idx, 1
+      Util.arrayRemove @teams, team
 
     registerRoom: (room) ->
       id = @id
@@ -95,9 +97,7 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
         @rooms.push room
 
     unregisterRoom: (room) ->
-      idx = @rooms.indexOf room
-      if idx != -1
-        @rooms.splice idx, 1
+      Util.arrayRemove @rooms, room
     
     sortByRank: (array) ->
       Team.calculateStats array, @previousRounds()

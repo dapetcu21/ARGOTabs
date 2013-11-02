@@ -128,7 +128,7 @@ div.tab-content
         script(type='text/html')
           td {{$index + 1}}
           td
-            input(type='checkbox', ng-model='o.rounds[round.id].participates')
+            input(type='checkbox', ng-disabled='o.rounds[round.id].ballot.locked', ng-model='o.rounds[round.id].participates')
           td {{o.name}}
           td: span(class='muted-{{o.club == null}}') {{nilPlaceholder(o.club, {name:"unaffiliated"}).name}}
           td {{rankStrings[o.rank]}}
