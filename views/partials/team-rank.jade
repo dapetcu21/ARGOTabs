@@ -6,19 +6,19 @@
           th(data-auto-index=4) #
           th(data-auto-index=1) Team name
           th(data-auto-index=2) Club
-          th(data-auto-index=3) Ballots
-          th(data-auto-index=3) Wins
-          th(data-auto-index=3) Score
-          th(data-auto-index=3) Reply
+          th(data-auto-index=3): div.gear-covered Ballots
+          th(data-auto-index=4): div.gear-covered Wins
+          th(data-auto-index=5): div.gear-covered Reply
+          th(data-auto-index=6): div.gear-covered Score
       tbody(editable-tbody)
         script(type='text/html')
           td {{$index + 1}}
           td {{o.name}}
-          td {{o.club.name}}
+          td: span(class='muted-{{o.club == null}}') {{namePlaceholder(o.club, 'unaffiliated').name}}
           td: span.right {{o.stats.ballots}}
           td: span.right {{o.stats.wins}}
-          td: span.right {{toFixed(o.stats.score, 2)}}
-          td: span.right {{toFixed(o.stats.reply, 2)}}
+          td: span.right {{toFixed(o.stats.reply, replyDec)}}
+          td: span.right {{toFixed(o.stats.score, scoreDec)}}
             
 
   .span2
@@ -35,9 +35,16 @@
       strong Ranking criteria
       sorter-criteria(bind='tournament.teamRankSorter')
 :stylus
-  #teams-table th:nth-child(1)
+  #team-rank-table th:nth-child(1)
     width: 35px
-  #teams-table th:nth-child(2)
+  #team-rank-table th:nth-child(3)
     width: 20%
-  #teams-table th:nth-child(3)
-    width: 10%
+  #team-rank-table th:nth-child(4),
+  #team-rank-table th:nth-child(5),
+  #team-rank-table th:nth-child(6),
+  #team-rank-table th:nth-child(7)
+    width: 60px
+  #team-rank-table .squeezedElement .gear-covered
+    width: 19px
+
+

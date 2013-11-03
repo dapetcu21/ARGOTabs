@@ -31,9 +31,18 @@ define ["team", "util", "underscore"], (Team, Util) ->
           rounds ?= baseRounds()
           Team.calculateStats teams, rounds
           sorter = tournament.teamRankSorter.boundComparator()
-          console.log teams
           teams.sort (a,b) -> sorter a.stats, b.stats
-          console.log teams
+
+          maxScoreDec = 0
+          maxReplyDec = 0
+          for team in teams
+            scoreDec = Util.decimalsOf team.stats.score, 2
+            replyDec = Util.decimalsOf team.stats.reply, 2
+            maxScoreDec = scoreDec if scoreDec > maxScoreDec
+            maxReplyDec = replyDec if replyDec > maxReplyDec
+
+          $scope.scoreDec = maxScoreDec
+          $scope.replyDec = maxReplyDec
 
         roundIds = null
         Util.installScopeUtils $scope

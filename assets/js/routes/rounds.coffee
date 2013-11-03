@@ -135,18 +135,9 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
           $scope.scoreDecimals ?= 0
           sd = $scope.scoreDecimals
 
-          decimalsOf = (v) ->
-            s = v.toFixed 2
-            n = s.length
-            dec = 2
-            while n and dec and s[n-1] == '0'
-              dec--
-              n--
-            return dec
-
           maxScoreDec = (s) ->
-            d1 = decimalsOf s[0]
-            d2 = decimalsOf s[1]
+            d1 = Util.decimalsOf s[0], 2
+            d2 = Util.decimalsOf s[1], 2
             if d2 > d1
               d2
             else

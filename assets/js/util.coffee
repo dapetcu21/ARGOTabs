@@ -71,6 +71,15 @@ define ->
         scope.$apply fn
       return
 
+    @decimalsOf: (v, maxDecimals = 2) ->
+      s = v.toFixed maxDecimals
+      n = s.length
+      dec = maxDecimals
+      while n and dec and s[n-1] == '0'
+        dec--
+        n--
+      return dec
+
     @installScopeUtils: (scope) ->
       scope.yesNoInherit = (v,y,n,i) ->
         if v == null

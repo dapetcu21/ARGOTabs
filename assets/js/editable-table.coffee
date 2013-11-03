@@ -251,7 +251,7 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
                 width: el.width()
               )
                 .appendTo(element.find('thead tr'))
-                .find('i.close.icon-cog').click (e) ->
+                .find('i.close.fa-cog').click (e) ->
                   setTimeout -> #to avoid the click event that cancels my menu
                     element.find('thead').contextmenu 'show', e
                   , 1
