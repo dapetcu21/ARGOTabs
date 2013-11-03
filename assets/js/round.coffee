@@ -106,7 +106,7 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
     
     sortByRank: (array) ->
       Team.calculateStats array, @previousRounds()
-      sorter = @pairRankSorterSolved().compareObjects
+      sorter = @pairRankSorterSolved().boundComparator()
       array.sort (a,b) -> sorter a.stats, b.stats
 
     pairingTeams: ->

@@ -30,12 +30,13 @@ define ["team", "util", "underscore"], (Team, Util) ->
           teams = $scope.teams = tournament.teams.slice(0)
           rounds ?= baseRounds()
           Team.calculateStats teams, rounds
-          sorter = tournament.teamRankSorter.compareObjects
+          sorter = tournament.teamRankSorter.boundComparator()
+          console.log teams
           teams.sort (a,b) -> sorter a.stats, b.stats
+          console.log teams
 
         roundIds = null
         Util.installScopeUtils $scope
-        console.log $scope.truncFloat
 
         $scope.$watch (-> JSON.stringify roundIds = baseRoundIds()), (v) ->
           refreshStats baseRounds roundIds
