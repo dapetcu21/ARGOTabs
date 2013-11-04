@@ -1,4 +1,4 @@
-define ['jquery', 'util', 'underscore', 'templates', 'angular', 'jquery.event.drag', 'html2canvas'], ($, Util) ->
+define ['jquery', 'util', 'jquery.transit', 'underscore', 'templates', 'angular', 'jquery.event.drag', 'html2canvas'], ($, Util) ->
   mod = angular.module "components", []
   mod.directive 'navLi', ->
     restrict: 'E'
@@ -19,6 +19,15 @@ define ['jquery', 'util', 'underscore', 'templates', 'angular', 'jquery.event.dr
     restrict: 'E'
     scope:
       model: '=bind'
+      onUpdate: '&onUpdate'
+    link: (scope, element, attrs) ->
+      scope.manualMove = (from, to) ->
+        if to != from
+          Util.safeApply scope, ->
+            el = scope.model.criteria.splice(from, 1)[0]
+            scope.model.criteria.splice to, 0, el
+        if attrs.onUpdate?
+          scope.onUpdate()
   ]
 
   mod.directive "tristateCheckbox", ['$parse', ($parse) ->
@@ -219,6 +228,151 @@ define ['jquery', 'util', 'underscore', 'templates', 'angular', 'jquery.event.dr
             return scope.choiceName
               o: o
           return scope.allowNil
+
+  mod.directive "vlistCell", ['$parse', ($parse) ->
+    template: templates.vlistCell()
+    restrict: 'E'
+    scope:
+      model: '=bind'
+      manualMove: '&manualMove'
+    transclude: true
+    link: (scope, element, attrs) ->
+      dragElement = null
+      currentPoint = -1
+      lastHover = -1
+      elementParent = null
+      items = null
+      offsets = null
+      dragPointX = 0
+      dragPointY = 0
+      dragStart = -1
+      w = 0
+      h = 0
+
+      element.on 'draginit', (e) ->
+        el = $(e.target)
+        dragElement = null
+        elementParent = null
+        if el.hasClass 'moveable-true'
+          elementParent = el
+        else if (a = el.parents('.moveable-true')).length
+          elementParent = a
+        if elementParent
+          items = element.find('.item')
+          dragStart = $.makeArray(items).indexOf elementParent[0]
+          dragElement = elementParent.find('.vlist-content')
+          offs = dragElement.offset()
+          dragPointX = e.pageX - offs.left
+          dragPointY = e.pageY - offs.top
+          return element
+        return false
+
+      updatePoint = (e) ->
+        currentHover = -1
+        for _el, i in items
+          continue if i == dragStart
+          el = $ _el
+          offs = el.offset()
+          if offs.left <= e.pageX and e.pageX <= offs.left + el.outerWidth() and offs.top <= e.pageY and e.pageY <= offs.top + el.outerHeight()
+            currentHover = i
+            break
+        if currentHover != lastHover and currentHover >= 0
+          if currentPoint >= dragStart
+            currentPoint++
+          if currentPoint <= currentHover
+            currentPoint = currentHover + 1
+          else
+            currentPoint = currentHover
+          if currentPoint > dragStart
+            currentPoint--
+        lastHover = currentHover
+
+      relayout = ->
+
+      updateState = (e) ->
+        dragElement.css "left", e.pageX - dragPointX
+        dragElement.css "top", e.pageY - dragPointY
+        lastPoint = currentPoint
+        updatePoint(e)
+        if currentPoint != lastPoint
+          top = 0
+          i = 0
+          for el, j in items
+            continue if j == dragStart
+            if i == currentPoint
+              top += h
+            i++
+            $(el).transition
+              top: top
+              duration: 100
+            top += offsets[j].h
+
+      element.on 'dragstart', (e) ->
+        container = element.find ".vlist"
+        container.css "width", container.width()
+        container.css "height", container.height()
+
+        offsets = []
+        for _el, i in items
+          el = $ _el
+          o = el.position()
+          o.w = el.width()
+          o.h = el.height()
+          offsets.push o
+        for _el, i in items
+          el = $ _el
+          o = offsets[i]
+          el.css "width", o.w
+          el.css "height", o.h
+          el.css "top", o.top
+          el.css "left", o.left
+          el.css "position", "absolute"
+
+        currentPoint = dragStart
+        w = dragElement.width()
+        h = dragElement.height()
+        dragElement.css "width", w
+        dragElement.css "height", h
+        dragElement.css "position", "absolute"
+
+        $('body').append dragElement
+        updateState e
+        return dragElement
+
+      element.on 'drag', {distance: 2}, (e) ->
+        updateState e
+        return
+
+      element.on 'dragend', (e) ->
+        for _el, i in items
+          el = $ _el
+          el.css "width", ""
+          el.css "height", ""
+          el.css "top", ""
+          el.css "left", ""
+          el.css "position", ""
+        elementParent.append dragElement
+        dragElement.css "width", ""
+        dragElement.css "height", ""
+        dragElement.css "position", ""
+
+        container = element.find ".vlist"
+        container.css "width", ""
+        container.css "height", ""
+
+        if attrs.manualMove?
+          Util.safeApply scope, ->
+            scope.manualMove
+              from: dragStart
+              to: currentPoint
+        else
+          if currentPoint != dragStart
+            Util.safeApply scope, ->
+              el = scope.model.splice(dragStart, 1)[0]
+              scope.model.splice currentPoint, 0, el
+
+        return
+  ]
 
   mod.directive "hlistCell", ['$parse', ($parse)->
     template: templates.hlistCell()

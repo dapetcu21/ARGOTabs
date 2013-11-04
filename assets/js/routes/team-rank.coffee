@@ -25,7 +25,7 @@ define ["team", "util", "underscore"], (Team, Util) ->
               r.push round
           return r
 
-        refreshStats = (rounds) ->
+        $scope.refreshStats = (rounds) ->
           tournament = $scope.tournament
           teams = $scope.teams = tournament.teams.slice(0)
           rounds ?= baseRounds()
@@ -35,18 +35,22 @@ define ["team", "util", "underscore"], (Team, Util) ->
 
           maxScoreDec = 0
           maxReplyDec = 0
+          maxHighLowDec = 0
           for team in teams
             scoreDec = Util.decimalsOf team.stats.score, 2
             replyDec = Util.decimalsOf team.stats.reply, 2
+            highLowDec = Util.decimalsOf team.stats.scoreHighLow, 2
             maxScoreDec = scoreDec if scoreDec > maxScoreDec
             maxReplyDec = replyDec if replyDec > maxReplyDec
+            maxHighLowDec = highLowDec if highLowDec > maxHighLowDec
 
           $scope.scoreDec = maxScoreDec
           $scope.replyDec = maxReplyDec
+          $scope.highLowDec = maxHighLowDec
 
         roundIds = null
         Util.installScopeUtils $scope
 
         $scope.$watch (-> JSON.stringify roundIds = baseRoundIds()), (v) ->
-          refreshStats baseRounds roundIds
+          $scope.refreshStats baseRounds roundIds
       ]

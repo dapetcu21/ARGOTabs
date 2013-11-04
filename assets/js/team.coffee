@@ -33,8 +33,45 @@ define ['util', 'player'], (Util, Player) ->
       return model
 
     @calculateStats: (teams, rounds) ->
+      totalScore = 0
+      totalHL = 0
+      totalReply = 0
+      nScore = 0
+      nHL = 0
+      nReply = 0
       for team in teams
-        team.stats = team.getStats rounds
+        s = team.stats = team.getStats rounds
+        if s.score >= 0
+          totalScore += s.score
+          nScore++
+        if s.reply >= 0
+          totalReply += s.reply
+          nReply++
+        if s.scoreHighLow >= 0
+          totalHL += s.scoreHighLow
+          nHL++
+
+      if nScore
+        totalScore /= nScore
+      else
+        totalScore = 70*3.5
+      if nHL
+        totalHL /= nHL
+      else
+        totalHL = 70*3.5
+      if nReply
+        totalReply /= nReply
+      else
+        totalReply = 35
+
+      for team in teams
+        s = team.stats
+        if s.score < 0
+          s.score *= -totalScore
+        if s.scoreHighLow < 0
+          s.scoreHighLow *= -totalHL
+        if s.reply < 0
+          s.reply *= -totalReply
 
     getStats: (rounds) ->
       o =
@@ -93,12 +130,10 @@ define ['util', 'player'], (Util, Player) ->
       o.wins = o.rawWins + o.byeWins
       o.ballots = o.rawBallots + o.byeBallots
       rp = o.roundsPlayed + o.roundsBotched
-      averageScore = 245
-      averageReply = 35
-      o.score = o.rawScore + o.byeWins * if rp then (o.rawScore / rp) else averageScore
-      o.reply = o.rawReply + o.byeWins * if rp then (o.rawReply / rp) else averageReply
+      o.score = o.rawScore + o.byeWins * if rp then (o.rawScore / rp) else -1
+      o.reply = o.rawReply + o.byeWins * if rp then (o.rawReply / rp) else -1
       rp = o.rawHLRounds
-      o.scoreHighLow = o.rawHLScore + o.byeHLRounds * if rp then (o.rawHLScore / rp) else 245
+      o.scoreHighLow = o.rawHLScore + o.byeHLRounds * if rp then (o.rawHLScore / rp) else -1
       o.wins = o.rawWins + o.byeWins
       o.ballots = o.rawBallots + o.byeBallots
       return o

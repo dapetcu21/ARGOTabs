@@ -10,6 +10,7 @@
           th(data-auto-index=4): div.gear-covered Wins
           th(data-auto-index=5): div.gear-covered Reply
           th(data-auto-index=6): div.gear-covered Score
+          th(data-auto-index=7): div.gear-covered H/L
       tbody(editable-tbody)
         script(type='text/html')
           td {{$index + 1}}
@@ -19,7 +20,7 @@
           td: span.right {{o.stats.wins}}
           td: span.right {{toFixed(o.stats.reply, replyDec)}}
           td: span.right {{toFixed(o.stats.score, scoreDec)}}
-            
+          td: span.right {{toFixed(o.stats.scoreHighLow, highLowDec)}}
 
   .span2
     .well.settings-group
@@ -33,7 +34,7 @@
           | Round {{$index+1}}
     .well.settings-group
       strong Ranking criteria
-      sorter-criteria(bind='tournament.teamRankSorter')
+      sorter-criteria(bind='tournament.teamRankSorter', on-update='refreshStats()')
 :stylus
   #team-rank-table th:nth-child(1)
     width: 35px
@@ -42,7 +43,8 @@
   #team-rank-table th:nth-child(4),
   #team-rank-table th:nth-child(5),
   #team-rank-table th:nth-child(6),
-  #team-rank-table th:nth-child(7)
+  #team-rank-table th:nth-child(7),
+  #team-rank-table th:nth-child(8)
     width: 60px
   #team-rank-table .squeezedElement .gear-covered
     width: 19px

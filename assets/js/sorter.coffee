@@ -35,10 +35,12 @@ define [], ->
 
     @teamRankSorter: (o) ->
       new Sorter if o? then o else [
+      #new Sorter [
         newCrit('Ballots', 'ballots'),
-        newCrit('Points', 'score'),
-        newCrit('H/L Points', 'scoreHighLow'),
+        newCrit('Score', 'score'),
+        newCrit('H/L Score', 'scoreHighLow'),
         newCrit('Wins', 'wins')
+        newCrit('Reply Score', 'reply')
       ]
 
 
