@@ -72,7 +72,7 @@ define ['util', 'club', 'team', 'judge', 'room', 'player', 'round', 'sorter'], (
       for r in @rounds
         v = @rankFromTeams[r.id]
         if v?
-          model.rankFromTeams[id] = v
+          model.rankFromTeams[r.id] = v
       return model
 
     toFile: (pretty = false) ->
