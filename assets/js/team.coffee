@@ -34,10 +34,8 @@ define ['util', 'player'], (Util, Player) ->
 
     @calculateStats: (teams, rounds) ->
       totalScore = 0
-      totalHL = 0
       totalReply = 0
       nScore = 0
-      nHL = 0
       nReply = 0
       for team in teams
         s = team.stats = team.getStats rounds
@@ -47,18 +45,11 @@ define ['util', 'player'], (Util, Player) ->
         if s.reply >= 0
           totalReply += s.reply
           nReply++
-        if s.scoreHighLow >= 0
-          totalHL += s.scoreHighLow
-          nHL++
 
       if nScore
         totalScore /= nScore
       else
         totalScore = 70*3.5
-      if nHL
-        totalHL /= nHL
-      else
-        totalHL = 70*3.5
       if nReply
         totalReply /= nReply
       else
@@ -67,9 +58,9 @@ define ['util', 'player'], (Util, Player) ->
       for team in teams
         s = team.stats
         if s.score < 0
+          if s.score < -2
+            s.scoreHighLow = totalScore * -(s.score + 2)
           s.score *= -totalScore
-        if s.scoreHighLow < 0
-          s.scoreHighLow *= -totalHL
         if s.reply < 0
           s.reply *= -totalReply
 
@@ -78,12 +69,11 @@ define ['util', 'player'], (Util, Player) ->
         rawWins: 0
         rawScore: 0
         rawReply: 0
-        rawHLScore: 0
-        rawHLRounds: 0 #this includes botched
         rawBallots: 0
         byeWins: 0
         byeBallots: 0
-        byeHLRounds: 0
+        minScore: 80 * 3.5
+        maxScore: 0
         wins: 0
         score: 0
         reply: 0
@@ -122,6 +112,10 @@ define ['util', 'player'], (Util, Player) ->
               replyScore /= ballots
             o.rawScore += score
             o.rawReply += replyScore
+            if score < o.minScore
+              o.minScore = score
+            if score > o.maxScore
+              o.maxScore = score
           else
             o.byeWins++
             o.byeBallots += round.ballotsPerMatchSolved()
@@ -132,8 +126,9 @@ define ['util', 'player'], (Util, Player) ->
       rp = o.roundsPlayed + o.roundsBotched
       o.score = o.rawScore + o.byeWins * if rp then (o.rawScore / rp) else -1
       o.reply = o.rawReply + o.byeWins * if rp then (o.rawReply / rp) else -1
-      rp = o.rawHLRounds
-      o.scoreHighLow = o.rawHLScore + o.byeHLRounds * if rp then (o.rawHLScore / rp) else -1
+      if o.byeWins + rp > 2 and rp
+        mr = if o.minScore == o.maxScore then 1 else 2
+        o.scoreHighLow = o.score - o.minScore - o.maxScore
       o.wins = o.rawWins + o.byeWins
       o.ballots = o.rawBallots + o.byeBallots
       return o
