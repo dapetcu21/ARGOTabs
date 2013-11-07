@@ -40,6 +40,12 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
     pairRankSorterSolved: -> if @pairRankSorter? then @pairRankSorter else @tournament.pairRankSorter
     allowShadowsSolved: -> if @allowShadows? then @allowShadows else @tournament.allowShadows
 
+    getName: ->
+      idx = @tournament.rounds.indexOf this
+      if idx != -1
+        return "Round " + (idx + 1)
+      return "<undefined>"
+
     unpackCycles: ->
       Util.unpackCycles @teams, @tournament.teams
       Util.unpackCycles @judges, @tournament.judges
@@ -104,8 +110,8 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
       Util.arrayRemove @rooms, room
       Util.arrayRemove @freeRooms, room
     
-    sortByRank: (array) ->
-      Team.calculateStats array, @previousRounds()
+    sortByRank: (array, prev = @previousRounds()) ->
+      Team.calculateStats array, prev
       sorter = @pairRankSorterSolved().boundComparator()
       array.sort (a,b) -> sorter a.stats, b.stats
 
@@ -116,24 +122,11 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
     pair: (opts) ->
 
       teams = @pairingTeams()
-      
-      if opts.algorithm
-        @sortByRank teams
-      else
-        teams = _.shuffle teams
-      if teams.length & 1
-        teams.push null
-
-
+      prevRounds = @previousRounds()
+      @sortByRank teams, prevRounds
       id = @id
-      rooms = _.filter @rooms, (o) ->
-        ropts = o.rounds[id]
-        ropts.ballot = null
-        ropts.participates
-      roomsIdx = 0
-      roomsL = rooms.length
 
-      flip = opts.shuffleSides || opts.algorithm != 1
+      flip = !opts.manualSides || opts.algorithm != 1
       balance = opts.balanceSides
       balance ?= true
 
@@ -152,19 +145,72 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
           ballot.locked = true
         else
           if flip
-            proportion = 0.5
-            #if balance
-              #weighted coin flip
-            if Math.random() > proportion
-              ballot.teams[0] = b
-              ballot.teams[1] = a
-        if roomsIdx < roomsL and not ballot.locked
-          ballot.room = rooms[roomsIdx]
-          ballot.room.rounds[id].ballot = ballot
-          roomsIdx++
+            sa = a.stats.side
+            sb = b.stats.side
+            if sa == sb and opts.sides == 1
+              da = Math.abs(a.stats.prop - a.stats.opp)
+              db = Math.abs(b.stats.prop - b.stats.opp)
+              if da > db
+                sb = 1 - sb
+              else if db > da
+                sa = 1 - sa
+            if sa == sb
+              if Math.random() > 0.5
+                ballot.teams[0] = b
+                ballot.teams[1] = a
+            else
+              if sa == 1 or sb == 0
+                ballot.teams[0] = b
+                ballot.teams[1] = a
         @ballots.push ballot
-        a.rounds[id].ballot = ballot if a?
-        b.rounds[id].ballot = ballot if b?
+        if a
+          a.rounds[id].ballot = ballot
+          a.stats.paired = true
+        if b
+          b.rounds[id].ballot = ballot
+          b.stats.paired = true
+
+      #pick bye team
+      bye = null
+      if teams.length & 1 and opts.algorithm != 1
+        if not opts.algorithm and (opts.randomBye or not prevRounds.length)
+          teams = _.shuffle teams
+          bye = teams.pop()
+        else
+          minByes = Number.MAX_VALUE
+          index = -1
+          for i in [teams.length-1..0]
+            t = teams[i]
+            nB = 0
+            for round in prevRounds
+              try
+                nB++ if not t.rounds[round.id].ballot.teams[1]
+              catch
+            if nB < minByes
+              bye = t
+              index = i
+              minByes = nB
+
+          teams.splice index, 1
+
+          if not opts.algorithm
+            teams = _.shuffle teams
+
+      if opts.sides == 1
+        for team in teams
+          prop = team.stats.prop
+          opp = team.stats.opp
+          if opp > prop
+            team.stats.side = 0
+          else if prop > opp
+            team.stats.side = 1
+      else if typeof opts.sides == 'object'
+        rid = opts.sides.roundId
+        fl = opts.sides.flip
+        for team in teams
+          ballot = team.rounds[rid].ballot
+          if ballot? and ballot.teams[1]?
+            team.stats.side = (ballot.teams[1] == team) ^ fl
 
       skillIndex = 0
       switch opts.algorithm
@@ -177,10 +223,12 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
         when 3 #high-high
           for i in [0...teams.length] by 2
             pairTeams teams[i], teams[i+1], skillIndex++
+      if bye?
+        pairTeams bye, null
       @paired = true
 
-      rooms.splice 0, roomsIdx
-      @freeRooms = rooms
+
+      @assignRooms()
       if opts.shuffleRooms
         @shuffleRooms()
 
@@ -313,4 +361,4 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
 
     @allAlgos = [0, 1, 2, 3]
     @initialAlgos = [0, 1]
-    @algoName = ['Random', 'Manual', 'High-Low', 'Power Pairing']
+    @algoName = ['Random', 'Manual', 'High-High Power Pairing', 'High-Low Power Pairing']

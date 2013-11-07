@@ -1,22 +1,32 @@
 .alert.alert-block <strong>Warning!</strong> Once you create a pairing, you can only undo it by deleting the round. You also can't remove teams that have been paired or judges that filled in at least a ballot sheet from the tournament.
 
 .settings-group
-  div
-    .small-margin.inline Algorithm:&nbsp;
-    select(ng-model='pairOpts.algorithm', ng-options='algoName[algo] for algo in pairAlgorithms')
-  label(ng-show='pairOpts.algorithm != 0').checkbox
-    | Randomize room order
-    input(type='checkbox', ng-model='pairOpts.shuffleRooms')
-  label(ng-show='pairOpts.algorithm == 1').checkbox
-    | Randomize sides
-    input(type='checkbox', ng-model='pairOpts.shuffleSides')
-  label(ng-show='(pairOpts.algorithm != 1 || pairOpts.shuffleSides) && prevRounds.length').checkbox
-    | Balance sides
-    input(type='checkbox', ng-model='pairOpts.balanceSides')
-  div(ng-show='pairOpts.algorithm == 2')
-    span Number of brackets: 
-    text-edit-cell(bind='pairOpts.brackets', editing, input-width='50', pattern='[0-9]*', setter='parseInt(o)')
+  .row-fluid
+    .span6
+      div.pair-select
+        .small-margin.inline Algorithm:
+        select(ng-model='pairOpts.algorithm', ng-options='algoName[algo] for algo in pairAlgorithms')
 
+      label(ng-show='pairOpts.algorithm == 1').checkbox
+        | Manual sides 
+        input(type='checkbox', ng-model='pairOpts.manualSides')
+
+      label(ng-show='pairOpts.algorithm == 0 && prevRounds.length && (pairingTeams.length % 2)').checkbox
+        | Randomize bye
+        input(type='checkbox', ng-model='pairOpts.randomBye')
+
+      label(ng-show='pairOpts.algorithm != 0').checkbox
+        | Randomize room order
+        input(type='checkbox', ng-model='pairOpts.shuffleRooms')
+
+    .span6
+      div(ng-show='pairOpts.algorithm != 1 || !pairOpts.manualSides').pair-select
+        .small-margin.inline Sides:
+        select(ng-model='pairOpts.sides', ng-options='sidesName(side) for side in sides')
+
+      label(ng-show='(pairOpts.algorithm != 1 || !pairOpts.manualSides) && pairOpts.sides', title='Checking this means that side constraints should take priority over pairing algorithm constraints.').checkbox
+        | Enforce side constraint
+        input(type='checkbox', ng-model='pairOpts.hardSides')
   .error-placeholder
 
   .manual-pairings(ng-show='pairOpts.algorithm == 1')
@@ -31,14 +41,13 @@
           i.fa.fa-arrow-right.hidden-phone
           i.fa.fa-arrow-down.visible-phone
         div(ng-repeat='pair in manualPairing').pairing.rounded-bullets
-          span(ng-show='pair.prop && !pairOpts.shuffleSides').prop {{pair.prop.name}}
-          span(ng-show='pair.prop && pairOpts.shuffleSides').prop-opp {{pair.prop.name}}
-          span(ng-show='!pair.prop') Bail
+          span(ng-show='pairOpts.manualSides').prop {{pair.prop.name}}
+          span(ng-show='!pairOpts.manualSides').prop-opp {{pair.prop.name}}
           span &nbsp;vs.&nbsp;
-          span(ng-show='!pair.opp') Bail
-          span(ng-show='pair.opp && !pairOpts.shuffleSides').opp {{pair.opp.name}}
-          span(ng-show='pair.opp && pairOpts.shuffleSides').prop-opp {{pair.opp.name}}
-          i(ng-click='reverseSidesInManualPairing(pair)', ng-show='!pairOpts.shuffleSides').fa.fa-exchange
+          span(ng-show='!pair.opp') Bye
+          span(ng-show='pair.opp && pairOpts.manualSides').opp {{pair.opp.name}}
+          span(ng-show='pair.opp && !pairOpts.manualSides').prop-opp {{pair.opp.name}}
+          i(ng-click='reverseSidesInManualPairing(pair)', ng-show='pairOpts.manualSides && pair.opp').fa.fa-exchange
           i(ng-click='removePairFromManualPairing(pair, $index)').fa.fa-times
       .span4
         div(ng-repeat='o in pairingTeams', ng-click='addTeamToManualPairing(o, $index)').rounded-bullets.red.pushable {{o.name}}

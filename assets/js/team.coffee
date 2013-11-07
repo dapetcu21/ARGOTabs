@@ -81,6 +81,8 @@ define ['util', 'player'], (Util, Player) ->
         ballots: 0
         roundsPlayed: 0
         roundsBotched: 0 #zeros
+        prop: 0
+        opp: 0
       for roundId in rounds
         roundId = roundId.id if typeof roundId == 'object'
         round = @tournament.roundWithId roundId
@@ -116,6 +118,10 @@ define ['util', 'player'], (Util, Player) ->
               o.minScore = score
             if score > o.maxScore
               o.maxScore = score
+            if side
+              o.opp++
+            else
+              o.prop++
           else
             o.byeWins++
             o.byeBallots += round.ballotsPerMatchSolved()

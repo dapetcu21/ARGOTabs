@@ -226,14 +226,33 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
         $scope.pair = ->
           $scope.pairOpts =
             algorithm: 0
-            shuffle: false
-            balance: true
-            brackets: 1
+            sides: 0
+            manualSides: true
+            shuffleRooms: false
+            hardSides: true
           prev = $scope.prevRounds = round.previousRounds()
           $scope.pairAlgorithms = if prev.length then Round.allAlgos else Round.initialAlgos
           $scope.algoName = Round.algoName
           $scope.pairingTeams = round.pairingTeams()
           $scope.manualPairing = []
+          v = $scope.sides = [0, 1]
+          for r in prev
+            name = r.getName()
+            v.push
+              roundId: r.id
+              name: "Same as " + name
+              flip: false
+            v.push
+              roundId: r.id
+              name: "Opposite from " + name
+              flip: true
+
+          $scope.sidesName = (s) ->
+            if s == 0
+              return "Random"
+            if s == 1
+              return "Balanced"
+            return s.name
 
           new AlertController
             buttons: ['Cancel', 'Ok']
