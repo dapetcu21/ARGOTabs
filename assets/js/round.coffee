@@ -235,7 +235,6 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
                   cmp = 1
                 else if score[k] > min[k]
                   cmp = 2
-            console.log min, score, cmp, zero
             if cmp == 1
               aux = min
               min = score
@@ -246,7 +245,6 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
 
       if opts.hardSides
         restrictions.conditions.push (a, b) ->
-          console.log a.name, a.stats.side, b.name, b.stats.side
           if a.stats.side? and b.stats.side? and a.stats.side == b.stats.side then 1 else 0
 
       if opts.minimizeReMeet
@@ -269,7 +267,6 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
         when 0,3 #random, high-high
           for t, i in teams
             continue if t.stats.paired
-            console.log t.name, "t"
             m = restrictions.match t, (test) ->
               for j in [i+1...n]
                 if test teams[j]
