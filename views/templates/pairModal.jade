@@ -19,6 +19,9 @@
         | Randomize room order
         input(type='checkbox', ng-model='pairOpts.shuffleRooms')
 
+      label(ng-show='pairOpts.algorithm != 1').checkbox
+        | Minimize teams meeting twice
+        input(type='checkbox', ng-model='pairOpts.minimizeReMeet')
     .span6
       div(ng-show='pairOpts.algorithm != 1 || !pairOpts.manualSides').pair-select
         .small-margin.inline Sides:

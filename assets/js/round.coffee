@@ -120,7 +120,6 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
       teams = _.filter @teams, (o) -> o.rounds[id].participates
 
     pair: (opts) ->
-
       teams = @pairingTeams()
       prevRounds = @previousRounds()
       @sortByRank teams, prevRounds
@@ -174,8 +173,7 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
       bye = null
       if teams.length & 1 and opts.algorithm != 1
         if not opts.algorithm and (opts.randomBye or not prevRounds.length)
-          teams = _.shuffle teams
-          bye = teams.pop()
+          bye = teams.splice Math.floor(Math.random() * teams.length), 1
         else
           minByes = Number.MAX_VALUE
           index = -1
@@ -193,9 +191,7 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
 
           teams.splice index, 1
 
-          if not opts.algorithm
-            teams = _.shuffle teams
-
+      #mark side constraints
       if opts.sides == 1
         for team in teams
           prop = team.stats.prop
@@ -212,24 +208,82 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
           if ballot? and ballot.teams[1]?
             team.stats.side = (ballot.teams[1] == team) ^ fl
 
+      #the actual pairing
+      if opts.algorithm == 0
+        teams = _.shuffle teams
+
+      restrictions =
+        conditions: []
+        match: (t, looper) ->
+          v = @conditions
+          nv = v.length
+          min = new Array nv
+          score = new Array nv
+          for e, ii in v
+            min[ii] = Number.MAX_VALUE
+          r = null
+          looper (u) ->
+            return if u.stats.paired
+            cmp = 0
+            zero = true
+            for cond, k in v
+              score[k] = cond t, u
+              if score[k]
+                zero = false
+              if cmp == 0
+                if score[k] < min[k]
+                  cmp = 1
+                else if score[k] > min[k]
+                  cmp = 2
+            console.log min, score, cmp, zero
+            if cmp == 1
+              aux = min
+              min = score
+              score = aux
+              r = u
+            return zero
+          return r
+
+      if opts.hardSides
+        restrictions.conditions.push (a, b) ->
+          console.log a.name, a.stats.side, b.name, b.stats.side
+          if a.stats.side? and b.stats.side? and a.stats.side == b.stats.side then 1 else 0
+
+      if opts.minimizeReMeet
+        restrictions.conditions.push (a, b) ->
+          count = 0
+          for round in prevRounds
+            ballot = a.rounds[round.id].ballot
+            if ballot? and (
+              (ballot.teams[0] == a and ballot.teams[1] == b) or
+              (ballot.teams[1] == a and ballot.teams[0] == b))
+              count++
+          return count
+
       skillIndex = 0
+      n = teams.length
       switch opts.algorithm
-        when 0 #random
-          for i in [0...teams.length] by 2
-            pairTeams teams[i], teams[i+1]
         when 1 #manual
           for o in opts.manualPairing
             pairTeams o.prop, o.opp
-        when 3 #high-high
-          for i in [0...teams.length] by 2
-            pairTeams teams[i], teams[i+1], skillIndex++
+        when 0,3 #random, high-high
+          for t, i in teams
+            continue if t.stats.paired
+            console.log t.name, "t"
+            m = restrictions.match t, (test) ->
+              for j in [i+1...n]
+                if test teams[j]
+                  return
+            pairTeams t, m, if opts.algorithm then skillIndex++ else 0
+        when 4 #high-low
+          throw new Error("High-Low unimplemented")
       if bye?
         pairTeams bye, null
       @paired = true
 
 
       @assignRooms()
-      if opts.shuffleRooms
+      if opts.shuffleRooms and opts.algorithm
         @shuffleRooms()
 
       @assignJudges()
@@ -326,11 +380,15 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
       id = @id
       lockedBallots = _.filter @ballots, (o) -> o.locked
       ballots = _.shuffle _.filter @ballots, (o) -> !o.locked
-      rooms = _.map ballots, (o) -> o.room
+      rooms = _.filter (_.map ballots, (o) -> o.room), (o) -> o
+      rn = rooms.length
       for ballot,i in ballots
-        room = rooms[i]
-        room.rounds[id].ballot = ballot
-        ballot.room = room
+        if i < rn
+          room = rooms[i]
+          room.rounds[id].ballot = ballot
+          ballot.room = room
+        else
+          ballot.room = null
         @ballots[i] = ballot
       n = ballots.length
       for ballot, i in lockedBallots
