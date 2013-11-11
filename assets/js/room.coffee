@@ -9,7 +9,7 @@ define ['util'], (Util)->
       @rounds ?= {}
       if not other
         for round in @tournament.rounds
-          round.registerRounds this
+          round.registerRoom this
 
     unpackCycles: ->
       for round in @tournament.rounds
