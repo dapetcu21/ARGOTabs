@@ -203,6 +203,24 @@ div.tab-content
             span Max. panel size:
               multi-cell(bind='round.maxPanelSize', nil-placeholder='{{infinityName(tournament.maxPanelSize,infinity,"Unlimited")}} (inherited)', input-width='170', choices='maxPanelChoices', choice-name='infinityName(o,infinity,"Unlimited")')
                 i.fa.fa-fw.fa-edit.bottom-line
+
+
+          strong Main judges:
+          div
+            multi-cell(bind='round.judgeMainPriority', nil-placeholder='{{priorityChoiceNames[tournament.judgeMainPriority]}} (inherited)', input-width='320', choices='priorityChoices', choice-name='priorityChoiceNames[o]')
+              i.fa.fa-fw.fa-edit.bottom-line
+          div
+            multi-cell(bind='round.judgeMainOrder', nil-placeholder='{{orderChoiceNames[tournament.judgeMainOrder]}} (inherited)', input-width='320', choices='orderChoices', choice-name='orderChoiceNames[o]')
+              i.fa.fa-fw.fa-edit.bottom-line
+
+          strong Shadow judges:
+          div
+            multi-cell(bind='round.judgeShadowPriority', nil-placeholder='{{priorityChoiceNames[tournament.judgeShadowPriority]}} (inherited)', input-width='320', choices='priorityChoices', choice-name='priorityChoiceNames[o]')
+              i.fa.fa-fw.fa-edit.bottom-line
+          div
+            multi-cell(bind='round.judgeShadowOrder', nil-placeholder='{{orderChoiceNames[tournament.judgeShadowOrder]}} (inherited)', input-width='320', choices='orderChoices', choice-name='orderChoiceNames[o]')
+              i.fa.fa-fw.fa-edit.bottom-line
+
       .span6
         .well.settings-group
           strong Pairing rank criteria

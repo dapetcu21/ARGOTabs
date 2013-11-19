@@ -20,6 +20,10 @@ define ['util', 'club', 'team', 'judge', 'room', 'player', 'round', 'sorter'], (
         @maxMainJudges = 10000
         @maxShadowJudges = 10000
         @maxPanelSize = 10000
+        @judgeMainPriority = 0
+        @judgeMainOrder = 0
+        @judgeShadowPriority = 0
+        @judgeShadowOrder = 0
         @minPlayed = 1
         @allowShadows ?= true
         @rankFromTeams ?= {all:true}

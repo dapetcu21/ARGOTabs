@@ -26,24 +26,7 @@
         label.checkbox.inline
           input(type='checkbox' ng-model='tournament.allowShadows')
           span {{yesNo(tournament.allowShadows, "Yes", "No")}}
-    .well.pair-rules-group.settings-group
-      strong Pairing rank criteria
-      sorter-criteria(bind='tournament.pairRankSorter')
-  .span6
-    .well.judge-rules-group.settings-group
-      strong Judging assignment rules 
-      div
-        span Max. main judges:
-          multi-cell(bind='tournament.maxMainJudges', input-width='100', choices='maxPanelChoices', choice-name='infinityName(o,infinity,"Unlimited")')
-            i.fa.fa-fw.fa-edit.bottom-line
-      div
-        span Max. shadow judges:
-          multi-cell(bind='tournament.maxShadowJudges', input-width='100', choices='maxPanelChoices', choice-name='infinityName(o,infinity,"Unlimited")')
-            i.fa.fa-fw.fa-edit.bottom-line
-      div
-        span Max. panel size:
-          multi-cell(bind='tournament.maxPanelSize', input-width='100', choices='maxPanelChoices', choice-name='infinityName(o,infinity,"Unlimited")')
-            i.fa.fa-fw.fa-edit.bottom-line
+
     .well.settings-group.high-low-group
       strong High-Low power pairing defaults
       div
@@ -59,4 +42,41 @@
           input(type='radio', ng-model='tournament.evenBrackets', ng-value='1') 
           span pulling up teams with weakest previous opponents
           
+    .well.pair-rules-group.settings-group
+      strong Pairing rank criteria
+      sorter-criteria(bind='tournament.pairRankSorter')
+
+  .span6
+    .well.judge-rules-group.settings-group
+      strong Judge assignment rules 
+      div
+        span Max. main judges:
+          multi-cell(bind='tournament.maxMainJudges', input-width='100', choices='maxPanelChoices', choice-name='infinityName(o,infinity,"Unlimited")')
+            i.fa.fa-fw.fa-edit.bottom-line
+      div
+        span Max. shadow judges:
+          multi-cell(bind='tournament.maxShadowJudges', input-width='100', choices='maxPanelChoices', choice-name='infinityName(o,infinity,"Unlimited")')
+            i.fa.fa-fw.fa-edit.bottom-line
+      div
+        span Max. panel size:
+          multi-cell(bind='tournament.maxPanelSize', input-width='100', choices='maxPanelChoices', choice-name='infinityName(o,infinity,"Unlimited")')
+            i.fa.fa-fw.fa-edit.bottom-line
+
+      strong Main judges:
+      div
+        multi-cell(bind='tournament.judgeMainPriority', input-width='255', choices='priorityChoices', choice-name='priorityChoiceNames[o]')
+          i.fa.fa-fw.fa-edit.bottom-line
+      div
+        multi-cell(bind='tournament.judgeMainOrder', input-width='255', choices='orderChoices', choice-name='orderChoiceNames[o]')
+          i.fa.fa-fw.fa-edit.bottom-line
+
+      strong Shadow judges:
+      div
+        multi-cell(bind='tournament.judgeShadowPriority', input-width='255', choices='priorityChoices', choice-name='priorityChoiceNames[o]')
+          i.fa.fa-fw.fa-edit.bottom-line
+      div
+        multi-cell(bind='tournament.judgeShadowOrder', input-width='255', choices='orderChoices', choice-name='orderChoiceNames[o]')
+          i.fa.fa-fw.fa-edit.bottom-line
+
+
 
