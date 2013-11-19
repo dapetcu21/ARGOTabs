@@ -20,8 +20,13 @@
         input(type='checkbox', ng-model='pairOpts.shuffleRooms')
 
       label(ng-show='pairOpts.algorithm != 1').checkbox
-        | Minimize teams meeting twice
+        | No teams meeting twice
         input(type='checkbox', ng-model='pairOpts.minimizeReMeet')
+
+      div(ng-show='pairOpts.algorithm == 3')
+        span Min. matches per bracket: 
+        text-edit-cell(bind='pairOpts.matchesPerBracket', input-width='50', pattern='[0-9]*', setter='parseInt(o)')
+          i.fa.fa-fw.fa-edit.bottom-line
     .span6
       div(ng-show='pairOpts.algorithm != 1 || !pairOpts.manualSides').pair-select
         .small-margin.inline Sides:
@@ -30,6 +35,14 @@
       label(ng-show='(pairOpts.algorithm != 1 || !pairOpts.manualSides) && pairOpts.sides', title='Checking this means that side constraints should take priority over pairing algorithm constraints.').checkbox
         | Enforce side constraint
         input(type='checkbox', ng-model='pairOpts.hardSides')
+      div(ng-show='pairOpts.algorithm == 3').radio-container
+        div Even brackets by pulling
+        label 
+          input(type='radio', ng-model='pairOpts.evenBrackets', ng-value='0') 
+          span down leftover teams
+        label
+          input(type='radio', ng-model='pairOpts.evenBrackets', ng-value='1') 
+          span up teams with weakest past opponents
   .error-placeholder
 
   .manual-pairings(ng-show='pairOpts.algorithm == 1')

@@ -264,7 +264,7 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
         when 1 #manual
           for o in opts.manualPairing
             pairTeams o.prop, o.opp
-        when 0,3 #random, high-high
+        when 0,2 #random, high-high
           for t, i in teams
             continue if t.stats.paired
             m = restrictions.match t, (test) ->
@@ -272,8 +272,119 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
                 if test teams[j]
                   return
             pairTeams t, m, if opts.algorithm then skillIndex++ else 0
-        when 4 #high-low
-          throw new Error("High-Low unimplemented")
+        when 3 #high-low
+          brackets = {}
+          vb = []
+          for t, i in teams
+            t.stats.rank = i
+            nbal = t.stats.ballots
+            bracket = brackets[nbal]
+            if not bracket?
+              bracket = brackets[nbal] =
+                teams: []
+                ballots: nbal
+              vb.push bracket
+            bracket.teams.push t
+
+          if opts.evenBrackets == 1
+            for t in teams
+              avgc = 0
+              t.stats.oppRank = 0
+              for rnd in prevRounds
+                bal = t.rounds[rnd.id].ballot
+                if bal?
+                  ta = bal.teams[0]
+                  tb = bal.teams[1]
+                  if ta == t and tb? and tb.stats? and tb.stats.rank?
+                    avgc++
+                    t.stats.oppRank += tb.stats.rank
+                  else if tb == t and ta? and ta.stats? and ta.stats.rank?
+                    avgc++
+                    t.stats.oppRank += ta.stats.rank
+              if avgc
+                t.stats.oppRank /= avgc
+              else
+                t.stats.oppRank = Number.MAX_VALUE
+
+          switch opts.evenBrackets
+            when 0 #pull down
+              pull = (bracket, count, avoidedSide) ->
+                bracket.teams.sort (a, b) ->
+                  b.stats.rank - a.stats.rank
+                bracket.teams = _.filter bracket.teams, (a) ->
+                  if count > 0 and (not avoidedSide? or avoidedSide == a.stats.side)
+                    count--
+                    nextBracket.teams.push a
+                    return false
+                  return true
+            when 1 #pull up
+              pull = (bracket, count, avoidedSide) ->
+                cni = i + 1
+                _nextBracket = vb[cni]
+                while count and cni < vbn
+                  nbv = _nextBracket.teams
+                  nbv.sort (a, b) ->
+                    b.stats.oppRank - a.stats.oppRank
+                  _nextBracket.teams = nbv = _.filter nbv, (a) ->
+                    if count > 0 and (not avoidedSide? or avoidedSide != a.stats.side)
+                      count--
+                      bracket.teams.push a
+                      return false
+                    return true
+                  _nextBracket = vb[++cni]
+
+          vb.sort (a, b) ->
+            b.ballots - a.ballots
+
+          vbn = vb.length
+          for bracket, i in vb
+            bo = bp = bu = 0
+            bn = bracket.teams.length
+            continue if not bn
+            for t in bracket.teams
+              switch t.stats.side
+                when 0
+                  bp++
+                when 1
+                  bo++
+                when undefined
+                  bu++
+
+            nextBracket = vb[i + 1]
+            if nextBracket?
+              if opts.hardSides
+                if bo > bp + bu
+                  pull bracket, bo - bp - bu, 1
+                else if bp > bo + bu
+                  pull bracket, bp - bo - bu, 0
+                else if bn & 1
+                  pull bracket, 1
+              else if bn & 1
+                pull bracket, 1
+
+              j = i + 1
+              while nextBracket? and nextBracket.length == 0
+                nextBracket = vb[++j]
+
+              if nextBracket?
+                bn = bracket.teams.length
+                nbv = nextBracket.teams
+                if bn < opts.matchesPerBracket * 2
+                  bracket.teams.forEach (o) ->
+                    nbv.push o
+                  bracket.teams.length = 0
+
+            bracket.teams.sort (a, b) ->
+              a.stats.rank - b.stats.rank
+
+            for t in bracket.teams
+              continue if t.stats.paired
+              m = restrictions.match t, (test) ->
+                for tt in bracket.teams by -1
+                  if test tt
+                    return
+              pairTeams t, m, if opts.algorithm then skillIndex++ else 0
+
       if bye?
         pairTeams bye, null
       @paired = true

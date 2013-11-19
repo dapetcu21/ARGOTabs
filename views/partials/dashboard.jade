@@ -44,4 +44,19 @@
         span Max. panel size:
           multi-cell(bind='tournament.maxPanelSize', input-width='100', choices='maxPanelChoices', choice-name='infinityName(o,infinity,"Unlimited")')
             i.fa.fa-fw.fa-edit.bottom-line
+    .well.settings-group.high-low-group
+      strong High-Low power pairing defaults
+      div
+        span Min. matches per bracket:
+        text-edit-cell(bind='tournament.matchesPerBracket', input-width='50', pattern='[0-9]*', setter='parseInt(o)')
+          i.fa.fa-fw.fa-edit.bottom-line
+      div.radio-container
+        div Even brackets by:
+        label 
+          input(type='radio', ng-model='tournament.evenBrackets', ng-value='0') 
+          span pulling down leftover teams
+        label
+          input(type='radio', ng-model='tournament.evenBrackets', ng-value='1') 
+          span pulling up teams with weakest previous opponents
+          
 

@@ -15,6 +15,8 @@ define ['util', 'club', 'team', 'judge', 'room', 'player', 'round', 'sorter'], (
         @rounds =[]
         @tableOpts = {}
         @ballotsPerMatch = 1
+        @evenBrackets = 1
+        @matchesPerBracket = 1
         @maxMainJudges = 10000
         @maxShadowJudges = 10000
         @maxPanelSize = 10000

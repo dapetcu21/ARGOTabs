@@ -231,6 +231,8 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
             shuffleRooms: true
             hardSides: true
             minimizeReMeet: true
+            matchesPerBracket: round.tournament.matchesPerBracket
+            evenBrackets: round.tournament.evenBrackets
           prev = $scope.prevRounds = round.previousRounds()
           $scope.pairAlgorithms = if prev.length then Round.allAlgos else Round.initialAlgos
           $scope.algoName = Round.algoName
