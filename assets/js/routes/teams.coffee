@@ -24,7 +24,6 @@ define ['team'], (Team) ->
           team = player.team
           for round in ui.tournament.rounds
             ropts = team.rounds[round.id]
-            console.log ropts.ballot.roles
             if ropts? and ropts.ballot? and ropts.ballot.locked and ropts.ballot.roles?
               for i in [0...2]
                 for j in [0...4]

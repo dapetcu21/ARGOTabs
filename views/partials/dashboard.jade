@@ -58,7 +58,7 @@
           multi-cell(bind='tournament.maxShadowJudges', input-width='100', choices='maxPanelChoices', choice-name='infinityName(o,infinity,"Unlimited")')
             i.fa.fa-fw.fa-edit.bottom-line
       div
-        span Max. panel size:
+        span Max. panel size (mains + shadows):
           multi-cell(bind='tournament.maxPanelSize', input-width='100', choices='maxPanelChoices', choice-name='infinityName(o,infinity,"Unlimited")')
             i.fa.fa-fw.fa-edit.bottom-line
 
@@ -72,6 +72,11 @@
 
       strong Shadow judges:
       div
+        span Use idle mains as shadows: 
+        label.checkbox.inline
+          input(type='checkbox' ng-model='tournament.judgeShadowReport')
+          span {{yesNo(tournament.judgeShadowReport, "Yes", "No")}}
+      div(ng-show='tournament.judgeShadowReport')
         multi-cell(bind='tournament.judgeShadowPriority', input-width='255', choices='priorityChoices', choice-name='priorityChoiceNames[o]')
           i.fa.fa-fw.fa-edit.bottom-line
       div

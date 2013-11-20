@@ -18,6 +18,11 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
       @maxPanelSize ?= null
       @inheritPairRank ?= true
       @allowShadows ?= null
+      @judgeMainPriority ?= null
+      @judgeMainOrder ?= null
+      @judgeShadowPriority ?= null
+      @judgeShadowOrder ?= null
+      @judgeShadowReport ?= null
       @pairRankSorter = Sorter.teamRankSorter @pairRankSorter
       @rankFrom ?= {all:true}
       if other
@@ -35,10 +40,15 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
 
     ballotsPerMatchSolved: -> if @ballotsPerMatch? then @ballotsPerMatch else @tournament.ballotsPerMatch
     maxMainJudgesSolved: -> if @maxMainJudges? then @maxMainJudges else @tournament.maxMainJudges
-    maxShadowJudgesSolved: -> if @maxShadowJudges? then @maxShadowJudages else @tournament.maxShadowJudges
+    maxShadowJudgesSolved: -> if @maxShadowJudges? then @maxShadowJudges else @tournament.maxShadowJudges
     maxPanelSizeSolved: -> if @maxPanelSize? then @maxPanelSize else @tournament.maxPanelSize
     pairRankSorterSolved: -> if @pairRankSorter? then @pairRankSorter else @tournament.pairRankSorter
     allowShadowsSolved: -> if @allowShadows? then @allowShadows else @tournament.allowShadows
+    judgeMainPrioritySolved: -> if @judgeMainPriority? then @judgeMainPriority else @tournament.judgeMainPriority
+    judgeMainOrderSolved: -> if @judgeMainOrder? then @judgeMainOrder else @tournament.judgeMainOrder
+    judgeShadowPrioritySolved: -> if @judgeShadowPriority? then @judgeShadowPriority else @tournament.judgeShadowPriority
+    judgeShadowOrderSolved: -> if @judgeShadowOrder? then @judgeShadowOrder else @tournament.judgeShadowOrder
+    judgeShadowReportSolved: -> if @judgeShadowReport? then @judgeShadowReport else @tournament.judgeShadowReport
 
     getName: ->
       idx = @tournament.rounds.indexOf this
@@ -389,7 +399,6 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
         pairTeams bye, null
       @paired = true
 
-
       @assignRooms()
       if opts.shuffleRooms and opts.algorithm
         @shuffleRooms()
@@ -398,7 +407,7 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
 
     assignJudges: ->
       id = @id
-      ballots = _.sortBy _.shuffle _.filter @ballots, ((o)-> !o.locked && o.teams[0] && o.teams[1]), (o) -> o.skillIndex
+      ballots = _.sortBy (_.shuffle (_.filter @ballots, ((o)-> !o.locked && o.teams[0] && o.teams[1]) ) ), (o) -> o.skillIndex
 
       for b in ballots
         for j in b.judges
@@ -414,8 +423,8 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
       shadowJudges = _.shuffle _.filter @judges, (o) ->
         ropts = o.rounds[id]
         ropts.participates && !ropts.ballot && o.rank == Judge.shadowRank
-      @freeJudges = []
-      judges.sort (a,b) -> a.rank < b.rank
+      freeJ = @freeJudges = []
+      judges.sort (a,b) -> a.rank - b.rank
 
       noBallots = ballots.length
       noJudges = judges.length
@@ -442,30 +451,73 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
         ropts.ballot = b
         ropts.shadow = sh
 
-      #to be changed
-      i = 0
-      for j in judges
-        ballot = ballots[i]
-        jc = ballot.judges.length
-        sc = ballot.shadows.length
-        continue if jc + sc >= panelSize
-        if jc < ballotPerMatch && jc < maxJudges
-          addJudge j, ballot
-        else if sc < maxShadows
-          addJudge j, ballot, true
-        else
-          @freeJudges.push j
-        i = 0 if ++i >= noBallots
+      compat = (judge, ballot) ->
+        0
 
-      for j in shadowJudges
-        ballot = ballots[i]
-        jc = ballot.judges.length
-        sc = ballot.shadows.length
-        if jc + sc < panelSize && sc < maxShadows
-          addJudge j, ballot, true
+      assign = (judges, order, priority, shadow, judgeCount) ->
+        for b in ballots
+          b.maxJudgeCount = judgeCount b
+          b.judgeCount = 0
+        saturated = 0
+        left = n = judges.length
+        while left and saturated != noBallots
+          saturated = 0
+          for b in ballots by (if order then -1 else 1)
+            if b.maxJudgeCount <= b.judgeCount
+              saturated++
+            else
+              b.judgeCount++
+              left--
+            break if not left
+
+
+        for b in ballots by (if priority then -1 else 1)
+          for i in [0...b.judgeCount]
+            judge = null
+            min = Number.MAX_VALUE
+            for j in judges
+              if not j.rounds[id].ballot?
+                score = compat j, b
+                if score < min
+                  min = score
+                  judge = j
+                  if not score
+                    break
+            addJudge judge, b, shadow
+
+
+      mainsPerMatch = ballotPerMatch
+      if panelSize < mainsPerMatch
+        mainsPerMatch = panelSize
+      if maxJudges < mainsPerMatch
+        mainsPerMatch = maxJudges
+      assign judges, @judgeMainOrderSolved(), @judgeMainPrioritySolved(), false, -> mainsPerMatch
+
+      judges.forEach (o) ->
+        if not o.rounds[id].ballot?
+          freeJ.push o
+
+      report = @judgeShadowReportSolved()
+      assign (if report then freeJ.concat shadowJudges else shadowJudges), @judgeShadowOrderSolved(), @judgeShadowPrioritySolved(), true, (ballot) ->
+        ps = panelSize - ballot.judges.length
+        if maxShadows < ps
+          maxShadows
         else
-          @freeJudges.push j
-        i = 0 if ++i >= noBallots
+          ps
+
+      if report
+        freeJ.length = 0
+        judges.forEach (o) ->
+          if not o.rounds[id].ballot?
+            freeJ.push o
+          
+      shadowJudges.forEach (o) ->
+        if not o.rounds[id].ballot?
+          freeJ.push o
+
+      for b in ballots
+        delete b.maxJudgeCount
+        delete b.judgeCount
 
     assignRooms: ->
       ballots = _.filter @ballots, (o) -> !o.locked

@@ -200,7 +200,7 @@ div.tab-content
               multi-cell(bind='round.maxShadowJudges', nil-placeholder='{{infinityName(tournament.maxShadowJudges,infinity,"Unlimited")}} (inherited)', input-width='170', choices='maxPanelChoices', choice-name='infinityName(o,infinity,"Unlimited")')
                 i.fa.fa-fw.fa-edit.bottom-line
           div
-            span Max. panel size:
+            span Max. panel size (mains + shadows):
               multi-cell(bind='round.maxPanelSize', nil-placeholder='{{infinityName(tournament.maxPanelSize,infinity,"Unlimited")}} (inherited)', input-width='170', choices='maxPanelChoices', choice-name='infinityName(o,infinity,"Unlimited")')
                 i.fa.fa-fw.fa-edit.bottom-line
 
@@ -214,7 +214,13 @@ div.tab-content
               i.fa.fa-fw.fa-edit.bottom-line
 
           strong Shadow judges:
+
           div
+            span Use idle mains as shadows: 
+            label.checkbox.inline
+              input(type='checkbox' tristate-checkbox='round.judgeShadowReport')
+              span(class="muted-{{round.judgeShadowReport == null}}") {{yesNoInherit(round.judgeShadowReport, "Yes", "No", yesNo(round.tournament.judgeShadowReport, "Yes", "No") + " (inherited)")}}
+          div(ng-show='round.judgeShadowReportSolved()')
             multi-cell(bind='round.judgeShadowPriority', nil-placeholder='{{priorityChoiceNames[tournament.judgeShadowPriority]}} (inherited)', input-width='320', choices='priorityChoices', choice-name='priorityChoiceNames[o]')
               i.fa.fa-fw.fa-edit.bottom-line
           div

@@ -24,6 +24,7 @@ define ['util', 'club', 'team', 'judge', 'room', 'player', 'round', 'sorter'], (
         @judgeMainOrder = 0
         @judgeShadowPriority = 0
         @judgeShadowOrder = 0
+        @judgeShadowReport = false
         @minPlayed = 1
         @allowShadows ?= true
         @rankFromTeams ?= {all:true}
