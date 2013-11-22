@@ -288,7 +288,7 @@ define ['util', 'ballot', 'judge', 'sorter', 'judgerules', 'team', 'underscore']
           vb = []
           for t, i in teams
             t.stats.rank = i
-            nbal = t.stats.ballots
+            nbal = t.stats.wins
             bracket = brackets[nbal]
             if not bracket?
               bracket = brackets[nbal] =
