@@ -47,8 +47,8 @@
       sorter-criteria(bind='tournament.pairRankSorter')
 
   .span6
-    .well.judge-rules-group.settings-group
-      strong Judge assignment rules 
+    .well.judge-settings-group.settings-group
+      strong Judge assignment settings
       div
         span Max. main judges:
           multi-cell(bind='tournament.maxMainJudges', input-width='100', choices='maxPanelChoices', choice-name='infinityName(o,infinity,"Unlimited")')
@@ -82,6 +82,11 @@
       div
         multi-cell(bind='tournament.judgeShadowOrder', input-width='255', choices='orderChoices', choice-name='orderChoiceNames[o]')
           i.fa.fa-fw.fa-edit.bottom-line
+
+    .well.judge-rules-group.settings-group
+      strong Judge assignment rules
+      div
+        span {{tournament.judgeRules}}
 
 
 

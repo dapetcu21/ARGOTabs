@@ -1,4 +1,4 @@
-define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballot, Judge, Sorter, Team) ->
+define ['util', 'ballot', 'judge', 'sorter', 'judgerules', 'team', 'underscore'], (Util, Ballot, Judge, Sorter, JudgeRules, Team) ->
  class Round
     constructor: (@tournament, other) ->
       if other
@@ -24,6 +24,7 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
       @judgeShadowOrder ?= null
       @judgeShadowReport ?= null
       @pairRankSorter = Sorter.teamRankSorter @pairRankSorter
+      @judgeRules = new JudgeRules @tournament, @judgeRules
       @rankFrom ?= {all:true}
       if other
         for ballot, i in @ballots
@@ -454,6 +455,9 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
       compat = (judge, ballot) ->
         0
 
+      rules = @judgeRules
+      mainRules = @tournament.judgeRules
+
       assign = (judges, order, priority, shadow, judgeCount) ->
         for b in ballots
           b.maxJudgeCount = judgeCount b
@@ -470,20 +474,24 @@ define ['util', 'ballot', 'judge', 'sorter', 'team', 'underscore'], (Util, Ballo
               left--
             break if not left
 
-
-        for b in ballots by (if priority then -1 else 1)
-          for i in [0...b.judgeCount]
+        filled = 1
+        while filled
+          filled = 0
+          for b in ballots by (if priority then -1 else 1)
+            continue if b.judgeCount <= 0
             judge = null
             min = Number.MAX_VALUE
             for j in judges
               if not j.rounds[id].ballot?
-                score = compat j, b
+                score = rules.compatibilityFactor j, b, mainRules
                 if score < min
                   min = score
                   judge = j
                   if not score
                     break
             addJudge judge, b, shadow
+            b.judgeCount--
+            filled++
 
 
       mainsPerMatch = ballotPerMatch

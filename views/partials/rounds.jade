@@ -189,6 +189,27 @@ div.tab-content
             label.checkbox.inline
               input(type='checkbox' tristate-checkbox='round.allowShadows')
               span(class="muted-{{round.allowShadows == null}}") {{yesNoInherit(round.allowShadows, "Yes", "No", yesNo(round.tournament.allowShadows, "Yes", "No") + " (inherited)")}}
+
+        .well.settings-group
+          strong Calculate pairing rank based on:
+          div
+            label.checkbox
+              input(type='checkbox', ng-model='round.rankFrom.all')
+              | All previous rounds
+            label.checkbox(ng-repeat='o in tournament.rounds', ng-show='o!=round && !round.rankFrom.all')
+              input(type='checkbox', ng-model='round.rankFrom[o.id]')
+              | Round {{$index+1}}
+
+        .well.settings-group
+          strong Pairing rank criteria
+          div
+            label.checkbox
+              input(type='checkbox', ng-model='round.inheritPairRank')
+              | Inherit from tournament settings
+          div(ng-show='!round.inheritPairRank')
+            sorter-criteria(bind='round.pairRankSorter')
+
+      .span6
         .well.settings-group
           strong Judge assignment rules
           div
@@ -227,26 +248,10 @@ div.tab-content
             multi-cell(bind='round.judgeShadowOrder', nil-placeholder='{{orderChoiceNames[tournament.judgeShadowOrder]}} (inherited)', input-width='320', choices='orderChoices', choice-name='orderChoiceNames[o]')
               i.fa.fa-fw.fa-edit.bottom-line
 
-      .span6
         .well.settings-group
-          strong Pairing rank criteria
+          strong Additional judge assignment rules
           div
-            label.checkbox
-              input(type='checkbox', ng-model='round.inheritPairRank')
-              | Inherit from tournament settings
-          div(ng-show='!round.inheritPairRank')
-            sorter-criteria(bind='round.pairRankSorter')
-        .well.settings-group
-          strong Calculate pairing rank based on:
-          div
-            label.checkbox
-              input(type='checkbox', ng-model='round.rankFrom.all')
-              | All previous rounds
-            label.checkbox(ng-repeat='o in tournament.rounds', ng-show='o!=round && !round.rankFrom.all')
-              input(type='checkbox', ng-model='round.rankFrom[o.id]')
-              | Round {{$index+1}}
-
-
+            span {{round.judgeRules}}
 
 
 :stylus

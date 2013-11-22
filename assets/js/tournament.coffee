@@ -1,4 +1,4 @@
-define ['util', 'club', 'team', 'judge', 'room', 'player', 'round', 'sorter'], (Util, Club, Team, Judge, Room, Player, Round, Sorter) ->
+define ['util', 'club', 'team', 'judge', 'room', 'player', 'round', 'sorter', 'judgerules'], (Util, Club, Team, Judge, Room, Player, Round, Sorter, JudgeRules) ->
   class Tournament
     constructor: (@backend) ->
       @clubs = []
@@ -60,6 +60,7 @@ define ['util', 'club', 'team', 'judge', 'room', 'player', 'round', 'sorter'], (
 
         @teamRankSorter = Sorter.teamRankSorter model.teamRankSorter
         @pairRankSorter = Sorter.teamRankSorter model.pairRankSorter
+        @judgeRules = JudgeRules.mainRules this, model.judgeRules
 
         @lastData = @toFile()
         fn()

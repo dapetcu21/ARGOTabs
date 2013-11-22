@@ -27,9 +27,9 @@ define [], ->
       return true if not @criteria?
       for criterion in @criteria
         r = criterion.func a,b
-        return false if r < 0
-        return true if r > 0
-      return true
+        return -1 if r < 0
+        return 1 if r > 0
+      return 0
 
     boundComparator: -> @compareObjects.bind this
 
