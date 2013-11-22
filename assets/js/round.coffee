@@ -547,8 +547,9 @@ define ['util', 'ballot', 'judge', 'sorter', 'judgerules', 'team', 'underscore']
     shuffleRooms: ->
       id = @id
       lockedBallots = _.filter @ballots, (o) -> o.locked
-      ballots = _.shuffle _.filter @ballots, (o) -> !o.locked
+      ballots = _.filter @ballots, (o) -> !o.locked
       rooms = _.filter (_.map ballots, (o) -> o.room), (o) -> o
+      ballots = _.shuffle ballots
       rn = rooms.length
       for ballot,i in ballots
         if i < rn
