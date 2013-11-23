@@ -1,5 +1,6 @@
+h3.print-only.text-center {{tournament.name}} - Team rank
 .row-fluid
-  .span10
+  .span10.print-full-width
     table(editable-table, model='teams', visible='tournament.tableOpts.teamRank')#team-rank-table
       thead
         tr
@@ -22,7 +23,7 @@
           td: span.right {{toFixed(o.stats.score, scoreDec)}}
           td: span.right {{toFixed(o.stats.scoreHighLow, highLowDec)}}
 
-  .span2
+  .span2.dont-print
     .well.settings-group
       strong Take into account:
       div
