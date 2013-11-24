@@ -116,6 +116,9 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
         $scope.shuffleRooms = ->
           round.shuffleRooms()
 
+        $scope.sortBallots = ->
+          round.sortBallots()
+
         $scope.judgeUd = (ballot, shadow) ->
           {ballot: ballot, shadow: shadow}
 
@@ -125,6 +128,10 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
           return true if fromList == toList
           return false if ballot.locked or not ballot.teams[0] or not ballot.teams[1]
           toList.ud.shadow or ballot.judges.length < round.ballotsPerMatchSolved()
+
+        $scope.isCompatible = (ballot, judge) ->
+          console.log ballot, judge
+          return false
 
         $scope.judgeMove = (fromList, fromIndex, toList, toIndex) ->
           if fromList == toList and toIndex > fromIndex
@@ -446,9 +453,10 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
           new AlertController
             buttons: ['Cancel', 'Ok']
             cancelButtonIndex: 0
-            width: 700
+            width: 760
             title: '<span class="prop">'+ballot.teams[0].name+'</span><span> vs. </span><span class="opp">'+ballot.teams[1].name+'</span>'
             htmlMessage: $compile(templates.ballotSheet())(sc)
+            animated: false
             onClick: (alert, button) ->
               sc.$apply ->
                 sc.drawsError = false

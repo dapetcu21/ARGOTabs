@@ -28,6 +28,7 @@ define ['util', 'club', 'team', 'judge', 'room', 'player', 'round', 'sorter', 'j
         @minPlayed = 1
         @allowShadows ?= true
         @rankFromTeams ?= {all:true}
+        @rankFromSpeakers ?= {all:true}
 
         for key, value of model
           this[key] = value
@@ -58,6 +59,7 @@ define ['util', 'club', 'team', 'judge', 'room', 'player', 'round', 'sorter', 'j
         for round in @rounds
           round.unpackCycles()
 
+        @speakerRankSorter = Sorter.speakerRankSorter model.speakerRankSorter
         @teamRankSorter = Sorter.teamRankSorter model.teamRankSorter
         @pairRankSorter = Sorter.teamRankSorter model.pairRankSorter
         @judgeRules = JudgeRules.mainRules this, model.judgeRules

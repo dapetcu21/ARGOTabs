@@ -1,0 +1,55 @@
+h3.print-only.text-center {{tournament.name}} - Speaker rank
+.row-fluid
+  .span10.print-full-width
+    table(editable-table, model='players', visible='tournament.tableOpts.speakerRank')#team-rank-table
+      thead
+        tr
+          th(data-auto-index=4) #
+          th(data-auto-index=1) Name
+          th(data-auto-index=2) Team
+          th(data-auto-index=3) Club
+          th(data-auto-index=5): div.gear-covered H/L
+          th(data-auto-index=6): div.gear-covered Score
+          th(data-auto-index=7): div.gear-covered Speeches
+          th(data-auto-index=8): div.gear-covered Reply
+          th(data-auto-index=9): div.gear-covered Replies
+      tbody(editable-tbody)
+        script(type='text/html')
+          td {{$index + 1}}
+          td {{o.name}}
+          td {{o.team.name}}
+          td: span(class='muted-{{o.team.club == null}}') {{namePlaceholder(o.team.club, 'unaffiliated').name}}
+          td: span.right {{toFixed(o.stats.scoreHighLow, highLowDec)}}
+          td: span.right {{toFixed(o.stats.score, scoreDec)}}
+          td: span.right {{o.stats.roundsPlayed}}
+          td: span.right {{toFixed(o.stats.reply, replyDec)}}
+          td: span.right {{o.stats.roundsReplyed}}
+
+  .span2.dont-print
+    .well.settings-group
+      strong Take into account:
+      div
+        label.checkbox
+          input(type='checkbox', ng-model='tournament.rankFromSpeakers.all')
+          | All rounds
+        label.checkbox(ng-repeat='o in tournament.rounds', ng-show='!tournament.rankFromSpeakers.all')
+          input(type='checkbox', ng-model='tournament.rankFromSpeakers[o.id]')
+          | Round {{$index+1}}
+    .well.settings-group
+      strong Ranking criteria
+      sorter-criteria(bind='tournament.speakerRankSorter', on-update='refreshStats()')
+:stylus
+  #team-rank-table th:nth-child(1)
+    width: 35px
+  #team-rank-table th:nth-child(3)
+    width: 20%
+  #team-rank-table th:nth-child(4),
+  #team-rank-table th:nth-child(5),
+  #team-rank-table th:nth-child(6),
+  #team-rank-table th:nth-child(7),
+  #team-rank-table th:nth-child(8)
+    width: 60px
+  #team-rank-table .squeezedElement .gear-covered
+    width: 19px
+
+

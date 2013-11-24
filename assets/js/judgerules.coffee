@@ -8,7 +8,7 @@ define [], ->
       #  unfold criterion
     
     isCompatible: (judge, ballot, next) ->
-      true
+      compatibilityFactor(judge, ballot, next) <= 0
 
     compatibilityFactor: (judge, ballot, next) ->
       #ARGO A - Central

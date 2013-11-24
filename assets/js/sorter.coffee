@@ -43,6 +43,14 @@ define [], ->
         newCrit('Reply Score', 'reply')
       ]
 
+    @speakerRankSorter: (o) ->
+      new Sorter if o? then o else [
+      #new Sorter [
+        newCrit('H/L Score', 'scoreHighLow'),
+        newCrit('Score', 'score'),
+        newCrit('Reply Score', 'reply')
+      ]
+
 
 
 

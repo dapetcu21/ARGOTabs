@@ -126,6 +126,10 @@ define ['util', 'ballot', 'judge', 'sorter', 'judgerules', 'team', 'underscore']
       sorter = @pairRankSorterSolved().boundComparator()
       array.sort (a,b) -> sorter a.stats, b.stats
 
+    sortBallots: ->
+      @ballots.sort (a,b) -> a.skillIndex - b.skillIndex
+
+
     pairingTeams: ->
       id = @id
       teams = _.filter @teams, (o) -> o.rounds[id].participates
@@ -282,7 +286,7 @@ define ['util', 'ballot', 'judge', 'sorter', 'judgerules', 'team', 'underscore']
               for j in [i+1...n]
                 if test teams[j]
                   return
-            pairTeams t, m, if opts.algorithm then skillIndex++ else 0
+            pairTeams t, m, skillIndex++
         when 3 #high-low
           brackets = {}
           vb = []
@@ -394,10 +398,10 @@ define ['util', 'ballot', 'judge', 'sorter', 'judgerules', 'team', 'underscore']
                 for tt in bracket.teams by -1
                   if test tt
                     return
-              pairTeams t, m, if opts.algorithm then skillIndex++ else 0
+              pairTeams t, m, skillIndex++
 
       if bye?
-        pairTeams bye, null
+        pairTeams bye, null, skillIndex
       @paired = true
 
       @assignRooms()

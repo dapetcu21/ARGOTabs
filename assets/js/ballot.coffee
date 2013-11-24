@@ -33,6 +33,10 @@ define ['util', 'underscore'], (Util) ->
       pushRoles @teams[1], roles[1].roles
       return roles
 
+    isCompatible: (judge) ->
+      return false
+      return @round.judgeRules.isCompatible(this, judge)
+
     getVotesForBallots: (b) ->
       if @votes and @votes.length
         votes = []

@@ -55,6 +55,8 @@ div.tab-content
         = ' '
         button(ng-click='shuffleRooms()').btn Shuffle in rooms
         = ' '
+        button(ng-click='sortBallots()').btn Sort by match rank
+        = ' '
         div.inline.small-margin You can manually drag judges and rooms to fine-tune
 
       h3.print-only.text-center {{round.getName()}} - Pairing
@@ -88,12 +90,12 @@ div.tab-content
                       i.fa.fa-gavel.judge-icon
                       = ' '
                       hlist-cell(bind='o.judges', extension-element='.ballot-{{$index}} .main-judges', extension-element-last='{{yesNo(o.shadows.length || round.allowShadowsSolved(), "", ".ballot-" + $index)}}', edit-hidden='true', reorders-always, reorders='!o.locked', userdata='judgeUd(o, false)', drop-group='judge-drop', group-test='judgeGroupTest(fromList, toList)', manual-move='judgeMove(fromList, fromIndex, toList, toIndex)').judge-list
-                        span.judge-box {{hlo.name}}
+                        span(class="valid-{{isCompatible(o, hlo)}}").judge-box {{hlo.name}}
                     div(ng-show='o.shadows.length || round.allowShadowsSolved()').nowrap.inline-block.shadow-judges
                       i.fa.fa-eye.judge-icon
                       = ' '
                       hlist-cell(bind='o.shadows', extension-element='.ballot-{{$index}} .shadow-judges', extension-element-last='{{yesNo(o.shadows.length || round.allowShadowsSolved(), ".ballot-" + $index, "")}}', edit-hidden='true', reorders-always, reorders='!o.locked', userdata='judgeUd(o, true)', drop-group='judge-drop', group-test='judgeGroupTest(fromList, toList)', manual-move='judgeMove(fromList, fromIndex, toList, toIndex)').judge-list
-                        span.judge-box {{hlo.name}}
+                        span(class="valid-{{isCompatible(o, hlo)}}").judge-box {{hlo.name}}
                 td.nowrap
                   span(class="{{o.stats.classes[0]}}") {{o.stats.scores[0]}} 
                   span(class="{{o.stats.winClass}}"): i.fa.fa-trophy

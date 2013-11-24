@@ -133,7 +133,6 @@ define ['util', 'player'], (Util, Player) ->
       o.score = o.rawScore + o.byeWins * if rp then (o.rawScore / rp) else -1
       o.reply = o.rawReply + o.byeWins * if rp then (o.rawReply / rp) else -1
       if o.byeWins + rp > 2 and rp
-        mr = if o.minScore == o.maxScore then 1 else 2
         o.scoreHighLow = o.score - o.minScore - o.maxScore
       o.wins = o.rawWins + o.byeWins
       o.ballots = o.rawBallots + o.byeBallots

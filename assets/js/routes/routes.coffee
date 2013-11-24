@@ -1,4 +1,4 @@
-define ['routes/unimplemented', 'routes/json', 'routes/clubs', 'routes/dashboard', 'routes/teams', 'routes/judges', 'routes/rooms', 'routes/rounds', 'routes/team-rank'], (Unimplemented, Json, Clubs, Dashboard, Teams, Judges, Rooms, Rounds, TeamRank) ->
+define ['routes/unimplemented', 'routes/json', 'routes/clubs', 'routes/dashboard', 'routes/teams', 'routes/judges', 'routes/rooms', 'routes/rounds', 'routes/team-rank', 'routes/speaker-rank'], (Unimplemented, Json, Clubs, Dashboard, Teams, Judges, Rooms, Rounds, TeamRank, SpeakerRank) ->
   (ui) ->
     ui.app.config ['$routeProvider', ($routeProvider) ->
       Unimplemented ui, $routeProvider
@@ -9,6 +9,7 @@ define ['routes/unimplemented', 'routes/json', 'routes/clubs', 'routes/dashboard
       Rooms ui, $routeProvider
       Rounds ui, $routeProvider
       TeamRank ui, $routeProvider
+      SpeakerRank ui, $routeProvider
       Json ui, $routeProvider
 
       $routeProvider.otherwise
