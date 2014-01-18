@@ -8,6 +8,7 @@ require.config
     'jquery.transit': '/components/jquery.transit/jquery.transit'
     filereader: '/components/filereader/filereader'
     angular: '/components/angular/angular'
+    'angular-route': '/components/angular/angular-route'
     B64: '/components/B64/base64'
     cookies: '/components/cookies/cookies'
     underscore: '/components/underscore/underscore'
@@ -22,6 +23,7 @@ require.config
     'jquery.event.drag': ['jquery']
     filereader: ['jquery']
     angular: ['jquery']
+    'angular-route': ['angular']
 
 require ['uicontroller', 'globals', 'jquery.bootstrap'], (UIController, globals) ->
   globals.uiController = new UIController()

@@ -1,3 +1,3 @@
 div.vlist
   div(ng-repeat='vlo in model', class='moveable-{{model.length > 1}}').item
-    div(ng-transclude).vlist-content
+    div(vlist-cell-transclude).vlist-content

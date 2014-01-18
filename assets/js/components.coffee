@@ -1,4 +1,4 @@
-define ['jquery', 'util', 'jquery.transit', 'underscore', 'templates', 'angular', 'jquery.event.drag', 'html2canvas'], ($, Util) ->
+define ['jquery', 'util', 'JudgeRules', 'jquery.transit', 'underscore', 'templates', 'angular', 'jquery.event.drag', 'html2canvas'], ($, Util, JudgeRules) ->
   mod = angular.module "components", []
   mod.directive 'navLi', ->
     restrict: 'E'
@@ -29,6 +29,82 @@ define ['jquery', 'util', 'jquery.transit', 'underscore', 'templates', 'angular'
         if attrs.onUpdate?
           scope.onUpdate()
   ]
+
+  mod.directive "judgeRules", ->
+    template: templates.judgeRules()
+    restrict: 'E'
+    replace: true
+    scope:
+      model: '='
+    controller: ["$scope", "$element", (scope, element) ->
+      scope.verbs = [0, 1]
+      scope.verbNames = JudgeRules.verbLabel
+
+      scope.buildJudgeList = ->
+        m = scope.model
+        nm = scope.judgeNames = []
+        idx = scope.judgeIndexes = []
+        for o, i in (scope.judgeList = scope.model.judgeArray())
+          nm.push JudgeRules.judgeLabel o
+          idx.push i
+        return
+
+      scope.buildTeamList = ->
+        m = scope.model
+        nm = scope.teamNames = []
+        idx = scope.teamIndexes = []
+        for o, i in (scope.teamList = scope.model.teamArray())
+          nm.push JudgeRules.teamLabel o
+          idx.push i
+        return
+
+      scope.buildJudgeList()
+      scope.buildTeamList()
+
+      scope.addRule = ->
+        scope.model.addNewRule()
+        setTimeout ->
+          if item = Util.focusableElement element.find(".judge-rule:first-child")
+            item.focus()
+        , 1
+
+      scope.removeRule = (index) ->
+        scope.model.removeRule index
+  
+      @scope = scope
+      return this
+    ]
+
+  mod.directive "judgeRulesHelper", ->
+    require: "^judgeRules"
+    link: (scope, element, attr, controller) ->
+      cscope = controller.scope
+
+      scope.$watch "vlo.judge", (v) ->
+        try
+          return if cscope.judgeList[scope.judgeIndex] == v
+        for o, i in cscope.judgeList
+          if o == v
+            scope.judgeIndex = i
+            return
+        return
+      scope.$watch "judgeIndex", (v) ->
+        try
+          scope.vlo.judge = cscope.judgeList[v]
+        return
+
+      scope.$watch "vlo.team", (v) ->
+        try
+          return if cscope.teamList[scope.teamIndex] == v
+        for o, i in cscope.teamList
+          if o == v
+            scope.teamIndex = i
+            return
+        return
+      scope.$watch "teamIndex", (v) ->
+        try
+          scope.vlo.team = cscope.teamList[v]
+        return
 
   mod.directive "tristateCheckbox", ['$parse', ($parse) ->
     link: (scope, element, attrs) ->
@@ -175,6 +251,8 @@ define ['jquery', 'util', 'jquery.transit', 'underscore', 'templates', 'angular'
       choices: '=choices'
       allowNil: '@nilPlaceholder'
       minWidth: '@inputWidth'
+      onBeginEdit: '&'
+      onEndEdit: '&'
     replace: true
     transclude: true
     compile: (element, attrs, transclude) ->
@@ -199,6 +277,7 @@ define ['jquery', 'util', 'jquery.transit', 'underscore', 'templates', 'angular'
         
         scope.beginEdit = ->
           return if scope.editing or not scope._enabled
+          scope.onBeginEdit()
           scope.editing = true
 
           minW = parseInt scope.minWidth
@@ -215,6 +294,7 @@ define ['jquery', 'util', 'jquery.transit', 'underscore', 'templates', 'angular'
 
         scope.endEdit = ->
           scope.editing = false
+          scope.onEndEdit()
 
         scope.$watch (-> not attrs.enabled? or scope.$parent.$eval(attrs.enabled)), (n, o) ->
           scope._enabled = n
@@ -229,14 +309,16 @@ define ['jquery', 'util', 'jquery.transit', 'underscore', 'templates', 'angular'
               o: o
           return scope.allowNil
 
-  mod.directive "vlistCell", ['$parse', ($parse) ->
+  mod.directive "vlistCell", ->
     template: templates.vlistCell()
     restrict: 'E'
     scope:
       model: '=bind'
       manualMove: '&manualMove'
     transclude: true
-    link: (scope, element, attrs) ->
+    replace: true
+    controller: ['$scope', '$element', '$attrs', '$transclude', '$parse', (scope, element, attrs, $transclude, $parse) ->
+      @transclude = $transclude
       dragElement = null
       currentPoint = -1
       lastHover = -1
@@ -308,7 +390,7 @@ define ['jquery', 'util', 'jquery.transit', 'underscore', 'templates', 'angular'
             top += offsets[j].h
 
       element.on 'dragstart', (e) ->
-        container = element.find ".vlist"
+        container = element
         container.css "width", container.width()
         container.css "height", container.height()
 
@@ -372,7 +454,17 @@ define ['jquery', 'util', 'jquery.transit', 'underscore', 'templates', 'angular'
               scope.model.splice currentPoint, 0, el
 
         return
-  ]
+      return this
+    ]
+
+  mod.directive "vlistCellTransclude", ->
+    require: "^vlistCell"
+    link: (scope, element, attrs, controller) ->
+        controller.transclude (clone, newScope)->
+          newScope.vlo = scope.vlo
+          newScope.$on "$destroy", (scope.$watch "$index", (v) ->
+            newScope.$index = v)
+          element.append clone
 
   mod.directive "hlistCell", ['$parse', ($parse)->
     template: templates.hlistCell()

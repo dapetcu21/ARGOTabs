@@ -1,5 +1,6 @@
-div.inline(ng-transclude, ng-click='beginEdit()')
+div.inline(ng-click='beginEdit()')
   span(ng-show='!editing', class='muted-{{value == null || value == undefined}}', tabindex=0).multi-label {{getChoiceName(value)}}
   select(ng-show='editing', ng-model='value', ng-options="choiceName({o: o}) for o in choices").multi-input
     option(value='') {{allowNil}}
+  span(ng-transclude)
 

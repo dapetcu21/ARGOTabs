@@ -1,0 +1,15 @@
+div.judge-rules
+  vlist-cell(bind='model.criteria')
+    div(judge-rules-helper).rounded-bullets.judge-rule
+      span.blue-rule
+        multi-cell(bind='judgeIndex', choices='judgeIndexes', choice-name='judgeNames[o]', on-begin-edit='buildJudgeList()')
+      &nbsp;
+      span(class='verb-{{vlo.verb}}')
+        multi-cell(bind='vlo.verb', choices='verbs', choice-name='verbNames[o]')
+      &nbsp;
+      multi-cell(bind='teamIndex', choices='teamIndexes', choice-name='teamNames[o]', on-begin-edit='buildTeamList()')
+      fa.fa.fa-times(ng-click='removeRule($index)').remove-rule
+
+  a(href='', ng-click='addRule()').add-rule
+    i.fa.fa-fw.fa-plus
+    |  Add rule

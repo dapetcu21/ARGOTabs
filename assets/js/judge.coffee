@@ -11,8 +11,8 @@ define ['util'], (Util) ->
         for round in @tournament.rounds
           round.registerJudge this
 
-    @rankStrings = ['A', 'B', 'C']
-    for i in [3..31]
+    @rankStrings = ['A', 'B', 'C', 'D']
+    for i in [4..31]
       @rankStrings.push null
     @rankStrings.push 'Shd'
 

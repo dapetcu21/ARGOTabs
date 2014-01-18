@@ -45,8 +45,7 @@ define ['util'], (Util) ->
         round = @tournament.roundWithId roundId
         continue if not @team?
         ballot = @team.rounds[roundId].ballot
-        continue if not ballot.locked
-        continue if not ballot.roles?
+        continue if not ballot or not ballot.locked or not ballot.roles?
         if @team == ballot.teams[0]
           side = 0
         else if @team == ballot.teams[1]

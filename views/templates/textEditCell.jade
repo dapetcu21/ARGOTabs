@@ -1,5 +1,6 @@
-div(ng-transclude, class='{{labelClass}}', ng-click='beginEdit_()').inline.textedit-cell
+div(class='{{labelClass}}', ng-click='beginEdit_()').inline.textedit-cell
   div(ng-show='!editing', tabindex=0).inline.textedit-label {{valueParsed}}
   div(ng-show='editing', class='{{inputClass}}').control-group
     input(type='text', ng-model='valueParsed').textedit-input
   div.inline.textedit-extra {{extra}}
+  span(ng-transclude)

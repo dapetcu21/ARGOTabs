@@ -134,6 +134,22 @@ define ['util', 'ballot', 'judge', 'sorter', 'judgerules', 'team', 'underscore']
       id = @id
       teams = _.filter @teams, (o) -> o.rounds[id].participates
 
+    pairTeams: (a, b, skillIndex = 0) ->
+      ballot = new Ballot this
+      ballot.teams[0] = a
+      ballot.teams[1] = b
+      ballot.skillIndex = skillIndex
+      if not a? or not b?
+        ballot.locked = true
+      @ballots.push ballot
+      if a
+        a.rounds[@id].ballot = ballot
+        a.stats.paired = true
+      if b
+        b.rounds[@id].ballot = ballot
+        b.stats.paired = true
+      return ballot
+
     pair: (opts) ->
       teams = @pairingTeams()
       prevRounds = @previousRounds()

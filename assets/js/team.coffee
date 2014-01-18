@@ -87,7 +87,7 @@ define ['util', 'player'], (Util, Player) ->
         roundId = roundId.id if typeof roundId == 'object'
         round = @tournament.roundWithId roundId
         ballot = @rounds[roundId].ballot
-        continue if not ballot.locked
+        continue if not ballot or not ballot.locked
         if this == ballot.teams[0]
           side = 0
         else if this == ballot.teams[1]
@@ -143,6 +143,7 @@ define ['util', 'player'], (Util, Player) ->
       @players.push pl
       @tournament.players.push pl
       pl.team = this
+      return pl
 
     removePlayer: (player) ->
       idx = @players.indexOf player

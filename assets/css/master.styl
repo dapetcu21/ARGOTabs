@@ -3,6 +3,11 @@
 @import '../components/bootstrap/css/bootstrap-responsive.css'
 @import '../components/font-awesome/css/font-awesome.css'
 */
+
+red-color = #a81313
+green-color = #1e6917
+blue-color = #12588a
+
 .sidebar-nav
   padding: 9px 0;
 
@@ -300,13 +305,13 @@ li.active .remove-round:hover
   margin-top: -7px
 
 .prop
-  color: #1e6917
+  color: green-color
 
 .opp
-  color: #a81313
+  color: red-color
 
 .prop-opp
-  color: #12588a
+  color: blue-color
 
 .manual-pairings .nopairs
   position: relative
@@ -382,6 +387,29 @@ li.active .remove-round:hover
   position: relative
   top: -3px
   margin-right: 7px
+
+.judge-rule .blue-rule .multi-label
+  color: blue-color
+
+.judge-rule .verb-0 .multi-label
+  color: green-color
+
+.judge-rule .verb-1 .multi-label
+  color: red-color 
+
+.judge-rule .remove-rule
+  position: absolute
+  top: 50%
+  right: 10px
+  margin-top: -6px
+  opacity: 0.5
+
+.judge-rule .remove-rule:hover
+  opacity: 1
+
+.judge-rules .add-rule
+  display: block
+  margin-top: 7px
 
 i.judge-icon
   opacity: 0.7

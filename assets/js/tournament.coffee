@@ -15,7 +15,7 @@ define ['util', 'club', 'team', 'judge', 'room', 'player', 'round', 'sorter', 'j
         @rounds =[]
         @tableOpts = {}
         @ballotsPerMatch = 1
-        @evenBrackets = 1
+        @evenBrackets = 0
         @matchesPerBracket = 1
         @maxMainJudges = 10000
         @maxShadowJudges = 10000
@@ -106,3 +106,50 @@ define ['util', 'club', 'team', 'judge', 'room', 'player', 'round', 'sorter', 'j
         fn()
       , force
 
+    #data encapsulationul care trebuia să îl fac de când hău
+
+    clubWithName: (s) ->
+      for c in @clubs
+        console.log c.name, s
+        if c.name == s
+          return c
+      return null
+
+    addClub: (s) ->
+      console.log "addClub", s
+      club = new Club this
+      @clubs.push club
+      club.name = s
+      return club
+
+    addTeam: (name, clubName, members) ->
+      club = @clubWithName clubName
+      if not club?
+        club = @addClub clubName
+
+      team = new Team this
+      team.name = name
+      team.club = club
+      club.addTeam team
+
+      for m in members
+        p = team.addPlayer()
+        p.name = m
+      @teams.push team
+      return team
+
+    addJudge: (name, clubName, rank = 0) ->
+      club = @clubWithName clubName
+      if not club?
+        club = @addClub clubName
+
+      if rank == -1
+        rank = Judge.shadowRank
+
+      judge = new Judge this
+      judge.name = name
+      judge.club = club
+      judge.rank = rank
+      club.addJudge judge
+      @judges.push judge
+      return judge
