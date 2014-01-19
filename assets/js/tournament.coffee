@@ -153,3 +153,8 @@ define ['util', 'club', 'team', 'judge', 'room', 'player', 'round', 'sorter', 'j
       club.addJudge judge
       @judges.push judge
       return judge
+
+    destroyEntityInJudgeRules: (e) ->
+      @judgeRules.entityDestroyed e
+      for r in @rounds
+        r.judgeRules.entityDestroyed e

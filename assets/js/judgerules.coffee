@@ -1,15 +1,64 @@
-define ['judge', 'team', 'club'], (Judge, Team, Club) ->
+define ['util', 'judge', 'team', 'club'], (Util, Judge, Team, Club) ->
   class JudgeRules
-    @newCriteria: (judge, verb, team) ->
+    newCriteria: (judge, verb, team) ->
       return {
         judge: judge
         verb: verb
         team: team
-        toJSON: ->
-          this
+        toJSON: @criterionPackFn()
       }
 
-    unpackCriterion: (criterion) ->
+    criterionPackFn: ->
+      trn = @tournament
+      ->
+        r =
+          verb: @verb
+
+        if @judge == null
+          r.judge = r.judgeType = -1
+        if typeof @judge == 'number'
+          r.judge = @judge
+          r.judgeType = 0
+        else if @judge instanceof Judge
+          r.judge = Util.packCycle @judge, trn.judges
+          r.judgeType = 1
+        else if @judge instanceof Club
+          r.judge = Util.packCycle @judge, trn.clubs
+          r.judgeType = 2
+
+        if @team == null
+          r.team = r.teamType = -1
+        if typeof @team == 'number'
+          r.team = @team
+          r.teamType = 0
+        else if @team instanceof Team
+          r.team = Util.packCycle @team, trn.teams
+          r.teamType = 1
+        else if @team instanceof Club
+          r.team = Util.packCycle @team, trn.clubs
+          r.teamType = 2
+
+        return r
+
+    unpackCriterion: (c) ->
+      trn = @tournament
+      if c.judgeType == -1
+        c.judge = null
+      else if c.judgeType == 1
+        c.judge = Util.unpackCycle c.judge, trn.judges
+      else if c.judgeType == 2
+        c.judge = Util.unpackCycle c.judge, trn.clubs
+      delete c.judgeType
+
+      if c.teamType == -1
+        c.team = null
+      else if c.teamType == 1
+        c.team = Util.unpackCycle c.team, trn.teams
+      else if c.teamType == 2
+        c.team = Util.unpackCycle c.team, trn.clubs
+      delete c.teamType
+
+      c.toJSON = @criterionPackFn()
       return
 
     @judgeLabel: (judge) ->
@@ -56,6 +105,7 @@ define ['judge', 'team', 'club'], (Judge, Team, Club) ->
       #true - the rule specifically states this combo is allowed
       #false - the rule specifically states this combo is disallowed
       #2 - the rule does not refer to this combo
+      return 2 if not crit.team? or not crit.judge?
       return 2
     
     isCompatible: (judge, ballot, next) ->
@@ -87,7 +137,15 @@ define ['judge', 'team', 'club'], (Judge, Team, Club) ->
       ]
 
     addNewRule: ->
-      @criteria.unshift JudgeRules.newCriteria 0, 1, 1
+      @criteria.unshift @newCriteria 0, 1, 1
 
     removeRule: (index) ->
       @criteria.splice index, 1
+
+    entityDestroyed: (e) ->
+      return if not e?
+      for criterion in @criteria
+        if criterion.judge == e
+          criterion.judge = null
+        if criterion.team == e
+          criterion.team = null

@@ -43,3 +43,4 @@ define ['util'], (Util) ->
         round.unregisterJudge this
       if @club
         @club.removeJudge(this)
+      @tournament.destroyEntityInJudgeRules this

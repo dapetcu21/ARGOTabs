@@ -256,7 +256,7 @@ define ['jquery', 'util', 'JudgeRules', 'jquery.transit', 'underscore', 'templat
     replace: true
     transclude: true
     compile: (element, attrs, transclude) ->
-      if not attrs.nilPlaceholder
+      if not attrs.nilPlaceholder or attrs.hideNil
         element.find('option').remove()
       (scope, element, attrs) ->
         scope.editing = false

@@ -161,3 +161,4 @@ define ['util', 'player'], (Util, Player) ->
         round.unregisterTeam this
       if @club
         @club.removeTeam(this)
+      @tournament.destroyEntityInJudgeRules this

@@ -341,23 +341,27 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
           scope.hover = true
           controller.scope.rowHovered++
           scope.id = 'id' + Math.round( Math.random() * 10000)
-          el = element.find('td:visible:last')
-          el.addClass('squeezedElement')
-          $(templates.editableTd
-            id: scope.id
-            width: el.width()
-            tableId: controller.scope.tableId
-          ).appendTo(element)
-            .find('i.close').click ->
-              Util.safeApply scope, ->
-                scope.removeItem(scope.$index)
+          setTimeout (->
+            el = element.find('td:visible:last')
+            el.addClass('squeezedElement')
+            $(templates.editableTd
+              id: scope.id
+              width: el.width()
+              tableId: controller.scope.tableId
+            ).appendTo(element)
+              .find('i.close').click ->
+                Util.safeApply scope, ->
+                  scope.removeItem(scope.$index)
+          ), 0
 
         scope.mouseLeave = ->
           return if not scope.hover
           scope.hover = false
           controller.scope.rowHovered--
-          element.find('.squeezedElement').removeClass('squeezedElement')
-          element.find('#'+scope.id).remove()
+          setTimeout (->
+            element.find('.squeezedElement').removeClass('squeezedElement')
+            element.find('#'+scope.id).remove()
+          ), 0
 
         currentPoint = null
         getCurrentPoint = (x, y) ->

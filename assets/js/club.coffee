@@ -37,3 +37,4 @@ define ['util'], (Util)->
         team.club = null
       for judge in @judges
         judge.club = null
+      @tournament.destroyEntityInJudgeRules this
