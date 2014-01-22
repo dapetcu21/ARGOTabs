@@ -21,22 +21,23 @@ define ['util', 'underscore'], (Util) ->
             roles[i].roles.push @roles[i][j]
         return roles
       pushRoles = (team, r) =>
-        if true
-          v = @round.previousRounds()
-          if v.length
-            pr = v[v.length-1]
-            bal = team.rounds[pr.id]
+        v = @round.previousRounds()
+        for pr in v by -1
+          console.log pr
+          bal = team.rounds[pr.id]
+          if bal?
+            bal = bal.ballot
+            console.log bal
             if bal?
-              bal = bal.ballot
-              console.log bal
-              if bal?
-                side = 0
-                if bal.teams[1] == team
-                  side = 1
-                v = bal.roles[side]
-                for i in v
-                  r.push i
-                return
+              side = 0
+              if bal.teams[1] == team
+                side = 1
+              continue if not bal.roles?
+              v = bal.roles[side]
+              continue if not v?
+              for i in v
+                r.push i
+              return
         n = team.players.length
         if n
           for l in [0..2]
