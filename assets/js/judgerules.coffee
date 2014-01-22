@@ -107,8 +107,8 @@ define ['util', 'judge', 'team', 'club'], (Util, Judge, Team, Club) ->
       #2 - the rule does not refer to this combo
       ta = ballot.teams[0]
       tb = ballot.teams[1]
+      return 2 if not ta? or not tb? or not judge?
       return 2 if not crit.team? or not crit.judge?
-      return 2 if not ta? or not tb?
       return 2 if crit.judge == 1 and judge.club?
       return 2 if crit.judge instanceof Club and judge.club != crit.judge
       return 2 if crit.judge instanceof Judge and judge != crit.judge

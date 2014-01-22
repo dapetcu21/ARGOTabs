@@ -8,7 +8,7 @@ red-color = #a81313
 green-color = #1e6917
 blue-color = #12588a
 gray-color = #808080
-orange-color = #a88713
+yellow-color = #a88713
 
 .sidebar-nav
   padding: 9px 0;
@@ -338,14 +338,14 @@ li.active .remove-round:hover
   padding: 2px 5px
   font-size: 13px
 
-#round-pairings-table.showranks-false .judge-rank
+#pairings.showranks-false .judge-rank
   display: none
 
 .judge-rank.judge-rank-0
   color: red-color
 
 .judge-rank.judge-rank-1
-  color: orange-color 
+  color: yellow-color 
 
 .judge-rank.judge-rank-2
   color: green-color
@@ -366,10 +366,10 @@ li.active .remove-round:hover
     color: #ffffff
 
 @media print 
-  #round-pairings-table.printca-true .judge-box.valid-false
+  #pairings.printca-true .judge-box.valid-false
     color: red-color
     border: 1px solid red-color
-  #round-pairings-table.printca-false .judge-rank
+  #pairings.printca-false .judge-rank
     display: none
 
 .well .judge-box
@@ -450,12 +450,18 @@ li.active .remove-round:hover
   margin-top: 7px
 
 i.judge-icon
-  opacity: 0.7
+  border-radius: 3px
+  background-color: #ffffff
+  color: #6d6d6d
+  padding: 2px
   font-size: 80%
 
 i.judge-icon:after
   content: ": "
-  opacity: 0.7
+
+.compat-false
+  background-image: url("/img/stripes.png")
+  background-repeat: repeat
 
 label.checkbox.inline
   position:relative

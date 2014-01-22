@@ -152,6 +152,16 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
           opts.ballot = toList.ud.ballot
           opts.shadow = toList.ud.shadow
 
+        $scope.judgeDragStart = (jud) ->
+          console.log 'dragStart', jud
+          $scope.compatList = v = []
+          for b in round.ballots
+            v.push $scope.isCompatible b, jud
+
+        $scope.judgeDragEnd = ->
+          console.log 'dragEnd'
+          $scope.compatList = null
+
         updateDecimals = (scores) ->
           $scope.scoreDecimals ?= 0
           sd = $scope.scoreDecimals

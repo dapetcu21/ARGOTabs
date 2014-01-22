@@ -47,7 +47,7 @@ div.tab-content
             td {{o.name}}
             td: span(class='muted-{{o.club == null}}') {{nilPlaceholder(o.club, {name:"unaffiliated"}).name}}
 
-    div#pairings(ng-show='round.paired')
+    div#pairings(ng-show='round.paired' class="printca-{{round.printCAMode}} showranks-{{showRanks}}")
       .control-group.dont-print
         button(ng-click='assignJudges()').btn Reassign judges
         = ' '
@@ -63,7 +63,7 @@ div.tab-content
 
       .row-fluid
         .span9.print-full-width
-          table(editable-table, model='round.ballots', visible='round.tableOpts.ballots', table-class='table table-bordered table-hover printca-{{round.printCAMode}} showranks-{{showRanks}}', row-clicked='editBallot($index)', reorders)#round-pairings-table
+          table(editable-table, model='round.ballots', visible='round.tableOpts.ballots', table-class='table table-bordered table-hover', row-clicked='editBallot($index)', reorders)#round-pairings-table
             thead
               tr
                 th(data-auto-index=6) #
@@ -83,20 +83,20 @@ div.tab-content
                   span(ng-show='o.room != null').judge-box {{o.room.name}}
                 td: span(class='muted-{{o.teams[0] == null}}') {{namePlaceholder(o.teams[0],'Bye').name}}
                 td: span(class='muted-{{o.teams[1] == null}}') {{namePlaceholder(o.teams[1],'Bye').name}}
-                td
+                td(class='compat-{{compatList[$index]}}')
                   span(class="notavailable-{{!o.teams[0] || !o.teams[1]}}")
                   div(ng-show='o.teams[0] && o.teams[1]', class='ballot-{{$index}}')
                     div.nowrap.inline-block.main-judges
                       i.fa.fa-gavel.judge-icon
                       = ' '
-                      hlist-cell(bind='o.judges', extension-element='.ballot-{{$index}} .main-judges', extension-element-last='{{yesNo(o.shadows.length || round.allowShadowsSolved(), "", ".ballot-" + $index)}}', edit-hidden='true', reorders-always, reorders='!o.locked', userdata='judgeUd(o, false)', drop-group='judge-drop', group-test='judgeGroupTest(fromList, toList)', manual-move='judgeMove(fromList, fromIndex, toList, toIndex)').judge-list
+                      hlist-cell(bind='o.judges', extension-element='.ballot-{{$index}} .main-judges', extension-element-last='{{yesNo(o.shadows.length || round.allowShadowsSolved(), "", ".ballot-" + $index)}}', edit-hidden='true', reorders-always, reorders='!o.locked', userdata='judgeUd(o, false)', drop-group='judge-drop', group-test='judgeGroupTest(fromList, toList)', on-start-drag='judgeDragStart(list.model[index])', on-end-drag='judgeDragEnd()', manual-move='judgeMove(fromList, fromIndex, toList, toIndex)').judge-list
                         span(class="valid-{{!showConflicts || isCompatible(o, hlo)}}").judge-box
                           span(class="judge-rank-{{hlo.rank}}").judge-rank {{rankStrings[hlo.rank]}}:&nbsp
                           | {{hlo.name}}
                     div(ng-show='o.shadows.length || round.allowShadowsSolved()').nowrap.inline-block.shadow-judges
                       i.fa.fa-eye.judge-icon
                       = ' '
-                      hlist-cell(bind='o.shadows', extension-element='.ballot-{{$index}} .shadow-judges', extension-element-last='{{yesNo(o.shadows.length || round.allowShadowsSolved(), ".ballot-" + $index, "")}}', edit-hidden='true', reorders-always, reorders='!o.locked', userdata='judgeUd(o, true)', drop-group='judge-drop', group-test='judgeGroupTest(fromList, toList)', manual-move='judgeMove(fromList, fromIndex, toList, toIndex)').judge-list
+                      hlist-cell(bind='o.shadows', extension-element='.ballot-{{$index}} .shadow-judges', extension-element-last='{{yesNo(o.shadows.length || round.allowShadowsSolved(), ".ballot-" + $index, "")}}', edit-hidden='true', reorders-always, reorders='!o.locked', userdata='judgeUd(o, true)', drop-group='judge-drop', group-test='judgeGroupTest(fromList, toList)', on-start-drag='judgeDragStart(list.model[index])', on-end-drag='judgeDragEnd()', manual-move='judgeMove(fromList, fromIndex, toList, toIndex)').judge-list
                         span(class="valid-{{!showShadowConflicts || isCompatible(o, hlo)}}").judge-box
                           span(class="judge-rank-{{hlo.rank}}").judge-rank {{rankStrings[hlo.rank]}}:&nbsp
                           | {{hlo.name}}
@@ -130,8 +130,10 @@ div.tab-content
             div(ng-show='!round.freeJudges.length')
               | All judges have been assigned
             div(ng-show='round.freeJudges.length')
-              hlist-cell(bind='round.freeJudges', extension-element='.well.settings-group.free-judges', edit-hidden='true', reorders-always, reorders='true', userdata='judgeUd(null, false)', drop-group='judge-drop', group-test='judgeGroupTest(fromList, toList)', manual-move='judgeMove(fromList, fromIndex, toList, toIndex)').judge-list
-                span.judge-box {{hlo.name}}
+              hlist-cell(bind='round.freeJudges', extension-element='.well.settings-group.free-judges', edit-hidden='true', reorders-always, reorders='true', userdata='judgeUd(null, false)', drop-group='judge-drop', on-start-drag='judgeDragStart(list.model[index])', on-end-drag='judgeDragEnd()', group-test='judgeGroupTest(fromList, toList)', manual-move='judgeMove(fromList, fromIndex, toList, toIndex)').judge-list
+                span.judge-box
+                  span(class="judge-rank-{{hlo.rank}}").judge-rank {{rankStrings[hlo.rank]}}:&nbsp;
+                  | {{hlo.name}}
           .well.settings-group.free-rooms
             strong Free rooms
             div(ng-show='!round.freeRooms.length')

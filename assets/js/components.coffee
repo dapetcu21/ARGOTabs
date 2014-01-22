@@ -493,6 +493,8 @@ define ['jquery', 'util', 'JudgeRules', 'jquery.transit', 'underscore', 'templat
       groupTest: '&groupTest'
       dropTest: '&dropTest' #not implemented
       manualMove: '&manualMove'
+      dragStartFn: '&onStartDrag'
+      dragEndFn: '&onEndDrag'
       extensionElement: '@'
       extensionElementLast: '@'
     transclude: true
@@ -702,6 +704,10 @@ define ['jquery', 'util', 'JudgeRules', 'jquery.transit', 'underscore', 'templat
 
             updateCanvas e
             return
+        Util.safeApply scope, ->
+          scope.dragStartFn
+            list: scope.fromInstance
+            index: dragStart
         return dragElement
 
       element.on 'drag', {distance: 2}, (e) ->
@@ -732,6 +738,10 @@ define ['jquery', 'util', 'JudgeRules', 'jquery.transit', 'underscore', 'templat
               Util.safeApply scope, ->
                 el = scope.model.splice(dragStart, 1)[0]
                 currentPoint.instance.model.splice idx, 0, el
+        Util.safeApply scope, ->
+          scope.dragEndFn
+            list: scope.fromInstance
+            index: dragStart
         return
       return this
     ]
