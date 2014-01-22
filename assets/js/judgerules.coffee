@@ -105,7 +105,26 @@ define ['util', 'judge', 'team', 'club'], (Util, Judge, Team, Club) ->
       #true - the rule specifically states this combo is allowed
       #false - the rule specifically states this combo is disallowed
       #2 - the rule does not refer to this combo
+      ta = ballot.teams[0]
+      tb = ballot.teams[1]
       return 2 if not crit.team? or not crit.judge?
+      return 2 if not ta? or not tb?
+      return 2 if crit.judge == 1 and judge.club?
+      return 2 if crit.judge instanceof Club and judge.club != crit.judge
+      return 2 if crit.judge instanceof Judge and judge != crit.judge
+
+      vrb = if crit.verb == 0 then true else false
+
+      relevantTeam = (t) ->
+        return true if crit.team == 0
+        return true if crit.team == 1 and judge.club? and judge.club == t.club
+        return true if crit.team == 2 and judge.club? and ta.club == tb.club and ta.club == judge.club
+        return true if crit.team instanceof Club and t.club == crit.team
+        return true if crit.team instanceof Team and t == crit.team
+        return false
+
+      return vrb if crit.team == 2 and judge.club? and ta.club == tb.club and ta.club == judge.club
+      return vrb if relevantTeam(ta) or relevantTeam(tb)
       return 2
     
     isCompatible: (judge, ballot, next) ->
@@ -134,10 +153,12 @@ define ['util', 'judge', 'team', 'club'], (Util, Judge, Team, Club) ->
 
     @mainRules: (tournament, o) ->
       return new JudgeRules tournament, if o? then o else [
+        {judge:0, verb:0, team:2}, #all judges can judge club matches
+        {judge:0, verb:1, team:1}  #all judges can't judge their club
       ]
 
     addNewRule: ->
-      @criteria.unshift @newCriteria 0, 1, 1
+      @criteria.unshift @newCriteria 0, 0, 0
 
     removeRule: (index) ->
       @criteria.splice index, 1

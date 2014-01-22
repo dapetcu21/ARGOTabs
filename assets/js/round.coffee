@@ -23,6 +23,11 @@ define ['util', 'ballot', 'judge', 'sorter', 'judgerules', 'team', 'underscore']
       @judgeShadowPriority ?= null
       @judgeShadowOrder ?= null
       @judgeShadowReport ?= null
+      @caMode ?= true
+      @showConflicts ?= true
+      @showShadowConflicts ?= true
+      @showRanks ?= true
+      @printCAMode ?= false
       @pairRankSorter = Sorter.teamRankSorter @pairRankSorter
       @judgeRules = new JudgeRules @tournament, @judgeRules
       @rankFrom ?= {all:true}

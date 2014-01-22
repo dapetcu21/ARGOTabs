@@ -15,6 +15,7 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
         $scope.priorityChoiceNames = ["Assign good judges to good teams", "Assign good judges to weak teams"]
         $scope.orderChoices = [0, 1]
         $scope.orderChoiceNames = ["Assign judges to good teams first", "Assign judges to weak teams first"]
+        $scope.rankStrings = Judge.rankStrings
 
         Util.installScopeUtils $scope
 
@@ -130,8 +131,17 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
           toList.ud.shadow or ballot.judges.length < round.ballotsPerMatchSolved()
 
         $scope.isCompatible = (ballot, judge) ->
-          console.log ballot, judge
-          return false
+          round.judgeRules.isCompatible judge, ballot, $scope.tournament.judgeRules
+        
+        updateCAMode = ->
+          $scope.showConflicts = round.caMode and round.showConflicts
+          $scope.showRanks = round.caMode and round.showRanks
+          $scope.showShadowConflicts = round.caMode and round.showShadowConflicts
+
+        $scope.$watch 'round.caMode', updateCAMode
+        $scope.$watch 'round.showConflicts', updateCAMode
+        $scope.$watch 'round.showShadowConflicts', updateCAMode
+        $scope.$watch 'round.showRanks', updateCAMode
 
         $scope.judgeMove = (fromList, fromIndex, toList, toIndex) ->
           if fromList == toList and toIndex > fromIndex

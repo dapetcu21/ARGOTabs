@@ -466,7 +466,16 @@ define ['jquery', 'util', 'JudgeRules', 'jquery.transit', 'underscore', 'templat
             newScope.$index = v)
           element.append clone
 
-  mod.directive "hlistCell", ['$parse', ($parse)->
+  mod.directive "hlistCellTransclude", ->
+    require: "^hlistCell"
+    link: (scope, element, attrs, controller) ->
+        controller.transclude (clone, newScope)->
+          newScope.hlo = scope.hlo
+          newScope.$on "$destroy", (scope.$watch "$index", (v) ->
+            newScope.$index = v)
+          element.append clone
+
+  mod.directive "hlistCell", ->
     template: templates.hlistCell()
     restrict: 'E'
     scope:
@@ -487,7 +496,8 @@ define ['jquery', 'util', 'JudgeRules', 'jquery.transit', 'underscore', 'templat
       extensionElement: '@'
       extensionElementLast: '@'
     transclude: true
-    link: (scope, element, attrs) ->
+    controller: ['$scope', '$element', '$attrs', '$parse', '$transclude', (scope, element, attrs, $parse, $transclude) ->
+      @transclude = $transclude
       scope.edit = false
       scope.remove = (index) ->
         scope.removeItem
@@ -537,7 +547,7 @@ define ['jquery', 'util', 'JudgeRules', 'jquery.transit', 'underscore', 'templat
           lists = $ 'hlist-cell'
 
         for list in lists
-          sc = $(list).scope()
+          sc = $(list).isolateScope()
           instance = if sc == scope then fromInstance else makeInstance sc
           continue if attrs.dropGroup? and sc.dropGroup != scope.dropGroup
           continue if attrs.groupTest? and not scope.groupTest({fromList: fromInstance, toList:instance})
@@ -723,6 +733,7 @@ define ['jquery', 'util', 'JudgeRules', 'jquery.transit', 'underscore', 'templat
                 el = scope.model.splice(dragStart, 1)[0]
                 currentPoint.instance.model.splice idx, 0, el
         return
-  ]
+      return this
+    ]
 
 

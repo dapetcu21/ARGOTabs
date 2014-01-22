@@ -16,7 +16,7 @@ define ['util'], (Util) ->
       @rankStrings.push null
     @rankStrings.push 'Shd'
 
-    @ranks = [0, 1, 2, 32]
+    @ranks = [0, 1, 2, 3, 32]
     @shadowRank = 32
 
     unpackCycles: ->

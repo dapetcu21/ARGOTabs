@@ -7,6 +7,8 @@
 red-color = #a81313
 green-color = #1e6917
 blue-color = #12588a
+gray-color = #808080
+orange-color = #a88713
 
 .sidebar-nav
   padding: 9px 0;
@@ -336,8 +338,39 @@ li.active .remove-round:hover
   padding: 2px 5px
   font-size: 13px
 
-.judge-box.valid-false
-  background-color: #ed9696
+#round-pairings-table.showranks-false .judge-rank
+  display: none
+
+.judge-rank.judge-rank-0
+  color: red-color
+
+.judge-rank.judge-rank-1
+  color: orange-color 
+
+.judge-rank.judge-rank-2
+  color: green-color
+  
+.judge-rank.judge-rank-3
+  color: blue-color
+
+.judge-rank.judge-rank-32
+  color: gray-color
+
+@media screen 
+  .judge-box.valid-false
+    background-color: red-color
+    color: #ffffff
+    border: 1px solid red-color
+
+  .judge-box.valid-false .judge-rank
+    color: #ffffff
+
+@media print 
+  #round-pairings-table.printca-true .judge-box.valid-false
+    color: red-color
+    border: 1px solid red-color
+  #round-pairings-table.printca-false .judge-rank
+    display: none
 
 .well .judge-box
   background-color: #e8e8e8
@@ -397,6 +430,11 @@ li.active .remove-round:hover
 .judge-rule .verb-1 .multi-label
   color: red-color 
 
+.judge-rule .multi-label.muted-true
+  color: red-color
+  opacity: 1
+  font-weight: bold 
+
 .judge-rule .remove-rule
   position: absolute
   top: 50%
@@ -423,7 +461,7 @@ label.checkbox.inline
   position:relative
   top: -1px
   padding-top: 0px
-  margin-left: 5px
+  margin-left: 5px !important
   margin-top: 0px
 
 @media (min-width: 767px)
