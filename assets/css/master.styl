@@ -337,6 +337,23 @@ li.active .remove-round:hover
   white-space: nowrap
   padding: 2px 5px
   font-size: 13px
+  position: relative
+
+.judge-box:before
+  display: none
+
+.judge-selected .judge-box:before
+  content: ""
+  display: block
+  background-color: #0088cc
+  position: absolute
+  top: -1px
+  bottom: -1px
+  left: -1px
+  right: -1px
+  border: 1px solid #0088cc
+  border-radius: 3px
+  opacity: 0.5
 
 #pairings.showranks-false .judge-rank
   display: none

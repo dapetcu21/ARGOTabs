@@ -502,6 +502,7 @@ define ['jquery', 'util', 'JudgeRules', 'jquery.transit', 'underscore', 'templat
       manualMove: '&manualMove'
       dragStartFn: '&onStartDrag'
       dragEndFn: '&onEndDrag'
+      replaceClass: '@'
       extensionElement: '@'
       extensionElementLast: '@'
     transclude: true
@@ -543,9 +544,10 @@ define ['jquery', 'util', 'JudgeRules', 'jquery.transit', 'underscore', 'templat
       $line = null
       dragPointX = dragPointY = 0
       dragStart = null
+      rectangleList = []
 
       buildRectangleList = ->
-        rl = scope.rectangleList = []
+        rl = rectangleList = []
 
         makeInstance = (s) -> {ud:s.userdata(), model: s.model}
         scope.fromInstance = fromInstance = makeInstance scope
@@ -584,6 +586,7 @@ define ['jquery', 'util', 'JudgeRules', 'jquery.transit', 'underscore', 'templat
                 height: $item.outerHeight()
                 index: i
                 replace: canReplace
+                elem: if canReplace then $item else null
                 move: canMove
                 instance: instance
 
@@ -634,7 +637,7 @@ define ['jquery', 'util', 'JudgeRules', 'jquery.transit', 'underscore', 'templat
                   instance: instance
 
       getCurrentPoint = (x,y) ->
-        for rect in scope.rectangleList
+        for rect in rectangleList
           w = rect.width
           h = rect.height
           t = rect.top
@@ -648,6 +651,7 @@ define ['jquery', 'util', 'JudgeRules', 'jquery.transit', 'underscore', 'templat
             replace: rect.replace
             index: rect.index
             instance: rect.instance
+            elem: rect.elem
 
           if rect.replace and rect.move
             if x < l + w * (1.0/3)
@@ -678,13 +682,24 @@ define ['jquery', 'util', 'JudgeRules', 'jquery.transit', 'underscore', 'templat
           $canvas.css 'top', e.pageY - dragPointY
         if $line
           pnt = getCurrentPoint e.pageX, e.pageY
-          if pnt and pnt.instance == scope.fromInstance and (pnt.index == dragStart or pnt.index == dragStart+1)
+          if pnt and pnt.instance == scope.fromInstance and (pnt.index == dragStart or (not pnt.replace and pnt.index == dragStart+1))
             pnt = null
-          if currentPoint and not pnt
+
+          repCls = attrs.replaceClass?
+          displayOld = currentPoint? and not (repCls and currentPoint.replace)
+          displayNew = pnt? and not (repCls and pnt.replace)
+          if repCls
+            if currentPoint? and currentPoint.replace
+              currentPoint.elem.removeClass scope.replaceClass
+            if pnt? and pnt.replace
+              console.log pnt
+              pnt.elem.addClass scope.replaceClass
+
+          if displayOld and not displayNew
             $line.css 'display', 'none'
-          else if pnt and not currentPoint
+          else if displayNew and not displayOld
             $line.css 'display', 'block'
-          if pnt
+          if pnt and displayNew
             $line.css 'left', pnt.x + 'px'
             $line.css 'top', pnt.y + 'px'
             $line.css 'height', pnt.height + 'px'
@@ -762,25 +777,43 @@ define ['jquery', 'util', 'JudgeRules', 'jquery.transit', 'underscore', 'templat
           $line.remove()
           $line = null
         if currentPoint
-          if attrs.manualMove?
-            Util.safeApply scope, ->
-              scope.manualMove
-                fromList: scope.fromInstance
-                toList: currentPoint.instance
-                fromIndex: dragStart
-                toIndex: currentPoint.index
-          else
-            idx = currentPoint.index
-            same = currentPoint == scope.fromInstance
-            idx-- if same and idx > dragStart
-            if not same or idx != dragStart
+          if currentPoint.replace
+            if attrs.manualReplace?
               Util.safeApply scope, ->
-                el = scope.model.splice(dragStart, 1)[0]
-                currentPoint.instance.model.splice idx, 0, el
+                scope.manualReplace
+                  fromList: scope.fromInstance
+                  toList: currentPoint.instance
+                  fromIndex: dragStart
+                  toIndex: currentPoint.index
+            else
+              if currentPoint.instance != scope.fromInstance or dragStart != currentPoint.index
+                Util.safeApply scope, ->
+                  a = scope.model[dragStart]
+                  b = currentPoint.instance.model[currentPoint.index]
+                  scope.model[dragStart] = b
+                  currentPoint.instance.model[currentPoint.index] = a
+          else
+            if attrs.manualMove?
+              Util.safeApply scope, ->
+                scope.manualMove
+                  fromList: scope.fromInstance
+                  toList: currentPoint.instance
+                  fromIndex: dragStart
+                  toIndex: currentPoint.index
+            else
+              idx = currentPoint.index
+              same = currentPoint.instance == scope.fromInstance
+              idx-- if same and idx > dragStart
+              if not same or idx != dragStart
+                Util.safeApply scope, ->
+                  el = scope.model.splice(dragStart, 1)[0]
+                  currentPoint.instance.model.splice idx, 0, el
         Util.safeApply scope, ->
           scope.dragEndFn
             list: scope.fromInstance
             index: dragStart
+        rectangleList = []
+        currentPoint = null
         return
       return this
     ]

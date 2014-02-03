@@ -23,11 +23,9 @@ define ['util', 'underscore'], (Util) ->
       pushRoles = (team, r) =>
         v = @round.previousRounds()
         for pr in v by -1
-          console.log pr
           bal = team.rounds[pr.id]
           if bal?
             bal = bal.ballot
-            console.log bal
             if bal?
               side = 0
               if bal.teams[1] == team

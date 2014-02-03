@@ -73,7 +73,7 @@ div.tab-content
         - var manualReplace = 'judgeReplace(fromList, fromIndex, toList, toIndex)';
         - var manualMove = 'judgeMove(fromList, fromIndex, toList, toIndex)';
         - var boxClass = free ? '' : 'valid-{{!showShadowConflicts || isCompatible(o, hlo)}}'
-        hlist-cell(bind='#{bind}', extension-element='#{ext}', extension-element-last='#{extLast}', edit-hidden='true', reorders-always, reorders='#{reorders}', userdata='#{userdata}', drop-group='judge-drop', on-start-drag='#{onStartDrag}', on-end-drag='#{onEndDrag}', group-test='#{groupTest}', group-replace-test='#{groupReplaceTest}', manual-replace='#{manualReplace}' manual-move='#{manualMove}').judge-list
+        hlist-cell(bind='#{bind}', extension-element='#{ext}', extension-element-last='#{extLast}', edit-hidden='true', reorders-always, reorders='#{reorders}', userdata='#{userdata}', drop-group='judge-drop', replace-class='judge-selected', on-start-drag='#{onStartDrag}', on-end-drag='#{onEndDrag}', group-test='#{groupTest}', group-replace-test='#{groupReplaceTest}', manual-replace='#{manualReplace}' manual-move='#{manualMove}').judge-list
           span(class="#{boxClass}").judge-box
             span(class="judge-rank-{{hlo.rank}}").judge-rank {{rankStrings[hlo.rank]}}:&nbsp;
             | {{hlo.name}}
