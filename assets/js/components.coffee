@@ -692,7 +692,6 @@ define ['jquery', 'util', 'judgerules', 'jquery.transit', 'underscore', 'templat
             if currentPoint? and currentPoint.replace
               currentPoint.elem.removeClass scope.replaceClass
             if pnt? and pnt.replace
-              console.log pnt
               pnt.elem.addClass scope.replaceClass
 
           if displayOld and not displayNew
