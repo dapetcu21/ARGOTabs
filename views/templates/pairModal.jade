@@ -35,6 +35,11 @@
       label(ng-show='(pairOpts.algorithm != 1 || !pairOpts.manualSides) && pairOpts.sides', title='Checking this means that side constraints should take priority over pairing algorithm constraints.').checkbox
         | Enforce side constraint
         input(type='checkbox', ng-model='pairOpts.hardSides')
+
+      label(ng-show='pairOpts.algorithm == 0').checkbox
+        | Prevent club matches
+        input(type='checkbox', ng-model='pairOpts.noClubMatches')
+
       div(ng-show='pairOpts.algorithm == 3').radio-container
         div Even brackets by pulling
         label 

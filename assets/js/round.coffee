@@ -294,6 +294,10 @@ define ['util', 'ballot', 'judge', 'sorter', 'judgerules', 'team', 'underscore']
               count++
           return count
 
+      if opts.noClubMatches
+        restrictions.conditions.push (a, b) ->
+          if a.club? and b.club? and a.club == b.club then 1 else 0
+
       skillIndex = 0
       n = teams.length
       switch opts.algorithm

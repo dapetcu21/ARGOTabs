@@ -277,6 +277,7 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
             sides: 0
             manualSides: true
             shuffleRooms: true
+            noClubMatches: true
             hardSides: true
             minimizeReMeet: true
             matchesPerBracket: round.tournament.matchesPerBracket
