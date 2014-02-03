@@ -1,1 +1,0 @@
-../../../../../assets/components/sydcanem-bootstrap-contextmenu/demo/assets/jquery.js

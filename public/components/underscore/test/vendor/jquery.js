@@ -1,1 +1,0 @@
-../../../../../assets/components/underscore/test/vendor/jquery.js

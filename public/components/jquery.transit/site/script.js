@@ -1,1 +1,0 @@
-../../../../assets/components/jquery.transit/site/script.js

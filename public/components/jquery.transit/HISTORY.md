@@ -1,1 +1,0 @@
-/Users/da_petcu21/Programare/argo-tabs/assets/components/jquery.transit/HISTORY.md
