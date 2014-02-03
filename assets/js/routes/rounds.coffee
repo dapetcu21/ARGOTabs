@@ -125,10 +125,17 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
 
         $scope.judgeGroupTest = (fromList, toList) ->
           ballot = toList.ud.ballot
-          return true if  not ballot?
+          return true if not ballot?
           return true if fromList == toList
           return false if ballot.locked or not ballot.teams[0] or not ballot.teams[1]
           toList.ud.shadow or ballot.judges.length < round.ballotsPerMatchSolved()
+
+        $scope.judgeGroupReplaceTest = (fromList, toList) ->
+          ballot = toList.ud.ballot
+          return true if not ballot?
+          return true if fromList == toList
+          return false if ballot.locked or not ballot.teams[0] or not ballot.teams[1]
+          return true
 
         $scope.isCompatible = (ballot, judge) ->
           round.judgeRules.isCompatible judge, ballot, $scope.tournament.judgeRules

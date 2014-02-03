@@ -308,6 +308,8 @@ define ['jquery', 'util', 'JudgeRules', 'jquery.transit', 'underscore', 'templat
             return scope.choiceName
               o: o
           return scope.allowNil
+        
+#VLISTCELL
 
   mod.directive "vlistCell", ->
     template: templates.vlistCell()
@@ -466,6 +468,8 @@ define ['jquery', 'util', 'JudgeRules', 'jquery.transit', 'underscore', 'templat
             newScope.$index = v)
           element.append clone
 
+#HLISTCELL
+
   mod.directive "hlistCellTransclude", ->
     require: "^hlistCell"
     link: (scope, element, attrs, controller) ->
@@ -491,7 +495,10 @@ define ['jquery', 'util', 'JudgeRules', 'jquery.transit', 'underscore', 'templat
       userdata: '&userdata'
       dropGroup: '@dropGroup'
       groupTest: '&groupTest'
-      dropTest: '&dropTest' #not implemented
+      groupReplaceTest: '&groupReplaceTest'
+      canDrop: '&canDrop' #not implemented
+      canReplace: '&canReplace' #not implemented
+      manualReplace: '&manualReplace'
       manualMove: '&manualMove'
       dragStartFn: '&onStartDrag'
       dragEndFn: '&onEndDrag'
@@ -552,35 +559,22 @@ define ['jquery', 'util', 'JudgeRules', 'jquery.transit', 'underscore', 'templat
           sc = $(list).isolateScope()
           instance = if sc == scope then fromInstance else makeInstance sc
           continue if attrs.dropGroup? and sc.dropGroup != scope.dropGroup
-          continue if attrs.groupTest? and not scope.groupTest({fromList: fromInstance, toList:instance})
+
+          params = {fromList: fromInstance, toList:instance}
+          canMove = not attrs.groupTest? or scope.groupTest(params)
+          canReplace = if attrs.groupReplaceTest?
+            scope.groupReplaceTest(params)
+          else
+            attrs.canReplace?
 
           init = rl.length
-
           items = $(list).find('.item')
-          if not items.length
+
+          if canMove and not items.length
             items.push $(list).find('.placeholder')[0]
 
-          for item, i in items
-            $item = $ item
-            offs = $item.offset()
-            rl.push
-              top: offs.top
-              left: offs.left
-              width: $item.outerWidth()
-              height: $item.outerHeight()
-              index: i
-              instance: instance
-
-          init = rl[init]
-          lastIndex = rl.length - 1
-          last = rl[lastIndex]
-
-          if $(items[0]).hasClass('placeholder')
-            init.empty = true
-
-          if sc.extensionElement? and sc.extensionElement != ""
-            a = $(sc.extensionElement)
-            for item in a
+          if canMove or canReplace
+            for item, i in items
               $item = $ item
               offs = $item.offset()
               rl.push
@@ -588,30 +582,56 @@ define ['jquery', 'util', 'JudgeRules', 'jquery.transit', 'underscore', 'templat
                 left: offs.left
                 width: $item.outerWidth()
                 height: $item.outerHeight()
-                lineTop: init.top
-                lineLeft: init.left
-                lineHeight: init.height
-                empty: true
-                index: 0
+                index: i
+                replace: canReplace
+                move: canMove
                 instance: instance
 
-          if sc.extensionElementLast? and sc.extensionElementLast != ""
-            a = $(sc.extensionElementLast)
-            for item in a
-              $item = $ item
-              offs = $item.offset()
-              left = if last.empty then last.left else last.left + last.width
-              rl.push
-                top: offs.top
-                left: offs.left
-                width: $item.outerWidth()
-                height: $item.outerHeight()
-                lineTop: last.top
-                lineLeft: left
-                lineHeight: last.height
-                empty: true
-                index: lastIndex
-                instance: instance
+          if canMove
+            init = rl[init]
+            lastIndex = rl.length - 1
+            last = rl[lastIndex]
+
+            if $(items[0]).hasClass('placeholder')
+              init.empty = true
+              init.replace = false
+
+            if sc.extensionElement? and sc.extensionElement != ""
+              a = $(sc.extensionElement)
+              for item in a
+                $item = $ item
+                offs = $item.offset()
+                rl.push
+                  top: offs.top
+                  left: offs.left
+                  width: $item.outerWidth()
+                  height: $item.outerHeight()
+                  lineTop: init.top
+                  lineLeft: init.left
+                  lineHeight: init.height
+                  empty: true
+                  move: true
+                  index: 0
+                  instance: instance
+
+            if sc.extensionElementLast? and sc.extensionElementLast != ""
+              a = $(sc.extensionElementLast)
+              for item in a
+                $item = $ item
+                offs = $item.offset()
+                left = if last.empty then last.left else last.left + last.width
+                rl.push
+                  top: offs.top
+                  left: offs.left
+                  width: $item.outerWidth()
+                  height: $item.outerHeight()
+                  lineTop: last.top
+                  lineLeft: left
+                  lineHeight: last.height
+                  empty: true
+                  move: true
+                  index: lastIndex
+                  instance: instance
 
       getCurrentPoint = (x,y) ->
         for rect in scope.rectangleList
@@ -620,19 +640,35 @@ define ['jquery', 'util', 'JudgeRules', 'jquery.transit', 'underscore', 'templat
           t = rect.top
           l = rect.left
           continue if y < t or y > t + h or x < l or x > l + w
-          m = if rect.empty then l + w else l + w/2
           r =
-            x: if x < m then l else l + w
+            x: l
             y: t
             height: h
-            index: rect.index + (if x < m then 0 else 1)
+            width: w
+            replace: rect.replace
+            index: rect.index
             instance: rect.instance
+
+          if rect.replace and rect.move
+            if x < l + w * (1.0/3)
+              r.replace = false
+            if x > l + w * (2.0/3)
+              r.replace = false
+              r.x += w
+              r.index++
+
+          if not rect.replace and rect.move and not rect.empty
+            if x > l + w * 0.5
+              r.x += w
+              r.index++
+
           if rect.lineTop?
             r.y = rect.lineTop
           if rect.lineLeft?
             r.x = rect.lineLeft
           if rect.lineHeight?
             r.height = rect.lineHeight
+
           return r
         return null
 
@@ -652,6 +688,8 @@ define ['jquery', 'util', 'JudgeRules', 'jquery.transit', 'underscore', 'templat
             $line.css 'left', pnt.x + 'px'
             $line.css 'top', pnt.y + 'px'
             $line.css 'height', pnt.height + 'px'
+            $line.css 'width', if pnt.replace then pnt.width else 0
+            $line.css 'opacity', if pnt.replace then 0.5 else 1
           currentPoint = pnt
 
       element.on 'draginit', (e) ->
@@ -694,6 +732,7 @@ define ['jquery', 'util', 'JudgeRules', 'jquery.transit', 'underscore', 'templat
             $line = $(document.createElement 'div')
             $line.css 'position', 'absolute'
             $line.css 'border', '1px solid #0088cc'
+            $line.css 'background-color' ,'#0088cc'
             $line.css 'border-radius', '1px'
             $line.css 'width', '0px'
             $line.css 'height', '0px'
