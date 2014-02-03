@@ -1,1 +1,1 @@
-module.exports=require("./underscore");
+../../../assets/components/underscore/index.js

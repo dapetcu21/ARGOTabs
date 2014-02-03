@@ -1,1 +1,1 @@
-(function(){define(function(){var n;return n=function(){function n(){throw new Error("Backend is purely virtual")}return n.prototype.save=function(){throw new Error("save(): Not implemented")},n.prototype.load=function(){throw new Error("load(): Not implemented")},n}()})}).call(this);
+(function(){define(function(){var a;return a=function(){function a(){throw new Error("Backend is purely virtual")}return a.prototype.save=function(){throw new Error("save(): Not implemented")},a.prototype.load=function(){throw new Error("load(): Not implemented")},a}()})}).call(this)

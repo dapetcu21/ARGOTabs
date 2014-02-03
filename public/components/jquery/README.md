@@ -1,4 +1,1 @@
-jQuery Component
-================
-
-Shim repository for jQuery.
+/Users/da_petcu21/Programare/argo-tabs/assets/components/jquery/README.md

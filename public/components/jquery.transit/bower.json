@@ -1,8 +1,1 @@
-{
-  "name": "jquery.transit",
-  "version": "0.9.9",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/rstacruz/jquery.transit.git"
-  }
-}
+../../../assets/components/jquery.transit/bower.json

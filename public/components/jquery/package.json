@@ -1,7 +1,1 @@
-{
-  "name": "components-jquery",
-  "version": "1.8.3",
-  "description": "jQuery component",
-  "keywords": ["jquery"],
-  "main": "./jquery.js"
-}
+../../../assets/components/jquery/package.json

@@ -1,1 +1,0 @@
-!function(){var t=document.createElement("script");t.type="text/javascript",t.async=!0,t.src="http://s3.buysellads.com/ac/bsa.js",(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(t)}();
