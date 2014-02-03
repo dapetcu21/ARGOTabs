@@ -775,8 +775,11 @@ define ['jquery', 'util', 'judgerules', 'jquery.transit', 'underscore', 'templat
         if $line
           $line.remove()
           $line = null
-        if currentPoint
+
+        if currentPoint?
           if currentPoint.replace
+            if attrs.replaceClass?
+              currentPoint.elem.removeClass scope.replaceClass
             if attrs.manualReplace?
               Util.safeApply scope, ->
                 scope.manualReplace
@@ -811,6 +814,7 @@ define ['jquery', 'util', 'judgerules', 'jquery.transit', 'underscore', 'templat
           scope.dragEndFn
             list: scope.fromInstance
             index: dragStart
+
         rectangleList = []
         currentPoint = null
         return
