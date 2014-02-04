@@ -154,3 +154,30 @@ define ->
         traverse 0, el
       return minItem
 
+    @naturalSort: (a, b) ->
+      console.log a, b
+      re = /(^-?[0-9]+(\.?[0-9]*)[df]?e?[0-9]?$|^0x[0-9a-f]+$|[0-9]+)/gi
+      sre = /(^[ ]*|[ ]*$)/g
+      dre = /(^([\w ]+,?[\w ]+)?[\w ]+,?[\w ]+\d+:\d+(:\d+)?[\w ]?|^\d{1,4}[\/\-]\d{1,4}[\/\-]\d{1,4}|^\w+, \w+ \d+, \d{4})/
+      hre = /^0x[0-9a-f]+$/i
+      ore = /^0/
+      x = a.toString().replace(sre, '') || ''
+      y = b.toString().replace(sre, '') || ''
+      xN = x.replace(re, '\0$1\0').replace(/\0$/,'').replace(/^\0/,'').split('\0')
+      yN = y.replace(re, '\0$1\0').replace(/\0$/,'').replace(/^\0/,'').split('\0')
+      xD = parseInt(x.match(hre)) || (xN.length != 1 && x.match(dre) && Date.parse(x))
+      yD = parseInt(y.match(hre)) || xD && y.match(dre) && Date.parse(y) || null
+      if yD
+        return -1 if xD < yD
+        return  1 if xD > yD
+      for cLoc in [0...Math.max(xN.length, yN.length)]
+        oFxNcL = !(xN[cLoc] || '').match(ore) && parseFloat(xN[cLoc]) || xN[cLoc] || 0
+        oFyNcL = !(yN[cLoc] || '').match(ore) && parseFloat(yN[cLoc]) || yN[cLoc] || 0
+        if isNaN(oFxNcL) != isNaN(oFyNcL)
+          return if isNaN(oFxNcL) then 1 else -1
+        else if typeof oFxNcL != typeof oFyNcL
+          oFxNcL += ''
+          oFyNcL += ''
+        return -1 if oFxNcL < oFyNcL
+        return  1 if oFxNcL > oFyNcL
+      return 0

@@ -24,6 +24,10 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
         $scope.orderChoices = [0, 1]
         $scope.orderChoiceNames = ["Assign judges to good teams first", "Assign judges to weak teams first"]
         $scope.rankStrings = Judge.rankStrings
+        $scope.naturalRoomSort = (a, b) ->
+          return -1 if not b.room?
+          return  1 if not a.room?
+          Util.naturalSort a.room.name, b.room.name
 
         Util.installScopeUtils $scope
 
@@ -120,6 +124,9 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
 
         $scope.sortByRank = ->
           round.sortByRank round.teams
+
+        $scope.shuffle = ->
+          round.shuffle()
 
         $scope.shuffleRooms = ->
           round.shuffleRooms()

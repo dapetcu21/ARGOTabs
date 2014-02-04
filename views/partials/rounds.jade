@@ -49,9 +49,7 @@ div.tab-content
 
     div#pairings(ng-show='round.paired' class="printca-{{round.printCAMode}} showranks-{{showRanks}}")
       .control-group.dont-print
-        button(ng-click='assignJudges()').btn Reassign judges
-        = ' '
-        button(ng-click='assignRooms()').btn Reassign rooms
+        button(ng-click='shuffle()').btn Shuffle
         = ' '
         button(ng-click='shuffleRooms()').btn Shuffle in rooms
         = ' '
@@ -87,7 +85,7 @@ div.tab-content
               tr
                 th(data-auto-index=6) #
                 th(data-auto-index=4)
-                  sort-arrow(model='round.ballots', sort-by='namePlaceholder(o.room.name)') Room
+                  sort-arrow(model='round.ballots', compare-function='naturalRoomSort(a, b)') Room
                 th(data-auto-index=3)
                   sort-arrow(model='round.ballots', sort-by='namePlaceholder(o.teams[0]).name').prop Prop
                 th(data-auto-index=2)
@@ -139,6 +137,11 @@ div.tab-content
               div: label.checkbox.inline
                 input(type='checkbox' ng-model='round.printCAMode')
                 span Print all of the above
+            div
+              span: strong Reassign:&nbsp;
+              div.btn-group.inline
+                button(ng-click='assignJudges()').btn Judges
+                button(ng-click='assignRooms()').btn Rooms
 
           .well.settings-group.free-judges
             strong Free judges

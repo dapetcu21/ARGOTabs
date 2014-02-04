@@ -10,15 +10,15 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
       hideArrows: '@'
     replace: true
     transclude: true
-    link: (scope, element) ->
+    link: (scope, element, attrs) ->
       scope.ascending = false
 
       scope.sort = ->
-        if scope.sortBy
+        if attrs.sortBy?
           scope.model = _.sortBy scope.model, (o)->
             scope.sortBy
               o: o
-        else if scope.compareFunction
+        else if attrs.compareFunction?
           scope.model.sort (a, b)->
             scope.compareFunction
               a: a
