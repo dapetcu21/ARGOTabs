@@ -108,7 +108,7 @@ for (var i = 0; i < n; i++) {
 buf.push("<li" + (jade.attrs({ 'data-index':('' + (i) + ''), "class": [('hide-row')] }, {"data-index":true})) + "><a tabindex=\"-1\"><i class=\"fa fa-check-square-o\"></i><span>&nbsp;</span><span class=\"item-label\">Row " + (jade.escape((jade.interp = i) == null ? '' : jade.interp)) + "</span></a></li>");
 }
 }
-buf.push("<li class=\"divider\"></li><li class=\"export-csv\"><a tabindex=\"-1\">Export to CSV</a></li></ul></div>");;return buf.join("");
+buf.push("<li class=\"divider\"></li><li class=\"export-csv-comma\"><a tabindex=\"-1\">Export to CSV (,)</a></li><li class=\"export-csv-semicolon\"><a tabindex=\"-1\">Export to CSV (;)</a></li></ul></div>");;return buf.join("");
 };
 templates['editableTd'] = function anonymous(locals) {
 var buf = [];
