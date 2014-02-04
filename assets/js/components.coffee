@@ -90,7 +90,8 @@ define ['jquery', 'util', 'judgerules', 'jquery.transit', 'underscore', 'templat
         return
       scope.$watch "judgeIndex", (v) ->
         try
-          scope.vlo.judge = cscope.judgeList[v]
+          if scope.judgeIndex?
+            scope.vlo.judge = cscope.judgeList[v]
         return
 
       scope.$watch "vlo.team", (v) ->
@@ -103,7 +104,8 @@ define ['jquery', 'util', 'judgerules', 'jquery.transit', 'underscore', 'templat
         return
       scope.$watch "teamIndex", (v) ->
         try
-          scope.vlo.team = cscope.teamList[v]
+          if scope.teamIndex?
+            scope.vlo.team = cscope.teamList[v]
         return
 
   mod.directive "tristateCheckbox", ['$parse', ($parse) ->

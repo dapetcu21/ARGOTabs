@@ -63,7 +63,7 @@ div.tab-content
       mixin judgeCell(free, shadow)
         - var bind = free ? 'round.freeJudges' : shadow ? 'o.shadows' : 'o.judges';
         - var ext = free ? '.well.settings-group.free-judges' : '.ballot-{{$index}} .' + (shadow ? 'shadow' : 'main') + '-judges';
-        - var extLast = free ? '' : ('{{yesNo(o.shadows.length || round.allowShadowsSolved(), ' + (shadow ? '".ballot-" + $index, "")}}' : '"", ".ballot-" + $index)}}'));
+        - var extLast = free ? '' : ('{{yesNo(o.shadows.length || round.allowShadowsSolved(), ' + (shadow ? '".judges-ballot-" + $index, "")}}' : '"", ".ballot-" + $index)}}'));
         - var reorders = free ? 'true' : '!o.locked';
         - var userdata = 'judgeUd(' + (free ? 'null' : 'o') + ', ' + (shadow ? 'true' : 'false') + ')';
         - var onStartDrag = 'judgeDragStart(list.model[index])';
@@ -98,12 +98,12 @@ div.tab-content
               script(type='text/html')
                 td {{$index + 1}}
                 td
-                  span(class='notavailable-{{o.room == null}}') 
+                  span(class='notavailable-{{o.room == null}}').dont-export N/A
                   span(ng-show='o.room != null').judge-box {{o.room.name}}
-                td: span(class='muted-{{o.teams[0] == null}}') {{namePlaceholder(o.teams[0],'Bye').name}}
-                td: span(class='muted-{{o.teams[1] == null}}') {{namePlaceholder(o.teams[1],'Bye').name}}
-                td(class='compat-{{compatList[$index]}}')
-                  span(class="notavailable-{{!o.teams[0] || !o.teams[1]}}")
+                td: span(class='muted-{{o.teams[0] == null}} dont-export-{{o.teams[0] == null}}') {{namePlaceholder(o.teams[0],'Bye').name}}
+                td: span(class='muted-{{o.teams[1] == null}} dont-export-{{o.teams[1] == null}}') {{namePlaceholder(o.teams[1],'Bye').name}}
+                td(class='compat-{{compatList[$index]}}', data-index='{{$index}}').judges-cell
+                  span(class="notavailable-{{!o.teams[0] || !o.teams[1]}}") N/A
                   div(ng-show='o.teams[0] && o.teams[1]', class='ballot-{{$index}}')
                     div.nowrap.inline-block.main-judges
                       i.fa.fa-gavel.judge-icon
@@ -114,7 +114,7 @@ div.tab-content
                       i.fa.fa-eye.judge-icon
                       = ' '
                       +judgeCell(false, true)
-                td.nowrap
+                td(data-index='{{$index}}').nowrap.win-cell
                   span(class="{{o.stats.classes[0]}}") {{o.stats.scores[0]}} 
                   span(class="{{o.stats.winClass}}"): i.fa.fa-trophy
                   span(class="{{o.stats.classes[1]}}")  {{o.stats.scores[1]}}

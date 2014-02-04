@@ -36,9 +36,12 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
         scope.sort()
 
   #---- Table ----
+  
+  eligibleForExport = (element, visible) ->
+    return not (element.hasClass('dont-export') or element.hasClass('dont-export-true') or (visible and element.css('display') == 'none'))
 
   elementToString = (element, visible = false) ->
-    return '' if element.hasClass('dont-export') or (visible and element.css('display') == 'none')
+    return '' if not eligibleForExport element, visible
     scope = angular.element(element).scope()
     if scope.elementToString
       r = scope.elementToString element, visible
@@ -48,10 +51,8 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
     r = ''
     element.children().each ->
       nw = elementToString $(this), visible
-      if nw
-        r += ' ' if first
-        r += nw
-        first = true
+      r += nw
+      first = true
     if not first
       return element.text()
     return r
@@ -60,9 +61,8 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
     arr = []
     element.children().each ->
       $this = $(this)
-      return if $this.hasClass 'dont-export'
+      return if not eligibleForExport $this, visible
       return if this.tagName != 'TD' and this.tagName != 'TH'
-      return if visible and $this.css('display') == 'none'
       arr.push elementToString $this, visible
     return arr
   
@@ -111,20 +111,23 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
             o: o
             index: index
 
-        exportCSV = ->
+        exportCSV = (separator=',', fileName='table.csv')->
           csv = []
           element.find('tr').each ->
             $this = $(this)
-            return if $this.hasClass 'dont-export'
+            return if not eligibleForExport $this, true
             csv.push serializeTr $this, true
           txt = ''
           for row, i in csv
             txt += '\r\n' if i
             for cell, j in row
-              txt += ',' if j
-              txt += '"' + cell.replace(/"/g, '""') + '"'
+              txt += separator if j
+              if /[\t\n,;"]/.test cell
+                txt += '"' + cell.replace(/"/g, '""') + '"'
+              else
+                txt += cell
           data = B64.encode txt
-          link = $('<a id="downloader" download="table.csv" href="data:application/octet-stream;base64,' + data + '"></a>')
+          link = $('<a id="downloader" download="' + fileName + '" href="data:application/octet-stream;base64,' + data + '"></a>')
             .appendTo $("body")
           link[0].click()
           link.remove()
@@ -155,8 +158,11 @@ define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.e
                 if not _.reduce scope.visible, ((m, i) -> m or i), false
                   scope.visible[i] = not scope.visible[i]
             else
-              if item.hasClass('export-csv') or item.parents('.export-csv')
-                exportCSV()
+              if item.hasClass('export-csv-comma') or item.parents('.export-csv-comma').length
+                exportCSV ',', 'table-colons.csv'
+              else
+                if item.hasClass('export-csv-semicolon') or item.parents('.export-csv-semicolon').length
+                  exportCSV ';', 'table-semicolons.csv'
 
         if not scope.visible?
           scope.visible = []

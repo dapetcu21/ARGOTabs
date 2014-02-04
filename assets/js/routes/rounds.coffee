@@ -123,6 +123,42 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
         $scope.judgeUd = (ballot, shadow) ->
           {ballot: ballot, shadow: shadow}
 
+        $scope.elementToString = (element) ->
+          if element.hasClass "judges-cell"
+            idx = parseInt element.data "index"
+            return null if isNaN idx
+            ballot = round.ballots[idx]
+            if not ballot.teams[0]? or not ballot.teams[1]?
+              return ""
+            r = ""
+            first = true
+            addJud = (j, shadow) ->
+              if first
+                first = false
+              else
+                r += ", "
+              r += j.name
+              if shadow
+                r += " (Shd)"
+            for j in ballot.judges
+              addJud j, false
+            for j in ballot.shadows
+              addJud j, true
+            return r
+          if element.hasClass "win-cell"
+            idx = parseInt element.data "index"
+            return null if isNaN idx
+            ballot = round.ballots[idx]
+            msg = ballot.stats.scores[0]
+            if msg == "default win"
+              return "default " + ballot.stats.classes[0] + " win"
+            if msg == "unfilled"
+              return ""
+            if ballot.stats.scores[1]
+              return ballot.stats.scores[0] + " - " + ballot.stats.scores[1] + " ("+ballot.stats.winClass+")"
+            return ballot.stats.scores[0]
+          return null
+
         $scope.judgeGroupTest = (fromList, toList) ->
           ballot = toList.ud.ballot
           return true if not ballot?

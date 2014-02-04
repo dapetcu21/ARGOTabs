@@ -318,9 +318,14 @@ li.active .remove-round:hover
 .manual-pairings .nopairs
   position: relative
 
-.notavailable-true:before
+.notavailable-,
+.notavailable-false,
+.notavailable
+  display: none
+
+.notavailable-true
   opacity: 0.5
-  content: "N/A"
+  display: inline-block
 
 .manual-pairings .nopairs i
   position: absolute
