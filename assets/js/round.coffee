@@ -579,15 +579,16 @@ define ['util', 'ballot', 'judge', 'sorter', 'judgerules', 'team', 'underscore']
       ballots = _.filter @ballots, (o) -> !o.locked
       rooms = _.map ballots, (o) -> o.room
       ballots = _.shuffle ballots
-      for ballot,i in ballots
+      i = 0
+      for bal,j in @ballots
+        continue if bal.locked
+        ballot = ballots[i]
         room = rooms[i]
         if room?
           room.rounds[id].ballot = ballot
         ballot.room = room
-        @ballots[i] = ballot
-      n = ballots.length
-      for ballot, i in lockedBallots
-        @ballots[i + n] = ballot
+        @ballots[j] = ballot
+        i++
 
     toJSON: ->
       model = Util.copyObject this, ['tournament']
