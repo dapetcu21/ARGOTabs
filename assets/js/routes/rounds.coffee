@@ -1,5 +1,12 @@
 define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Round, Util, AlertController) ->
-  (ui, $routeProvider) ->
+  [(ui) ->
+    ui.app.controller 'RoomController', ['$scope', ($scope) ->
+      ballot = $scope.round.ballots[$scope.$index]
+      $scope.currentRoom = [ballot.room]
+      return this
+    ]
+
+  ,(ui, $routeProvider) ->
     $routeProvider.when '/rounds/:roundIndex',
       templateUrl: 'partials/rounds.html'
       controller: [ '$scope', '$routeParams', '$compile', ($scope, $routeParams, $compile) ->
@@ -51,7 +58,6 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
                   Util.arrayRemove round.freeJudges, judge
               return
           ) (judge)
-
 
         for room in round.rooms
           ((room) ->
@@ -206,6 +212,43 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
           opts = b.rounds[round.id]
           opts.ballot = fromList.ud.ballot
           opts.shadow = fromList.ud.shadow
+
+        $scope.roomMove = (fromList, fromIndex, toList, toIndex) ->
+          return if toList.ud
+          room = fromList.model[fromIndex]
+          if fromList.ud
+            fromList.ud.room = null
+            fromList.model[0] = null
+            ropts = room.rounds[round.id]
+            if ropts?
+              ropts.ballot = null
+          else
+            if fromIndex < toIndex
+              toIndex--
+            round.freeRooms.splice fromIndex, 1
+          round.freeRooms.splice toIndex, 0, room
+
+        $scope.roomReplace = (fromList, fromIndex, toList, toIndex) ->
+          room1 = fromList.model[fromIndex]
+          room2 = toList.model[toIndex]
+          fromList.model[fromIndex] = room2
+          toList.model[toIndex] = room1
+          if fromList.ud?
+            fromList.ud.room = room2
+          else
+            if not room2?
+              fromList.model.splice fromIndex, 1
+          if toList.ud?
+            toList.ud.room = room1
+          else
+            if not room1?
+              toList.model.splice toIndex, 1
+          ro1 = if room1? then room1.rounds[round.id] else null
+          ro2 = if room2? then room2.rounds[round.id] else null
+          if ro1?
+            ro1.ballot = toList.ud
+          if ro2?
+            ro2.ballot = fromList.ud
 
         $scope.judgeDragStart = (jud) ->
           $scope.compatList = v = []
@@ -577,3 +620,4 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
               sc.$destroy() if sc?
 
       ]
+  ]

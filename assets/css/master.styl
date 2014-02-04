@@ -326,6 +326,7 @@ li.active .remove-round:hover
 .notavailable-true
   opacity: 0.5
   display: inline-block
+  position: relative
 
 .manual-pairings .nopairs i
   position: absolute
@@ -347,7 +348,8 @@ li.active .remove-round:hover
 .judge-box:before
   display: none
 
-.judge-selected .judge-box:before
+.judge-selected .judge-box:before,
+.judge-selected .room-na:before
   content: ""
   display: block
   background-color: #0088cc
@@ -359,6 +361,10 @@ li.active .remove-round:hover
   border: 1px solid #0088cc
   border-radius: 3px
   opacity: 0.5
+
+.well .judge-box
+  background-color: #e8e8e8
+  border-color: #bfbfbf
 
 #pairings.showranks-false .judge-rank
   display: none
@@ -393,23 +399,6 @@ li.active .remove-round:hover
     border: 1px solid red-color
   #pairings.printca-false .judge-rank
     display: none
-
-.well .judge-box
-  background-color: #e8e8e8
-  border-color: #bfbfbf
-
-.room-box
-  background-color: #f5f5f5
-  border: 1px solid #d9d9d9
-  border-radius: 3px
-  height: 20px
-  white-space: nowrap
-  padding: 2px 5px
-  font-size: 13px
-
-.well .room-box
-  background-color: #e8e8e8
-  border-color: #bfbfbf
 
 .left
   float: left

@@ -505,6 +505,7 @@ define ['jquery', 'util', 'judgerules', 'jquery.transit', 'underscore', 'templat
       dragStartFn: '&onStartDrag'
       dragEndFn: '&onEndDrag'
       replaceClass: '@'
+      replaceExtensions: '@'
       extensionElement: '@'
       extensionElementLast: '@'
     transclude: true
@@ -577,20 +578,40 @@ define ['jquery', 'util', 'judgerules', 'jquery.transit', 'underscore', 'templat
           if canMove and not items.length
             items.push $(list).find('.placeholder')[0]
 
+          if canReplace and sc.replaceExtensions
+            extVect = $ sc.replaceExtensions
+          else
+            extVect = []
+
           if canMove or canReplace
             for item, i in items
               $item = $ item
               offs = $item.offset()
+              ow = $item.outerWidth()
+              oh = $item.outerHeight()
               rl.push
                 top: offs.top
                 left: offs.left
-                width: $item.outerWidth()
-                height: $item.outerHeight()
+                width: ow
+                height: oh
                 index: i
                 replace: canReplace
                 elem: if canReplace then $item else null
                 move: canMove
                 instance: instance
+              if canReplace and i < extVect.length
+                el = $ extVect[i]
+                offsn = el.offset()
+                rl.push
+                  top: offsn.top
+                  left: offsn.left
+                  width: el.outerWidth()
+                  height: el.outerHeight()
+                  index: i
+                  replace: true
+                  elem: $item
+                  move: false
+                  instance: instance
 
           if canMove
             init = rl[init]
@@ -674,6 +695,8 @@ define ['jquery', 'util', 'judgerules', 'jquery.transit', 'underscore', 'templat
             r.x = rect.lineLeft
           if rect.lineHeight?
             r.height = rect.lineHeight
+          if rect.lineWidth?
+            r.width = rect.lineWidth
 
           return r
         return null

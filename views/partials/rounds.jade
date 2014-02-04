@@ -97,9 +97,10 @@ div.tab-content
             tbody(editable-tbody)
               script(type='text/html')
                 td {{$index + 1}}
-                td
-                  span(class='notavailable-{{o.room == null}}').dont-export N/A
-                  span(ng-show='o.room != null').judge-box {{o.room.name}}
+                td(ng-controller='RoomController', class='ballot-{{$index}}').room-cell
+                  hlist-cell(bind='currentRoom', edit-hidden='true', reorders-always, reorders='!o.locked && o.room', drop-group='rooms-drop', replace-class='judge-selected', group-replace-test='toList.ud == null || !toList.ud.locked', group-test='toList.ud == null', userdata='o', replace-extensions='.room-cell.ballot-{{$index}}', manual-move='roomMove(fromList, fromIndex, toList, toIndex)', manual-replace='roomReplace(fromList, fromIndex, toList, toIndex)')
+                    span(class='notavailable-{{hlo == null}}').room-na.dont-export N/A
+                    span(ng-show='hlo != null').judge-box {{hlo.name}}
                 td: span(class='muted-{{o.teams[0] == null}} dont-export-{{o.teams[0] == null}}') {{namePlaceholder(o.teams[0],'Bye').name}}
                 td: span(class='muted-{{o.teams[1] == null}} dont-export-{{o.teams[1] == null}}') {{namePlaceholder(o.teams[1],'Bye').name}}
                 td(class='compat-{{compatList[$index]}}', data-index='{{$index}}').judges-cell
@@ -148,10 +149,10 @@ div.tab-content
           .well.settings-group.free-rooms
             strong Free rooms
             div(ng-show='!round.freeRooms.length')
-              | All judges have been assigned
+              | All rooms have been assigned
             div(ng-show='round.freeRooms.length')
-              hlist-cell(bind='round.freeRooms', extension-element='.well.settings-group.free-rooms', edit-hidden='true', reorders-always, reorders='true', drop-group='rooms-drop', manual-move='roomMove(fromList, fromIndex, toList, toIndex)').judge-list
-                span.room-box {{hlo.name}}
+              hlist-cell(bind='round.freeRooms', replace-class='judge-selected' extension-element='.well.settings-group.free-rooms', edit-hidden='true', reorders-always, reorders='true', drop-group='rooms-drop', group-replace-test='toList.ud == null || !toList.ud.locked', userdata='null', group-test='toList.ud == null', manual-move='roomMove(fromList, fromIndex, toList, toIndex)', manual-replace='roomReplace(fromList, fromIndex, toList, toIndex)')
+                span.judge-box {{hlo.name}}
 
   div#judges.tab-pane
     .control-group.dont-print
