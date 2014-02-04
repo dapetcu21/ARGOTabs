@@ -3,7 +3,8 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
     ui.app.controller 'RoomController', ['$scope', ($scope) ->
       ballot = $scope.round.ballots[$scope.$index]
       $scope.currentRoom = [ballot.room]
-      return this
+      $scope.$watch "round.ballots[$index].room", (o) ->
+        $scope.currentRoom[0] = o
     ]
 
   ,(ui, $routeProvider) ->
@@ -217,8 +218,8 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
           return if toList.ud
           room = fromList.model[fromIndex]
           if fromList.ud
-            fromList.ud.room = null
             fromList.model[0] = null
+            fromList.ud.room = null
             ropts = room.rounds[round.id]
             if ropts?
               ropts.ballot = null

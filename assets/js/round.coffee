@@ -577,16 +577,13 @@ define ['util', 'ballot', 'judge', 'sorter', 'judgerules', 'team', 'underscore']
       id = @id
       lockedBallots = _.filter @ballots, (o) -> o.locked
       ballots = _.filter @ballots, (o) -> !o.locked
-      rooms = _.filter (_.map ballots, (o) -> o.room), (o) -> o
+      rooms = _.map ballots, (o) -> o.room
       ballots = _.shuffle ballots
-      rn = rooms.length
       for ballot,i in ballots
-        if i < rn
-          room = rooms[i]
+        room = rooms[i]
+        if room?
           room.rounds[id].ballot = ballot
-          ballot.room = room
-        else
-          ballot.room = null
+        ballot.room = room
         @ballots[i] = ballot
       n = ballots.length
       for ballot, i in lockedBallots
