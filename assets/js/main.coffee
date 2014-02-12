@@ -2,6 +2,7 @@
 #
 require.config
   baseUrl: '/js'
+  waitSeconds: 0
   paths:
     jquery: '/components/jquery/jquery'
     'jquery.bootstrap': '/components/bootstrap/js/bootstrap'
