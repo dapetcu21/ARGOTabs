@@ -9,16 +9,16 @@
       tr
         td Debaters: {{tournament.players.length}}
         td Rounds: {{tournament.rounds.length}}
-.row-fluid 
+.row-fluid
   .span6
     .well.settings-group
       strong Global settings
       div
-        span Ballots per match: 
+        span Ballots per match:&nbsp;
         multi-cell(bind='tournament.ballotsPerMatch', input-width='50', choices='ballotsPerMatchOptions', choice-name='o')
           i.fa.fa-fw.fa-edit.bottom-line
       div
-        span Min. played rounds to reach speaker tab: 
+        span Min. played rounds to reach speaker tab:&nbsp;
         text-edit-cell(bind='tournament.minPlayed', input-width='50', pattern='[0-9]*', setter='parseInt(o)')
           i.fa.fa-fw.fa-edit.bottom-line
       div
@@ -30,18 +30,17 @@
     .well.settings-group.high-low-group
       strong High-Low power pairing defaults
       div
-        span Min. matches per bracket:
+        span Min. matches per bracket:&nbsp;
         text-edit-cell(bind='tournament.matchesPerBracket', input-width='50', pattern='[0-9]*', setter='parseInt(o)')
           i.fa.fa-fw.fa-edit.bottom-line
       div.radio-container
         div Even brackets by:
-        label 
-          input(type='radio', ng-model='tournament.evenBrackets', ng-value='0') 
+        label
+          input(type='radio', ng-model='tournament.evenBrackets', ng-value='0')&nbsp;
           span pulling down leftover teams
         label
-          input(type='radio', ng-model='tournament.evenBrackets', ng-value='1') 
+          input(type='radio', ng-model='tournament.evenBrackets', ng-value='1')&nbsp;
           span pulling up teams with weakest previous opponents
-          
     .well.pair-rules-group.settings-group
       strong Pairing rank criteria
       sorter-criteria(bind='tournament.pairRankSorter')
@@ -50,15 +49,15 @@
     .well.judge-settings-group.settings-group
       strong Judge assignment settings
       div
-        span Max. main judges:
+        span Max. main judges:&nbsp;
           multi-cell(bind='tournament.maxMainJudges', input-width='100', choices='maxPanelChoices', choice-name='infinityName(o,infinity,"Unlimited")')
             i.fa.fa-fw.fa-edit.bottom-line
       div
-        span Max. shadow judges:
+        span Max. shadow judges:&nbsp;
           multi-cell(bind='tournament.maxShadowJudges', input-width='100', choices='maxPanelChoices', choice-name='infinityName(o,infinity,"Unlimited")')
             i.fa.fa-fw.fa-edit.bottom-line
       div
-        span Max. panel size (mains + shadows):
+        span Max. panel size (mains + shadows):&nbsp;
           multi-cell(bind='tournament.maxPanelSize', input-width='100', choices='maxPanelChoices', choice-name='infinityName(o,infinity,"Unlimited")')
             i.fa.fa-fw.fa-edit.bottom-line
 
@@ -72,7 +71,7 @@
 
       strong Shadow judges:
       div
-        span Use idle mains as shadows: 
+        span Use idle mains as shadows:
         label.checkbox.inline
           input(type='checkbox' ng-model='tournament.judgeShadowReport')
           span {{yesNo(tournament.judgeShadowReport, "Yes", "No")}}
