@@ -17,6 +17,16 @@ div(id=o.id, class=o.cssClass).modal.hide
           margin-left: #{-o.width / 2}px;
         }
       }
+  if o.height
+    style.
+      @media (min-width: 767px) {
+        ##{o.id} {
+          margin-top: #{-o.height/ 2}px;
+        }
+        ##{o.id} .modal-body {
+          max-height: #{o.height - 80 - (o.buttons.length ? 60 : 0)}px;
+        }
+      }
   style.
     @media (min-width: 767px) {
       .modal.fade {

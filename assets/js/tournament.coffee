@@ -1,4 +1,4 @@
-define ['util', 'club', 'team', 'judge', 'room', 'player', 'round', 'sorter', 'judgerules'], (Util, Club, Team, Judge, Room, Player, Round, Sorter, JudgeRules) ->
+define ['placeholderbackend', 'util', 'club', 'team', 'judge', 'room', 'player', 'round', 'sorter', 'judgerules'], (PlaceholderBackend, Util, Club, Team, Judge, Room, Player, Round, Sorter, JudgeRules) ->
   class Tournament
     constructor: (@backend) ->
       @clubs = []
@@ -158,3 +158,6 @@ define ['util', 'club', 'team', 'judge', 'room', 'player', 'round', 'sorter', 'j
       @judgeRules.entityDestroyed e
       for r in @rounds
         r.judgeRules.entityDestroyed e
+
+    @placeholderTournament: new Tournament(new PlaceholderBackend())
+    @placeholderTournament.load ->

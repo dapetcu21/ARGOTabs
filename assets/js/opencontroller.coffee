@@ -1,6 +1,6 @@
 define ['jquery', 'filereader', 'alertcontroller', 'tournament', 'backends', 'localbackend', 'templates', 'jquery.transit'], ($, FileReaderJS, AlertController, Tournament, Backends, LocalBackend) ->
   class OpenController
-    constructor: (@uiController) ->
+    constructor: (@uiController, onReady = (->), onDismiss = (->)) ->
       @closeable = @uiController.getTournament()?
 
       new AlertController
@@ -12,7 +12,10 @@ define ['jquery', 'filereader', 'alertcontroller', 'tournament', 'backends', 'lo
         primaryButtonIndex: -1
         cancelButtonIndex: 0
         width: 350
+        height: if @closeable then 310 else 250
         htmlMessage: templates.openModal()
+        onShow: onReady
+        onDismiss: onDismiss
 
       @openModal = openModal = $('#open-modal')
 
@@ -88,7 +91,14 @@ define ['jquery', 'filereader', 'alertcontroller', 'tournament', 'backends', 'lo
           newName = textBox[0].value
           if textBox[0].ongoingDeletion
             if newName == "confirm deletion of file"
-              new backend(itemName).delete()
+              bk = new backend(itemName)
+              if @uiController.tournament? and bk.fileName() == @uiController.tournament.backend.fileName()
+                @uiController.setTournament null
+                btn = $('#open-modal .modal-footer .modal-cancel')
+                btn.addClass 'disabled'
+                btn.css 'pointer-events', 'none'
+                $('#open-modal .modal-header .modal-cancel').remove()
+              bk.delete()
               delete fl[itemName]
               itemNode.remove()
 

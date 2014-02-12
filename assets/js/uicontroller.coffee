@@ -38,7 +38,12 @@ define ['jquery', 'B64', 'cookies', 'opencontroller', 'alertcontroller', 'tourna
 
       $(document).ready =>
         @loadSession =>
-          new OpenController this
+          @setTournament null
+          new OpenController this, =>
+            @injector.invoke ['$rootScope', ($rootScope) ->
+              $rootScope.$apply ->
+                $rootScope.tournamentLoaded = true
+            ]
 
         $(".fixed-menu").mouseover ->
           submenuPos = $(this).offset().left + 325
@@ -69,7 +74,19 @@ define ['jquery', 'B64', 'cookies', 'opencontroller', 'alertcontroller', 'tourna
 
     open: ->
       @save =>
-        new OpenController(this)
+        new OpenController this, (=>
+          @saveSession null
+        ), (=>
+          @saveSession @tournament
+        )
+
+    saveSession: (tournament) ->
+      if tournament?
+        Cookies.set 'lastBackend', Util.getObjectClass tournament.backend
+        Cookies.set 'lastFileName', tournament.backend.fileName()
+      else
+        Cookies.expire 'lastBackend'
+        Cookies.expire 'lastFileName'
 
     loadSession: (onFail) ->
       lastBackend = Cookies.get 'lastBackend'
@@ -157,6 +174,7 @@ define ['jquery', 'B64', 'cookies', 'opencontroller', 'alertcontroller', 'tourna
       invalid = {}
       LocalBackend.listFiles (fileList) ->
         for file in fileList
+
           invalid[file] = true
 
       new AlertController
@@ -221,16 +239,16 @@ define ['jquery', 'B64', 'cookies', 'opencontroller', 'alertcontroller', 'tourna
       @tournament = tournament
       if tournament
         tournament.load =>
-          Cookies.set 'lastBackend', Util.getObjectClass tournament.backend
-          Cookies.set 'lastFileName', tournament.backend.fileName()
+          @saveSession tournament
           @injector.invoke ['$rootScope', ($rootScope)->
             $rootScope.$apply ->
               $rootScope.tournament = tournament
+              $rootScope.tournamentLoaded = true
           ]
       else
-        Cookies.expire 'lastBackend'
-        Cookies.expire 'lastFileName'
+        @saveSession null
         @injector.invoke ['$rootScope', ($rootScope)->
           $rootScope.$apply ->
-            $rootScope.tournament = nil
+            $rootScope.tournament = Tournament.placeholderTournament
         ]
+
