@@ -137,7 +137,7 @@ define ['util', 'ballot', 'judge', 'sorter', 'judgerules', 'team', 'underscore']
 
     pairingTeams: ->
       id = @id
-      teams = _.filter @teams, (o) -> o.rounds[id].participates
+      _.filter @teams, (o) -> o.rounds[id].participates
 
     pairTeams: (a, b, skillIndex = 0) ->
       ballot = new Ballot this
@@ -145,6 +145,12 @@ define ['util', 'ballot', 'judge', 'sorter', 'judgerules', 'team', 'underscore']
       ballot.teams[1] = b
       ballot.skillIndex = skillIndex
       if not a? or not b?
+        if not a?
+          aux = a
+          a = b
+          b = aux
+          ballot.teams[0] = a
+          ballot.teams[1] = b
         ballot.locked = true
       @ballots.push ballot
       if a
@@ -166,44 +172,27 @@ define ['util', 'ballot', 'judge', 'sorter', 'judgerules', 'team', 'underscore']
       balance ?= true
 
       pairTeams = (a, b, skillIndex = 0) =>
-        ballot = new Ballot this
-        ballot.teams[0] = a
-        ballot.teams[1] = b
-        ballot.skillIndex = skillIndex
-        if not a? or not b?
-          if not a?
-            aux = a
-            a = b
-            b = aux
-            ballot.teams[0] = a
-            ballot.teams[1] = b
-          ballot.locked = true
+        swp = false
+        if flip and a? and b?
+          sa = a.stats.side
+          sb = b.stats.side
+          if sa == sb and opts.sides == 1
+            da = Math.abs(a.stats.prop - a.stats.opp)
+            db = Math.abs(b.stats.prop - b.stats.opp)
+            if da > db
+              sb = 1 - sb
+            else if db > da
+              sa = 1 - sa
+          if sa == sb
+            if Math.random() > 0.5
+              swp = true
+          else
+            if sa == 1 or sb == 0
+              swp = true
+        if swp
+          @pairTeams b, a, skillIndex
         else
-          if flip
-            sa = a.stats.side
-            sb = b.stats.side
-            if sa == sb and opts.sides == 1
-              da = Math.abs(a.stats.prop - a.stats.opp)
-              db = Math.abs(b.stats.prop - b.stats.opp)
-              if da > db
-                sb = 1 - sb
-              else if db > da
-                sa = 1 - sa
-            if sa == sb
-              if Math.random() > 0.5
-                ballot.teams[0] = b
-                ballot.teams[1] = a
-            else
-              if sa == 1 or sb == 0
-                ballot.teams[0] = b
-                ballot.teams[1] = a
-        @ballots.push ballot
-        if a
-          a.rounds[id].ballot = ballot
-          a.stats.paired = true
-        if b
-          b.rounds[id].ballot = ballot
-          b.stats.paired = true
+          @pairTeams a, b, skillIndex
 
       #pick bye team
       bye = null
@@ -260,6 +249,7 @@ define ['util', 'ballot', 'judge', 'sorter', 'judgerules', 'team', 'underscore']
           r = null
           looper (u) ->
             return if u.stats.paired
+            return if u == t
             cmp = 0
             zero = true
             for cond, k in v
@@ -326,6 +316,7 @@ define ['util', 'ballot', 'judge', 'sorter', 'judgerules', 'team', 'underscore']
               vb.push bracket
             bracket.teams.push t
 
+          #calculate opposition ranks
           if opts.evenBrackets == 1
             for t in teams
               avgc = 0
@@ -562,6 +553,8 @@ define ['util', 'ballot', 'judge', 'sorter', 'judgerules', 'team', 'underscore']
       for ballot in ballots
         if ballot.room?
           rooms.push ballot.room
+      for room in @freeRooms
+        rooms.push room
       n = rooms.length
       id = @id
       for ballot, i in ballots

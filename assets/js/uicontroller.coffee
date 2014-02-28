@@ -174,7 +174,6 @@ define ['jquery', 'B64', 'cookies', 'opencontroller', 'alertcontroller', 'tourna
       invalid = {}
       LocalBackend.listFiles (fileList) ->
         for file in fileList
-
           invalid[file] = true
 
       new AlertController
@@ -215,7 +214,7 @@ define ['jquery', 'B64', 'cookies', 'opencontroller', 'alertcontroller', 'tourna
                 alert.find('.btn-primary').button('loading')
               try
                 be = new LocalBackend(newName)
-                data = @tournament.toFile
+                data = @tournament.toFile()
                 be.save data, (=>
                   alert.modal('hide')), force
               catch e
