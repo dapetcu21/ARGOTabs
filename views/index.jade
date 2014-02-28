@@ -36,10 +36,9 @@ div(ng-controller='LoadingCtrl', ng-show="!loaded || !tournamentLoaded").loading
           nav-li(href="/judges") Judges
           nav-li(href="/rooms") Rooms
           li.nav-header Statistics
-          nav-li(href="/general-stats") General
           nav-li(href="/team-rank") Team rank
           nav-li(href="/speaker-rank") Speaker rank
-          nav-li(href="/judge-avg") Judge averages
+          //nav-li(href="/judge-avg") Judge averages
           li.nav-header Rounds
           nav-li(ng-repeat='round in tournament.rounds', href='/rounds/{{$index+1}}') 
             | Round {{$index+1}} 
