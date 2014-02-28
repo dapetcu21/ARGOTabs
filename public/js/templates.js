@@ -169,6 +169,10 @@ if ( o.width )
 {
 buf.push("<style>@media (min-width: 767px) {\n  #" + (jade.escape((jade.interp = o.id) == null ? '' : jade.interp)) + " {\n    width: " + (jade.escape((jade.interp = o.width) == null ? '' : jade.interp)) + "px;\n    margin-left: " + (jade.escape((jade.interp = -o.width / 2) == null ? '' : jade.interp)) + "px;\n  }\n}</style>");
 }
+if ( o.height)
+{
+buf.push("<style>@media (min-width: 767px) {\n  #" + (jade.escape((jade.interp = o.id) == null ? '' : jade.interp)) + " {\n    margin-top: " + (jade.escape((jade.interp = -o.height/ 2) == null ? '' : jade.interp)) + "px;\n  }\n  #" + (jade.escape((jade.interp = o.id) == null ? '' : jade.interp)) + " .modal-body {\n    max-height: " + (jade.escape((jade.interp = o.height - 80 - (o.buttons.length ? 60 : 0)) == null ? '' : jade.interp)) + "px;\n  }\n}</style>");
+}
 buf.push("<style>@media (min-width: 767px) {\n  .modal.fade {\n    top: 20px;\n  }\n  </style></div>");;return buf.join("");
 };
 templates['multiCell'] = function anonymous(locals) {
