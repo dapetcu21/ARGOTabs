@@ -48,7 +48,7 @@ define ['util', 'ballot', 'judge', 'sorter', 'judgerules', 'team', 'underscore']
     maxMainJudgesSolved: -> if @maxMainJudges? then @maxMainJudges else @tournament.maxMainJudges
     maxShadowJudgesSolved: -> if @maxShadowJudges? then @maxShadowJudges else @tournament.maxShadowJudges
     maxPanelSizeSolved: -> if @maxPanelSize? then @maxPanelSize else @tournament.maxPanelSize
-    pairRankSorterSolved: -> if @pairRankSorter? then @pairRankSorter else @tournament.pairRankSorter
+    pairRankSorterSolved: -> if @inheritPairRank then @tournament.pairRankSorter else @pairRankSorter
     allowShadowsSolved: -> if @allowShadows? then @allowShadows else @tournament.allowShadows
     judgeMainPrioritySolved: -> if @judgeMainPriority? then @judgeMainPriority else @tournament.judgeMainPriority
     judgeMainOrderSolved: -> if @judgeMainOrder? then @judgeMainOrder else @tournament.judgeMainOrder
