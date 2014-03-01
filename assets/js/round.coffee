@@ -211,7 +211,7 @@ define ['util', 'ballot', 'judge', 'sorter', 'judgerules', 'team', 'underscore']
       bye = null
       if teams.length & 1 and opts.algorithm != 1
         if not opts.algorithm and (opts.randomBye or not prevRounds.length)
-          bye = teams.splice Math.floor(Math.random() * teams.length), 1
+          bye = teams.splice(Math.floor(Math.random() * teams.length), 1)[0]
         else
           minByes = Number.MAX_VALUE
           index = -1
