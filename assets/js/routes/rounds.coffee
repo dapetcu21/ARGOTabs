@@ -43,7 +43,8 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
                 if rng.nodeName == "TABLE"
                   if rng.id == 'round-pairings-table'
                     e.preventDefault()
-                    $scope.editBallot(ballotIndex)
+                    Util.safeApply $scope, ->
+                      $scope.editBallot(ballotIndex)
                   else
                     return
                 rng = rng.parentNode
