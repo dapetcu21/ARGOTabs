@@ -578,6 +578,12 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
             else
               2
 
+          rx = /INPUT|TEXTAREA/i
+          preventBack = (e) ->
+            if e.which == 8
+                if !rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly
+                    e.preventDefault()
+
           new AlertController
             buttons: ['Cancel', 'Ok']
             cancelButtonIndex: 0
@@ -585,6 +591,18 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
             title: '<span class="prop">'+ballot.teams[0].name+'</span><span> vs. </span><span class="opp">'+ballot.teams[1].name+'</span>'
             htmlMessage: $compile(templates.ballotSheet())(sc)
             animated: false
+            tabIndex: [1]
+            onShown: (alert) ->
+              $(document).bind "keydown keypress", preventBack
+
+              alert.keypress (e) ->
+                console.log e
+                if e.which == 8
+                  e.stopPropagation()
+
+              setTimeout (->
+                alert.find('#roles-table tr:first-child td:nth-child(2) .multi-label').focus()
+              ), 1
             onClick: (alert, button) ->
               sc.$apply ->
                 sc.drawsError = false
@@ -630,6 +648,6 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
                 alert.modal 'hide'
             onDismissed: (alert) ->
               sc.$destroy() if sc?
-
+              $(document).unbind "keydown keypress", preventBack
       ]
   ]

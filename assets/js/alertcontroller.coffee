@@ -10,7 +10,9 @@ define ['jquery'], ($) ->
       o.closeable ?= true
       o.cssClass ?= ""
       o.animated ?= true
+      o.tabIndex ?= []
       o.id ?= 'modalid' + Math.round( Math.random() * 10000)
+
 
       if o.animated
         o.cssClass = 'fade ' + o.cssClass
@@ -23,6 +25,16 @@ define ['jquery'], ($) ->
       if o.htmlMessage
         mbody.append o.htmlMessage
       $('body').append jq
+
+      buttons = jq.find('.modal-footer a.btn')
+
+      buttons.keypress (e) ->
+        if e.which == 13 or e.which == 32
+          $(e.currentTarget).click()
+
+      for v in o.tabIndex
+        continue if v >= buttons.length
+        $(buttons[v]).attr('tabindex', 0)
 
       jq.find('.modal-button').click ->
         button = parseInt this.dataset.count
