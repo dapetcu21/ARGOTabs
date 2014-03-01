@@ -183,7 +183,6 @@ define ->
 
     @extendScope: (s) ->
       s.disableDigest = () ->
-        console.log this
         this.$$digestDisabled = true
         return
 

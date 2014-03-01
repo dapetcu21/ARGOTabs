@@ -32,6 +32,26 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
         Util.installScopeUtils $scope
         Util.extendScope $scope
 
+        enterForSelection = (e) ->
+          if e.which == 13
+            sel = window.getSelection()
+            if sel.rangeCount
+              rng = sel.getRangeAt(0).commonAncestorContainer
+              while rng and rng != document
+                if rng.nodeName == "TR"
+                  ballotIndex = $(rng).index()
+                if rng.nodeName == "TABLE"
+                  if rng.id == 'round-pairings-table'
+                    e.preventDefault()
+                    $scope.editBallot(ballotIndex)
+                  else
+                    return
+                rng = rng.parentNode
+
+        $(document).bind "keydown keypress", enterForSelection
+        $scope.$on '$destroy', ->
+          $(document).unbind "keydown keypress", enterForSelection
+
         _tf = $scope.truncFloat
         $scope.truncFloatN = (v, prec) ->
           if typeof v == 'number'
@@ -596,7 +616,6 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
               $(document).bind "keydown keypress", preventBack
 
               alert.keypress (e) ->
-                console.log e
                 if e.which == 8
                   e.stopPropagation()
 
