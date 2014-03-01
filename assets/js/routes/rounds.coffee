@@ -30,6 +30,7 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
           Util.naturalSort a.room.name, b.room.name
 
         Util.installScopeUtils $scope
+        Util.extendScope $scope
 
         _tf = $scope.truncFloat
         $scope.truncFloatN = (v, prec) ->
@@ -451,7 +452,9 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
           pairing.opp = p
 
         $scope.editBallot = (index) ->
-          sc = $scope.$new()
+          sc = $scope.$parent.$new()
+          Util.installScopeUtils sc
+          $scope.disableDigest()
           ballot = round.ballots[index]
           return if not ballot.teams[0]? or not ballot.teams[1]?
           noBallots = round.ballotsPerMatchSolved()
@@ -616,6 +619,7 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
                 ballot.presence = [sc.presence[0], sc.presence[1]]
                 sc.$destroy()
                 sc = null
+                $scope.enableDigest()
 
                 for vote in ballot.votes
                   delete vote.aux

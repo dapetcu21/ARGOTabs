@@ -180,3 +180,14 @@ define ->
         return -1 if oFxNcL < oFyNcL
         return  1 if oFxNcL > oFyNcL
       return 0
+
+    @extendScope: (s) ->
+      s.disableDigest = () ->
+        console.log this
+        this.$$digestDisabled = true
+        return
+
+      s.enableDigest = () ->
+        this.$$digestDisabled = false
+        this.$apply ->
+        return

@@ -84,6 +84,19 @@ define ['util', 'ballot', 'judge', 'sorter', 'judgerules', 'team', 'underscore']
             r.push round
       return r
 
+    previousRound: ->
+      if @rankFrom.all
+        r = null
+        for round in @tournament.rounds
+          break if round == this
+          if round.paired
+            r = round
+        return r
+      else
+        for round in @tournament.rounds by -1
+          if round.paired and @rankFrom[round.id]
+            return round
+
     registerJudge: (judge) ->
       id = @id
       if not judge.rounds[id]?
