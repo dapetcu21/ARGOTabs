@@ -45,8 +45,7 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
                     e.preventDefault()
                     Util.safeApply $scope, ->
                       $scope.editBallot(ballotIndex)
-                  else
-                    return
+                  return
                 rng = rng.parentNode
 
         $(document).bind "keydown keypress", enterForSelection
@@ -474,6 +473,7 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
 
         $scope.editBallot = (index) ->
           sc = $scope.$parent.$new()
+          $(document).unbind "keydown keypress", enterForSelection
           Util.installScopeUtils sc
           $scope.disableDigest()
           ballot = round.ballots[index]
@@ -600,10 +600,15 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
               2
 
           rx = /INPUT|TEXTAREA/i
+          _alert = null
           preventBack = (e) ->
-            if e.which == 8
-                if !rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly
-                    e.preventDefault()
+            if !rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly
+              if e.which == 8
+                e.preventDefault()
+              if e.which == 27
+                _alert.modal 'hide'
+                _alert = null
+                e.preventDefault()
 
           new AlertController
             buttons: ['Cancel', 'Ok']
@@ -615,6 +620,7 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
             tabIndex: [1]
             onShown: (alert) ->
               $(document).bind "keydown keypress", preventBack
+              _alert = alert
 
               alert.keypress (e) ->
                 if e.which == 8
@@ -668,6 +674,8 @@ define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Roun
                 alert.modal 'hide'
             onDismissed: (alert) ->
               sc.$destroy() if sc?
+              _alert = null
               $(document).unbind "keydown keypress", preventBack
+              $(document).bind "keydown keypress", enterForSelection
       ]
   ]
