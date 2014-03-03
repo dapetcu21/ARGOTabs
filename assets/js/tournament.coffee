@@ -2,34 +2,38 @@ define ['placeholderbackend', 'util', 'club', 'team', 'judge', 'room', 'player',
   class Tournament
     constructor: (@backend) ->
       @clubs = []
+      @teams = []
+      @judges = []
+      @rooms = []
+      @players = []
+      @rounds =[]
+      @tableOpts = {}
+      @ballotsPerMatch = 1
+      @evenBrackets = 0
+      @matchesPerBracket = 1
+      @maxMainJudges = 10000
+      @maxShadowJudges = 10000
+      @maxPanelSize = 10000
+      @judgeMainPriority = 0
+      @judgeMainOrder = 0
+      @judgeShadowPriority = 0
+      @judgeShadowOrder = 0
+      @judgeShadowReport = false
+      @minPlayed = 1
+      @allowShadows ?= true
+      @rankFromTeams ?= {all:true}
+      @rankFromSpeakers ?= {all:true}
+      @loaded = false
 
-    load: (fn) ->
-      @backend.load (loadedString) =>
-        try model = JSON.parse(loadedString) catch
+    load: (fn, fnErr = ->) ->
+      @backend.load ((loadedString) =>
+        try
+          model = JSON.parse(loadedString)
+        catch error
+          fnErr error
+          return
+
         model ?= {}
-        @clubs = []
-        @teams = []
-        @judges = []
-        @rooms = []
-        @players = []
-        @rounds =[]
-        @tableOpts = {}
-        @ballotsPerMatch = 1
-        @evenBrackets = 0
-        @matchesPerBracket = 1
-        @maxMainJudges = 10000
-        @maxShadowJudges = 10000
-        @maxPanelSize = 10000
-        @judgeMainPriority = 0
-        @judgeMainOrder = 0
-        @judgeShadowPriority = 0
-        @judgeShadowOrder = 0
-        @judgeShadowReport = false
-        @minPlayed = 1
-        @allowShadows ?= true
-        @rankFromTeams ?= {all:true}
-        @rankFromSpeakers ?= {all:true}
-
         for key, value of model
           this[key] = value
 
@@ -65,8 +69,11 @@ define ['placeholderbackend', 'util', 'club', 'team', 'judge', 'room', 'player',
         @judgeRules = JudgeRules.mainRules this, model.judgeRules
 
         @lastData = @toFile()
+        @loaded = true
         fn()
-        return
+      ), ((error) =>
+        fnErr error
+      )
 
     roundWithId: (id) ->
       if typeof id == 'string'
@@ -77,7 +84,7 @@ define ['placeholderbackend', 'util', 'club', 'team', 'judge', 'room', 'player',
       null
 
     toJSON: ->
-      model = Util.copyObject this, ['backend', 'lastData']
+      model = Util.copyObject this, ['backend', 'lastData', 'loaded']
       model.rankFromTeams = {all:@rankFromTeams.all}
       for r in @rounds
         v = @rankFromTeams[r.id]
@@ -101,6 +108,7 @@ define ['placeholderbackend', 'util', 'club', 'team', 'judge', 'room', 'player',
       return true
     
     saveData: (data, fn, force = false) ->
+      return if !@loaded
       @backend.save data, =>
         @lastData = data
         fn()

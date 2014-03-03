@@ -10,7 +10,7 @@ define ['backend'], (Backend) ->
       date = localStorage.getItem(@fName + '.mdate')
       if date? then new Date(parseInt(date.match(/\d+/)[0])) else @loadDate
 
-    load: (fn) ->
+    load: (fn, fnErr) ->
       obj = localStorage.getItem(@fName + ".atab")
       obj ?= ""
       @loadDate = new Date()

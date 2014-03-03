@@ -235,19 +235,44 @@ define ['jquery', 'B64', 'cookies', 'opencontroller', 'alertcontroller', 'tourna
 
     getTournament: -> @tournament
     setTournament: (tournament) ->
+      apply = (fn) =>
+        @injector.invoke ['$rootScope', ($rootScope)->
+          $rootScope.$apply fn($rootScope)
+        ]
+        return
       @tournament = tournament
+      console.log tournament
       if tournament
-        tournament.load =>
+        apply (sc) ->
+          sc.loadingTournament = true
+        tournament.load (=>
           @saveSession tournament
-          @injector.invoke ['$rootScope', ($rootScope)->
-            $rootScope.$apply ->
-              $rootScope.tournament = tournament
-              $rootScope.tournamentLoaded = true
-          ]
+          apply (sc) ->
+            sc.tournament = tournament
+            sc.tournamentLoaded = true
+            sc.loadingTournament = false
+        ), ((err) =>
+          @setTournament null
+          console.log 'alert'
+          new AlertController
+            buttons: ['OK']
+            primaryButtonIndex: 0
+            closeable: false
+            animated: false
+            id: 'open-tournament-error'
+            height: 200
+            title: 'Error'
+            message: "Can't open tournament: " + err.message
+            onShow: ->
+              apply (sc) ->
+                sc.loadingTournament = false
+            onClick: (alert, bIndex, bName) =>
+              if bIndex == 0
+                new OpenController this, ->
+                  alert.modal('hide')
+        )
       else
         @saveSession null
-        @injector.invoke ['$rootScope', ($rootScope)->
-          $rootScope.$apply ->
-            $rootScope.tournament = Tournament.placeholderTournament
-        ]
+        apply (sc) ->
+          sc.tournament = Tournament.placeholderTournament
 
