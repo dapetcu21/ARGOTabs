@@ -68,9 +68,9 @@ div(ng-show='presence[0] && presence[1]')
         td(class='valid-{{o.aux.decisionValid}}')
           span(ng-show='o.aux.decisionValid').nowrap
             multi-cell(bind='o.prop', enabled='!o.total && (o.aux.validSplits[o.aux.winner].length > 1)', input-width='41', choices='o.aux.validSplits[o.aux.winner]', choice-name='o')
-            span 
+            span &nbsp;
             i(class='{{winner(o)}}').vote-trophy.fa.fa-trophy
-            span 
+            span &nbsp;
             multi-cell(bind='o.opp', enabled='!o.total && (o.aux.validSplits[1-o.aux.winner].length > 1)', input-width='41', choices='o.aux.validSplits[1-o.aux.winner]', choice-name='o')
           span(ng-show='!o.aux.decisionValid && !o.total')
             | Draw

@@ -3,10 +3,10 @@ div.judge-rules
     div(judge-rules-helper).rounded-bullets.judge-rule
       span.blue-rule
         multi-cell(bind='judgeIndex', choices='judgeIndexes', choice-name='judgeNames[o]', nil-placeholder='!!!deleted!!!', hide-nil, on-begin-edit='buildJudgeList()')
-      &nbsp;
+        | &nbsp;
       span(class='verb-{{vlo.verb}}')
         multi-cell(bind='vlo.verb', choices='verbs', choice-name='verbNames[o]')
-      &nbsp;
+        | &nbsp;
       multi-cell(bind='teamIndex', choices='teamIndexes', choice-name='teamNames[o]', nil-placeholder='!!!deleted!!!', hide-nil, on-begin-edit='buildTeamList()')
       fa.fa.fa-times(ng-click='removeRule($index)').remove-rule
 

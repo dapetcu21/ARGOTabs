@@ -1,4 +1,4 @@
-define ['team', 'judge', 'round', 'util', 'alertcontroller'], (Team, Judge, Round, Util, AlertController) ->
+define ['team', 'judge', 'round', 'util', 'alertcontroller', 'templates'], (Team, Judge, Round, Util, AlertController, templates) ->
   [(ui) ->
     ui.app.controller 'RoomController', ['$scope', ($scope) ->
       ballot = $scope.round.ballots[$scope.$index]

@@ -1,4 +1,4 @@
-define ['jquery', 'util', 'B64', 'underscore', 'templates', 'angular', 'jquery.event.drag', 'jquery.bootstrap.contextmenu', 'html2canvas'], ($, Util, B64) ->
+define ['jquery', 'util', 'B64', 'templates', 'underscore', 'angular', 'jquery.event.drag', 'jquery.bootstrap.contextmenu', 'html2canvas'], ($, Util, B64, templates) ->
   mod = angular.module "editable-table", []
   mod.directive "sortArrow", ->
     template: templates.sortArrow()

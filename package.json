@@ -9,6 +9,6 @@
     "autoprefixer-stylus": "0.0.x",
     "rupture": "0.0.x",
     "roots": "~3.0.0-rc.2",
-    "client-templates": "0.0.3"
+    "client-templates": "0.0.x"
   }
 }

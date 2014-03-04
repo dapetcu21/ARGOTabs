@@ -1,4 +1,4 @@
-define ['jquery'], ($) ->
+define ['jquery', 'templates'], ($, templates) ->
   class AlertController
     constructor: (@opts) ->
       @opts ?= {}

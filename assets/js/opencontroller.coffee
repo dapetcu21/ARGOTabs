@@ -1,4 +1,4 @@
-define ['jquery', 'filereader', 'alertcontroller', 'tournament', 'backends', 'localbackend', 'templates', 'jquery.transit'], ($, FileReaderJS, AlertController, Tournament, Backends, LocalBackend) ->
+define ['jquery', 'filereader', 'alertcontroller', 'tournament', 'backends', 'localbackend', 'templates', 'jquery.transit'], ($, FileReaderJS, AlertController, Tournament, Backends, LocalBackend, templates) ->
   class OpenController
     constructor: (@uiController, onReady = (->), onDismiss = (->)) ->
       @closeable = @uiController.getTournament()?
