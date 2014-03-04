@@ -36,11 +36,11 @@
       div.radio-container
         div Even brackets by:
         label
-          input(type='radio', ng-model='tournament.evenBrackets', ng-value='0')&nbsp;
-          span pulling down leftover teams
+          input(type='radio', ng-model='tournament.evenBrackets', ng-value='0')
+          span &nbsp;pulling down leftover teams
         label
-          input(type='radio', ng-model='tournament.evenBrackets', ng-value='1')&nbsp;
-          span pulling up teams with weakest previous opponents
+          input(type='radio', ng-model='tournament.evenBrackets', ng-value='1')
+          span &nbsp;pulling up teams with weakest previous opponents
     .well.pair-rules-group.settings-group
       strong Pairing rank criteria
       sorter-criteria(bind='tournament.pairRankSorter')

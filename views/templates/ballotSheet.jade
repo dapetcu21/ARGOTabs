@@ -1,14 +1,14 @@
 div(ng-show='lockJudgesInfo').alert.alert-info
-  button(type='button', class='close', ng-click='lockJudgesInfo=false'): &times;
+  button(type='button', class='close', ng-click='lockJudgesInfo=false') &times;
   <strong>Warning!</strong> Once you submit this ballot sheet, the judges for this match are going to be locked in and can't be modified or reordered anymore.
 div(ng-show='noJudgesWarning').alert
-  button(type='button', class='close', ng-click='noJudgesWarning=false'): &times;
+  button(type='button', class='close', ng-click='noJudgesWarning=false') &times;
   <strong>Warning!</strong> There are no judges assigned to this match. You can still enter scores for the teams, but since they aren't bound to any judge, they won't matter for the judges tab. Furthermore, you cannot assign judges after submitting this ballot sheet.
 div(ng-show='outOfRangeError').alert.alert-error
-  button(type='button', class='close', ng-click='outOfRangeError=false'): &times;
+  button(type='button', class='close', ng-click='outOfRangeError=false') &times;
   <strong>Error!</strong> The scores are not within the valid World Schools range.
 div(ng-show='drawsError').alert.alert-error
-  button(type='button', class='close', ng-click='drawsError=false'): &times;
+  button(type='button', class='close', ng-click='drawsError=false') &times;
   <strong>Error!</strong> Draws are not valid in the World Schools format.
 table(editable-table, show-gear='false', model='roles')#roles-table
   thead
@@ -78,45 +78,3 @@ div(ng-show='presence[0] && presence[1]')
             | Invalid
         - sideTotal(1)
         - sideCells(1)
-
-:stylus
-  #roles-table th:nth-child(1)
-    width: 50px
-  #roles-table th:nth-child(2),
-  #roles-table th:nth-child(3),
-  #roles-table th:nth-child(4),
-  #roles-table th:nth-child(5)
-    width: 127px
-
-  #votes-table th:nth-child(1)
-    width: 20px
-  #votes-table th:nth-child(2)
-    width: 100px
-  #votes-table th:nth-child(3),
-  #votes-table th:nth-child(4),
-  #votes-table th:nth-child(5),
-  #votes-table th:nth-child(6),
-  #votes-table th:nth-child(10),
-  #votes-table th:nth-child(11),
-  #votes-table th:nth-child(12),
-  #votes-table th:nth-child(13)
-    width: 25px
-  #votes-table th:nth-child(7),
-  #votes-table th:nth-child(9)
-    width: 30px
-  #votes-table th:nth-child(8)
-    width: 40px
-
-  #votes-table td.valid-false
-    background-color: #b94a48
-    color: #ffffff
-
-  #votes-table td.valid-false .textedit-cell.invalid .textedit-label
-    color: #ffffff
-
-  input[type="checkbox"].presence-check
-    margin: 0px 5px 0px 0px
-
-  .icon-dobitoc
-    color: #b94a48
-    margin-left: 3px

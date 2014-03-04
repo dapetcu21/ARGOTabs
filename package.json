@@ -1,11 +1,14 @@
 {
   "name": "argo-tabs",
-  "version": "0.0.1",
+  "description": "Tabulation software for World Schools Debate competitions",
   "dependencies": {
-    "connect": "2.6.x"
-  },
-  "engines": {
-    "node": "0.8.x",
-    "npm": "1.1.x"
+    "jade": "1.x.x",
+    "marked": "0.3.x",
+    "stylus": "0.42.x",
+    "coffee-script": "1.x.x",
+    "autoprefixer-stylus": "0.0.x",
+    "rupture": "0.0.x",
+    "roots": "~3.0.0-rc.2",
+    "client-templates": "0.0.3"
   }
 }

@@ -1,65 +1,68 @@
-div(ng-controller='LoadingCtrl', ng-show="!loaded || !tournamentLoaded").loading-screen
-    h3
-      i.fa.fa-spinner.fa.fa-spin.fa.fa-large
-      | &nbsp; Loading...
+extends layout
 
-.navbar.navbar-fixed-top.dont-print
-  .navbar-inner
-    .container-fluid
-      ul.nav
-        li.arrow-nav: a.action-open.brand
-          i.fa.fa-arrow-left.view-arrow
-          span.view-brand ARGO Tabs
-        li.divider-vertical
-          li: a(href="#").brand.view-title {{tournament.name}}
+block content
+  div(ng-controller='LoadingCtrl', ng-show="!loaded || !tournamentLoaded || loadingTournament").loading-screen
+      h3
+        i.fa.fa-spinner.fa.fa-spin.fa.fa-large
+        | &nbsp; Loading...
 
-      .btn-group.pull-right
-        button(data-loading-text="Saving...", data-saved-text="Saved").btn.btn-info.action-save.view-save Save
-        button(data-toggle="dropdown").btn.btn-info.dropdown-toggle.view-save
-          span.caret
-        ul.dropdown-menu
-          li.action-saveas-local
-            a(tabindex='-1').action-saveaslocal Save a copy
-          li.action-saveas-download
-            a(tabindex='-1').action-download Download
-  
-.container-fluid
-  .row-fluid
-    .span2.dont-print
-      .well.sidebar-nav
-        ul(ng-controller='RoutesList').nav.nav-list
-          li.nav-header Tournament
-          nav-li(href="/") Dashboard
-          li.nav-header Participants
-          nav-li(href="/teams") Teams
-          nav-li(href="/clubs") Clubs
-          nav-li(href="/judges") Judges
-          nav-li(href="/rooms") Rooms
-          li.nav-header Statistics
-          nav-li(href="/team-rank") Team rank
-          nav-li(href="/speaker-rank") Speaker rank
-          //nav-li(href="/judge-avg") Judge averages
-          li.nav-header Rounds
-          nav-li(ng-repeat='round in tournament.rounds', href='/rounds/{{$index+1}}') 
-            | Round {{$index+1}} 
-            a(href='', ng-click='removeRound($index)').pull-right.unstyled.remove-round
-              i.fa.fa-fw.fa-times-circle.pull-right
-          li
-            a(href='', ng-click='addRound()')
-              i.fa.fa-fw.fa-plus
-              |  New round
-          
-    div(ng-view).span10.print-full-width
+  .navbar.navbar-fixed-top.dont-print
+    .navbar-inner
+      .container-fluid
+        ul.nav
+          li.arrow-nav: a.action-open.brand
+            i.fa.fa-arrow-left.view-arrow
+            span.view-brand ARGO Tabs
+          li.divider-vertical
+            li: a(href="#").brand.view-title {{tournament.name}}
 
-:stylus
-  .view-title, .app-title
-    margin-left: -10px !important
-  
-  .view-arrow
-    margin-right: 15px
+        .btn-group.pull-right
+          button(data-loading-text="Saving...", data-saved-text="Saved").btn.btn-info.action-save.view-save Save
+          button(data-toggle="dropdown").btn.btn-info.dropdown-toggle.view-save
+            span.caret
+          ul.dropdown-menu
+            li.action-saveas-local
+              a(tabindex='-1').action-saveaslocal Save a copy
+            li.action-saveas-download
+              a(tabindex='-1').action-download Download
+    
+  .container-fluid
+    .row-fluid
+      .span2.dont-print
+        .well.sidebar-nav
+          ul(ng-controller='RoutesList').nav.nav-list
+            li.nav-header Tournament
+            nav-li(href="/") Dashboard
+            li.nav-header Participants
+            nav-li(href="/teams") Teams
+            nav-li(href="/clubs") Clubs
+            nav-li(href="/judges") Judges
+            nav-li(href="/rooms") Rooms
+            li.nav-header Statistics
+            nav-li(href="/team-rank") Team rank
+            nav-li(href="/speaker-rank") Speaker rank
+            //nav-li(href="/judge-avg") Judge averages
+            li.nav-header Rounds
+            nav-li(ng-repeat='round in tournament.rounds', href='/rounds/{{$index+1}}') 
+              | Round {{$index+1}} 
+              a(href='', ng-click='removeRound($index)').pull-right.unstyled.remove-round
+                i.fa.fa-fw.fa-times-circle.pull-right
+            li
+              a(href='', ng-click='addRound()')
+                i.fa.fa-fw.fa-plus
+                |  New round
+            
+      div(ng-view).span10.print-full-width
 
-  @media (max-width: 767px)
-    .view-brand
-      display: none
-    li.arrow-nav a
-      padding-right: 0px !important
+  :stylus
+    .view-title, .app-title
+      margin-left: -10px !important
+    
+    .view-arrow
+      margin-right: 15px
+
+    @media (max-width: 767px)
+      .view-brand
+        display: none
+      li.arrow-nav a
+        padding-right: 0px !important

@@ -1,4 +1,4 @@
-!!!
+doctype
 html
   head
     meta(charset='utf8')
@@ -14,6 +14,6 @@ html
     link(rel='stylesheet', href='components/rainbow/themes/github.css')
     link(rel='stylesheet', href='css/master.css')
   body
-    != content
+    block content
 
     script(data-main="js/main", src="js/require.js")

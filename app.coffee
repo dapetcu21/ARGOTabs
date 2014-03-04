@@ -1,10 +1,16 @@
-ignore_files: ['_*', '.*.swp', '.*.swo', 'readme*', '.gitignore', '.DS_Store']
-ignore_folders: ['.git']
+autoprefixer    = require 'autoprefixer-stylus'
+rupture         = require 'rupture'
+ClientTemplates = require 'client-templates'
 
-watcher_ignore_files: ['.*.swp', '.*.swo']
-watcher_ignore_folders: ['components']
+module.exports =
+  extensions: [ClientTemplates(
+    base: "views/templates/"
+    pattern: "*.jade"
+    out: "js/templates.js"
+  )]
 
-layouts:
-  'index.jade': 'layout.jade'
+  ignores: ['readme.md', '**/layout.*', '**/_*', '**/.gitignore', '**/.*.sw*', '**/.DS_Store']
+  watcher_ignores: ['**/*.sw*', 'node_modules/**']
 
-templates: 'views/templates'
+  stylus:
+    use: [autoprefixer(), rupture()]

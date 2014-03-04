@@ -6,7 +6,7 @@ require.config
   paths:
     jquery: '/components/jquery/jquery'
     'jquery.bootstrap': '/components/bootstrap/js/bootstrap'
-    'jquery.transit': '/components/jquery.transit/jquery.transit'
+    'jquery.transit': '/components/jquery-transit/jquery-transit'
     filereader: '/components/filereader/filereader'
     angular: '/components/angular/angular'
     'angular-route': '/components/angular/angular-route'
@@ -15,7 +15,7 @@ require.config
     underscore: '/components/underscore/underscore'
     html2canvas: '/components/html2canvas/html2canvas'
     'jquery.bootstrap.contextmenu': '/components/sydcanem-bootstrap-contextmenu/bootstrap-contextmenu'
-    'jquery.event.drag': '/components/jquery.event.drag/jquery.event.drag'
+    'jquery.event.drag': '/components/jquery-event-drag/jquery-event-drag'
     rainbow: '/components/rainbow/rainbow'
   shim:
     'jquery.bootstrap': ['jquery']

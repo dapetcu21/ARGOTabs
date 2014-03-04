@@ -114,8 +114,6 @@ define ['placeholderbackend', 'util', 'club', 'team', 'judge', 'room', 'player',
         fn()
       , force
 
-    #data encapsulationul care trebuia să îl fac de când hău
-
     clubWithName: (s) ->
       for c in @clubs
         console.log c.name, s
