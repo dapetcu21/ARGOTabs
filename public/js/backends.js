@@ -1,1 +1,0 @@
-(function(){define(["localbackend"],function(a){return[a]})}).call(this)

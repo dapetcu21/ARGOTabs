@@ -1,1 +1,0 @@
-(function(){define(function(){var a;return a=function(){function a(){throw new Error("Backend is purely virtual")}return a.prototype.save=function(){throw new Error("save(): Not implemented")},a.prototype.load=function(){throw new Error("load(): Not implemented")},a}()})}).call(this)

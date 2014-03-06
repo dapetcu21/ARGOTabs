@@ -1,1 +1,0 @@
-(function(){define(["club"],function(a){return function(b,c){return c.when("/clubs",{templateUrl:"partials/clubs.html",controller:["$scope",function(c){c.addClub=function(){var c,d;return d=b.tournament,c=new a(d),d.clubs.push(c)},c.removeClub=function(a){var c,d;return c=b.tournament.clubs,d=c[a],d.destroy(),c.splice(a,1)}}]})}})}).call(this)

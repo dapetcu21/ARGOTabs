@@ -1,1 +1,0 @@
-(function(){define(["rainbow"],function(){return function(a,b){return b.when("/json",{template:'<div id="json-view"></div>',controller:["$scope",function(a){return a.$watch("tournament",function(a){var b;if(a!=null)return b=$("#json-view"),b.html("<pre><code data-language='javascript'>var tournament = "+a.toFile(!0)+"</pre></code>"),Rainbow.color(b[0])})}]})}})}).call(this)

@@ -1,7 +1,0 @@
-<h3 class="print-only text-center">{{tournament.name}} - Rooms</h3><table editable-table="editable-table" reorders="reorders" model="tournament.rooms" visible="tournament.tableOpts.rooms" add-item="addRoom()" can-remove-item="canRemoveRoom(o)" remove-item="removeRoom(index)" id="rooms-table"><thead><tr><th data-auto-index='3'>#</th><th data-auto-index='1'><sort-arrow model="tournament.rooms" sort-by="o.name">Name</sort-arrow></th><th data-auto-index='2'><sort-arrow model="tournament.rooms" sort-by="o.floor">Floor</sort-arrow></th></tr></thead><tbody editable-tbody="editable-tbody" add-item-label="Add room"><script type="text/html"><td>{{$index + 1}}</td><td><text-edit-cell bind="o.name"></text-edit-cell></td><td><text-edit-cell bind="o.floor"></text-edit-cell></td></script></tbody></table><style type="text/css">#rooms-table th:nth-child(1) {
-  width: 35px;
-}
-#rooms-table th:nth-child(3) {
-  width: 30%;
-}
-</style>
