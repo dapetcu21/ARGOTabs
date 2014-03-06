@@ -65,6 +65,28 @@ define ['jquery', 'util', 'B64', 'templates', 'underscore', 'angular', 'jquery.e
       return if this.tagName != 'TD' and this.tagName != 'TH'
       arr.push elementToString $this, visible
     return arr
+
+  setWidgets = (bar, id, row) ->
+    bar.data('lastId', id)
+    offset = row.position()
+    w = row.width()
+    h = row.height()
+    bar.css 'right', $("body").width() - offset.left - w
+    bar.css 'top', offset.top
+    bar.css 'height', h
+    bar.removeClass 'hidden-true'
+    bar.data 'margins',
+      off: offset
+      w: w
+      h: h
+
+  resetWidgets = (bar, id, event) ->
+    return if bar.data('lastId') != id
+    d = bar.data 'margins'
+    x = event.pageX
+    y = event.pageY
+    return if d and (x >= d.off.left) and (x < d.off.left + d.w) and (y >= d.off.top) and (y < d.off.top + d.h)
+    bar.addClass 'hidden-true'
   
   mod.directive 'editableTable', ['$parse', ($parse) ->
     template: templates.editableTable()
@@ -83,12 +105,15 @@ define ['jquery', 'util', 'B64', 'templates', 'underscore', 'angular', 'jquery.e
     link:
       post: (scope, element, attrs) ->
         elements = element.find('th').not('.controls')
-
         n = elements.length
 
         context = $(templates.editableTcontext
           id: scope.tableId
           n: n
+        ).appendTo $('body')
+
+        widgets = $(templates.editableWidgets
+          id: scope.tableId
         ).appendTo $('body')
 
         scope.$watch ->
@@ -103,6 +128,7 @@ define ['jquery', 'util', 'B64', 'templates', 'underscore', 'angular', 'jquery.e
 
         scope.$on '$destroy', ->
           context.remove()
+          widgets.remove()
 
         scope.canRemoveItem = (o, index) ->
           if not attrs.canRemoveItem?
@@ -110,6 +136,35 @@ define ['jquery', 'util', 'B64', 'templates', 'underscore', 'angular', 'jquery.e
           return scope.canRemoveItem_
             o: o
             index: index
+
+        scope.removeItem = (index) ->
+          fcn = scope.removeItem_
+          if fcn
+            fcn
+              index: index
+          else
+            scope.model.splice(index, 1)
+
+        (headWidget = widgets.find('.widget-head')).click (e) ->
+          setTimeout -> #to avoid the click event that cancels my menu
+            element.find('thead').contextmenu 'show', e
+          , 1
+
+        (rowWidget = widgets.find('.widget-row')).click (e) ->
+          idx = rowWidget.data('lastId')
+          if not isNaN(idx)
+            rowWidget.data('margins', null)
+            resetWidgets rowWidget, idx, e
+            Util.safeApply scope, ->
+              scope.removeItem(idx)
+
+
+        widgetMouseOut = (e) ->
+          el = $(e.currentTarget)
+          resetWidgets el, el.data('lastId'), e
+
+        headWidget.mouseout(widgetMouseOut)
+        rowWidget.mouseout(widgetMouseOut)
 
         exportCSV = (separator=',', fileName='table.csv')->
           csv = []
@@ -157,6 +212,8 @@ define ['jquery', 'util', 'B64', 'templates', 'underscore', 'angular', 'jquery.e
                 scope.visible[i] = not scope.visible[i]
                 if not _.reduce scope.visible, ((m, i) -> m or i), false
                   scope.visible[i] = not scope.visible[i]
+                else
+                  updateVisibles()
             else
               if item.hasClass('export-csv-comma') or item.parents('.export-csv-comma').length
                 exportCSV ',', 'table-colons.csv'
@@ -181,13 +238,25 @@ define ['jquery', 'util', 'B64', 'templates', 'underscore', 'angular', 'jquery.e
             while val.length < n
               val.push true
             scope.visible = val
+            updateVisibles()
 
-        scope.clearAutoCell = (elements) ->
+        updateVisibles = ->
+          s = ''
+          for i in [0...n]
+            if not scope.visible[i]
+              s += 'table.editable-table.' + scope.tableId + ' td:nth-child('+(i+1)+') { display:none; }\n'
+              s += 'table.editable-table.' + scope.tableId + ' th:nth-child('+(i+1)+') { display:none; }\n'
+          element.find('> tbody > style.visible-style').html(s)
+          es = element.find('> thead > tr > th')
+          clearAutoCell es
+          updateAutoCell es
+
+        clearAutoCell = (elements) ->
           if scope.auto != null
             $(elements[scope.auto]).removeClass 'a-width'
-          scope.auto = null
+            scope.auto = null
 
-        scope.updateAutoCell = (elements) ->
+        updateAutoCell = (elements) ->
           min = 1000001
           auto = null
           for em, i in elements
@@ -206,34 +275,9 @@ define ['jquery', 'util', 'B64', 'templates', 'underscore', 'angular', 'jquery.e
             $(elements[auto]).addClass 'a-width'
           scope.auto = auto
 
-        for el, i in elements
-          ((i, el) ->
-            scope.$watch 'visible['+i+']', (newValue, oldValue) ->
-              es = element.find('th').not('.controls')
-              scope.clearAutoCell es
-              scope.updateAutoCell es
-              if newValue
-                $(el).removeClass 'hidden-true'
-              else
-                $(el).addClass 'hidden-true'
-              
-            scope.$watch ->
-              return 1 if !scope.rowHovered
-              return 1 if scope.hover
-              return 1 if $(el).css('display') == 'none'
-              for j in [i+1...elements.length]
-                if $(elements[j]).css('display') != 'none'
-                  return 1
-              return 2
-            , (newValue) ->
-              el.setAttribute('colspan', newValue)
-          )(i, el)
     controller: [ '$scope', '$element', ($scope, $element) ->
       this.scope = $scope
       $scope.tableId = 'tid' + Math.round( Math.random() * 10000 )
-      $scope.hover = false
-      $scope.rowHovered = 0
-      
       return
     ]
   ]
@@ -243,32 +287,13 @@ define ['jquery', 'util', 'B64', 'templates', 'underscore', 'angular', 'jquery.e
     link:
       post:
         (scope, element, attrs) ->
-          element.find('thead').hover ->
-            Util.safeApply scope, ->
+          (head = element.find('thead')).hover((->
               return if not scope.showGear
-              scope.hover = true
-              scope.rowHovered++
-              scope.headId = 'id' + Math.round( Math.random() * 10000)
-              el = element.find('th:visible:last')
-              el.addClass('squeezedElement')
-              $(templates.editableTh
-                id: scope.headId
-                tableId: scope.tableId
-                width: el.width()
-              )
-                .appendTo(element.find('thead tr'))
-                .find('i.close.fa-cog').click (e) ->
-                  setTimeout -> #to avoid the click event that cancels my menu
-                    element.find('thead').contextmenu 'show', e
-                  , 1
-          , ->
-            Util.safeApply scope, ->
-              return if not scope.hover
-              scope.hover = false
-              scope.rowHovered--
-              element.find('.controls').hide()
-              element.find('.squeezedElement').removeClass('squeezedElement')
-              element.find('#'+scope.headId).remove()
+              setWidgets $('body > .table-widgets.widgets-'+scope.tableId+' > .widget-head'), 'head', head
+            ), ((e) ->
+              resetWidgets $('body > .table-widgets.widgets-'+scope.tableId+' > .widget-head'), 'head', e
+            )
+          )
 
     controller: [ '$transclude', '$element', ($transclude, $element) ->
       $transclude (clone) ->
@@ -283,14 +308,6 @@ define ['jquery', 'util', 'B64', 'templates', 'underscore', 'angular', 'jquery.e
     link: (scope, element, attr, controller) ->
       scope.getScope = ->
         controller.scope
-
-      scope.removeItem = (index) ->
-        fcn = controller.scope.removeItem_
-        if fcn
-          fcn
-            index: index
-        else
-          controller.scope.model.splice(index, 1)
 
       scope.$watch ->
         attr.addItemLabel
@@ -317,57 +334,16 @@ define ['jquery', 'util', 'B64', 'templates', 'underscore', 'angular', 'jquery.e
           .replace(/&gt;/gi, '>')
         element.append $content
 
-        elements = element.children('td').not('.controls')
-        for el, i in elements
-          el.setAttribute 'colspan', '{{noColumns(hover, '+i+')}}'
-          $(el).addClass 'hidden-{{!visible('+i+')}}'
-
       post: (scope, element, attrs, controller) ->
         elements = element.children('td').not('.controls')
+        widget = $('body > .table-widgets.widgets-'+controller.scope.tableId+' > .widget-row')
 
-        scope.noColumns = (hover, i) ->
-          return 1 if hover
-          return 1 if !controller.scope.rowHovered
-          el = elements[i]
-          return 1 if $(el).css('display') == 'none'
-          for j in [i+1...elements.length]
-            if $(elements[j]).css('display') != 'none'
-              return 1
-          return 2
-
-        scope.visible = (i) ->
-          try
-            controller.scope.visible[i]
-          catch
-            true
-
-        scope.mouseEnter = ->
-          return if scope.hover
-          return if not controller.scope.canRemoveItem scope.o, scope.$index
-          scope.hover = true
-          controller.scope.rowHovered++
-          scope.id = 'id' + Math.round( Math.random() * 10000)
-          setTimeout (->
-            el = element.find('td:visible:last')
-            el.addClass('squeezedElement')
-            $(templates.editableTd
-              id: scope.id
-              width: el.width()
-              tableId: controller.scope.tableId
-            ).appendTo(element)
-              .find('i.close').click ->
-                Util.safeApply scope, ->
-                  scope.removeItem(scope.$index)
-          ), 0
-
-        scope.mouseLeave = ->
-          return if not scope.hover
-          scope.hover = false
-          controller.scope.rowHovered--
-          setTimeout (->
-            element.find('.squeezedElement').removeClass('squeezedElement')
-            element.find('#'+scope.id).remove()
-          ), 0
+        element.hover(((e) ->
+            return if not controller.scope.canRemoveItem scope.o, scope.$index
+            setWidgets widget, scope.$index, element
+          ), ((e) ->
+            resetWidgets widget, scope.$index, e
+        ))
 
         currentPoint = null
         getCurrentPoint = (x, y) ->
@@ -511,3 +487,4 @@ define ['jquery', 'util', 'B64', 'templates', 'underscore', 'angular', 'jquery.e
                 el = arr.splice(dragStart, 1)[0]
                 arr.splice idx, 0, el
           return
+

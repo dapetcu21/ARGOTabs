@@ -9,8 +9,8 @@ module.exports =
     out: "js/templates.js"
   )]
 
-  ignores: ['readme.md', '**/layout.*', '**/_*', '**/.gitignore', '**/.*.sw*', '**/.DS_Store']
-  watcher_ignores: ['**/*.sw*', 'node_modules/**']
+  ignores: ['readme.md', '**/layout.*', '**/_*', '**/.gitignore', '**/.*.sw*', '**/.DS_Store', 'Procfile', 'server.js']
+  watcher_ignores: ['**/*.sw*', 'node_modules/**/*']
 
   stylus:
     use: [autoprefixer(), rupture()]
