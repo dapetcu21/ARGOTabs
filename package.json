@@ -11,5 +11,12 @@
     "roots": "~3.0.0-rc.2",
     "client-templates": "0.0.x",
     "connect": "2.6.x"
+  },
+  "engines": {
+    "node": "0.10.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:dapetcu21/argotabs.git"
   }
 }
