@@ -66,27 +66,47 @@ define ['jquery', 'util', 'B64', 'templates', 'underscore', 'angular', 'jquery.e
       arr.push elementToString $this, visible
     return arr
 
-  setWidgets = (bar, id, row) ->
-    bar.data('lastId', id)
+  adjustWidget = (bar, row, id) ->
+    return if bar.data('lastId') != id
+    return if bar.hasClass('hidden-true')
     offset = row.position()
-    w = row.width()
-    h = row.height()
-    bar.css 'right', $("body").width() - offset.left - w
+    w = row.outerWidth()
+    h = row.outerHeight()
+    bar.css 'right', $("body").outerWidth() - offset.left - w
     bar.css 'top', offset.top
     bar.css 'height', h
-    bar.removeClass 'hidden-true'
-    bar.data 'margins',
+    bar.data 'margins', d =
       off: offset
       w: w
       h: h
+    d
+
+  setWidgets = (bar, id, row) ->
+    bar.data('lastId', id)
+    bar.removeClass 'hidden-true'
+    adjustWidget(bar, row, id)
 
   resetWidgets = (bar, id, event) ->
     return if bar.data('lastId') != id
-    d = bar.data 'margins'
+    if (elem = $(event.delegateTarget)).is(bar)
+      d = bar.data 'margins'
+    else
+      d = adjustWidget(bar, elem, id)
     x = event.pageX
     y = event.pageY
     return if d and (x >= d.off.left) and (x < d.off.left + d.w) and (y >= d.off.top) and (y < d.off.top + d.h)
     bar.addClass 'hidden-true'
+
+  setUpWidget = (bar, row, test = (-> true), id = (-> 'id')) ->
+    row.hover(((e) ->
+        return if not test()
+        setWidgets bar, id(), row
+      ), ((e) ->
+        resetWidgets bar, id(), e
+    ))
+    adj = -> adjustWidget(bar, row, id())
+    row.click adj
+    row.on 'focusin focusout', setTimeout.bind(null, adj, 0)
   
   mod.directive 'editableTable', ['$parse', ($parse) ->
     template: templates.editableTable()
@@ -165,6 +185,11 @@ define ['jquery', 'util', 'B64', 'templates', 'underscore', 'angular', 'jquery.e
 
         headWidget.mouseout(widgetMouseOut)
         rowWidget.mouseout(widgetMouseOut)
+
+        setUpWidget headWidget, element.find('thead'), ->
+          scope.showGear
+        , ->
+          'head'
 
         exportCSV = (separator=',', fileName='table.csv')->
           csv = []
@@ -284,20 +309,10 @@ define ['jquery', 'util', 'B64', 'templates', 'underscore', 'angular', 'jquery.e
 
   mod.directive 'editableHeadTransclude', ->
     require: '^editableTable'
-    link:
-      post:
-        (scope, element, attrs) ->
-          (head = element.find('thead')).hover((->
-              return if not scope.showGear
-              setWidgets $('body > .table-widgets.widgets-'+scope.tableId+' > .widget-head'), 'head', head
-            ), ((e) ->
-              resetWidgets $('body > .table-widgets.widgets-'+scope.tableId+' > .widget-head'), 'head', e
-            )
-          )
-
-    controller: [ '$transclude', '$element', ($transclude, $element) ->
+    controller: [ '$transclude', '$element', '$scope', ($transclude, $element, $scope) ->
       $transclude (clone) ->
         $element.append(clone)
+
     ]
 
   mod.directive 'editableTbody', ->
@@ -317,7 +332,7 @@ define ['jquery', 'util', 'B64', 'templates', 'underscore', 'angular', 'jquery.e
       scope.addItem = ->
         controller.scope.addItem_()
         setTimeout ->
-          if item = Util.focusableElement element.find("tr:nth-last-child(2)")
+          if item = Util.focusableElement element.find("tr:nth-last-child(3)")
             item.focus()
         , 1
 
@@ -338,12 +353,10 @@ define ['jquery', 'util', 'B64', 'templates', 'underscore', 'angular', 'jquery.e
         elements = element.children('td').not('.controls')
         widget = $('body > .table-widgets.widgets-'+controller.scope.tableId+' > .widget-row')
 
-        element.hover(((e) ->
-            return if not controller.scope.canRemoveItem scope.o, scope.$index
-            setWidgets widget, scope.$index, element
-          ), ((e) ->
-            resetWidgets widget, scope.$index, e
-        ))
+        setUpWidget widget, element, ->
+          controller.scope.canRemoveItem scope.o, scope.$index
+        , ->
+          scope.$index
 
         currentPoint = null
         getCurrentPoint = (x, y) ->
