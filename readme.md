@@ -13,7 +13,7 @@ Installation
 - Run `node server.js`
 - **or** (recommended if you want to hack on it with live reload):
 - Run `npm install`
-- Run `npm install -g roots@3.0.0-rc.2`
+- Run `npm install -g roots@3.0.0-rc.3`
 - Run `roots watch`
 
 Features
