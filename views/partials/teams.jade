@@ -14,8 +14,14 @@ table(editable-table, reorders, model='tournament.teams', visible='tournament.ta
       td {{$index + 1}}
       td
         text-edit-cell(bind='o.name')
-      td(ng-init='initRepeat(this)')
+      td
         multi-cell(bind='o.club', choices='tournament.clubs', nil-placeholder='unaffiliated', choice-name='o.name')
-      td(ng-mouseenter='playerHover = true', ng-mouseleave='playerHover = false')
-        hlist-cell(bind='o.players', add-item='o.addPlayer()', remove-item='o.removePlayerAtIndex(index)', remove-item-hidden='!canRemovePlayer(hlo)', separator=',', edit-hidden='!playerHover', reorders='true')
+      td(ng-controller='EditableController')
+        hlist-cell(bind='o.players', separator=',', reorders='true')
+          div(class='enabled-{{editPlayers}}', ng-show='canRemovePlayer(hlo)').item-controls.valign-middle
+            i(ng-click='removePlayer(o, $index)').fa.fa-times-circle.highlight-button
           text-edit-cell(bind='hlo.name')
+        .inline.valign-middle.hlist-controls
+          a(ng-click='o.addPlayer()', href='', tabindex=0).dont-print.unstyled-link.valign-middle
+            i.fa.fa-plus-circle.highlight-button
+          i(ng-click='editPlayers = !editPlayers', ng-show='o.players.length', class='edit-{{editPlayers}}').fa.fa-pencil-square.highlight-button.dont-print.edit-button.pre-space.valign-middle

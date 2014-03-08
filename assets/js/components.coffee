@@ -486,14 +486,8 @@ define ['jquery', 'util', 'judgerules', 'templates', 'jquery.transit', 'undersco
     restrict: 'E'
     scope:
       model: '=bind'
-      addItem: '&addItem'
-      _addItemHidden: '&addItemHidden'
-      removeItem: '&removeItem'
-      _removeItemHidden: '&removeItemHidden'
-      editHidden: '=editHidden'
       separator: '@separator'
       reorders: '&reorders'
-      reordersAlways: '@reordersAlways'
       userdata: '&userdata'
       dropGroup: '@dropGroup'
       groupTest: '&groupTest'
@@ -511,35 +505,18 @@ define ['jquery', 'util', 'judgerules', 'templates', 'jquery.transit', 'undersco
     transclude: true
     controller: ['$scope', '$element', '$attrs', '$parse', '$transclude', (scope, element, attrs, $parse, $transclude) ->
       @transclude = $transclude
-      scope.edit = false
-      scope.remove = (index) ->
-        scope.removeItem
-          index: index
-        if not scope.model.length
-          scope.edit = false
-      scope.add = ->
-        scope.addItem()
-        setTimeout ->
-          if item = Util.focusableElement element.find('.item'), false
-            item.focus()
-        , 1
-      scope.comma = (show) ->
-        if show
-          ','
-        else
-          ''
-      scope.$watch (-> attrs.dropGroup?), (v) -> scope.hasGroup = v
-      scope.$watch (-> attrs.addItem? and not (attrs.addItemHidden? and scope._addItemHidden())), (v) -> scope.canAddItem = v
-      scope.$watch (-> attrs.reorders? && scope.reorders(scope.$parent)), (v) ->
-        scope._reorders = v
 
-      scope.removeItemHidden = (hlo, index) ->
-        if attrs.removeItemHidden?
-          scope._removeItemHidden
-            hlo: hlo
-            $index: index
-        else
-          false
+      if (attrs.placeholder?)
+        pl = $('<div class="hlist-placeholder '+attrs.placeholder+'"></div>')
+        pl.appendTo element
+        scope.$watch 'model.length == 0', (v) ->
+          if v
+            pl.addClass 'hlist-empty'
+          else
+            pl.removeClass 'hlist-empty'
+
+      scope.isMovable = ->
+        attrs.reorders? && scope.reorders(scope.$parent) && (scope.model.length > 1 || attrs.dropGroup?)
 
       currentPoint = null
       dragElement = null

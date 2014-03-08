@@ -1,5 +1,24 @@
-define ['team'], (Team) ->
-  (ui, $routeProvider) ->
+define ['team'], (Team) -> [
+  (ui) ->
+    ui.app.controller 'EditableController', ['$scope', ($scope) ->
+      $scope.editPlayers = false
+      $scope.removePlayer = (team, index) ->
+        team.removePlayerAtIndex(index)
+        $scope.editPlayers = not not team.players.length
+
+      $scope.$watch ->
+        $scope.o.club
+      , (newValue, oldValue) ->
+        return if newValue == oldValue
+        team = $scope.o
+        if oldValue
+          oldValue.removeTeam(team)
+        if newValue
+          newValue.addTeam(team)
+    ]
+
+  , (ui, $routeProvider) ->
+
     $routeProvider.when '/teams',
       templateUrl: 'partials/teams.html'
       controller: [ '$scope', ($scope) ->
@@ -31,19 +50,11 @@ define ['team'], (Team) ->
                     return false
           return true
 
-        $scope.initRepeat = (iScope) ->
-          iScope.$watch ->
-            iScope.o.club
-          , (newValue, oldValue) ->
-            return if newValue == oldValue
-            team = iScope.o
-            if oldValue
-              oldValue.removeTeam(team)
-            if newValue
-              newValue.addTeam(team)
+
 
         $scope.eliminateNil = (a) ->
           if not a?
             return ''
           return a
       ]
+  ]
