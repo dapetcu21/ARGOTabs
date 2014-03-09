@@ -272,10 +272,11 @@ define ['jquery', 'util', 'judgerules', 'templates', 'jquery.transit', 'undersco
       scope.$watch ->
         $parse(attrs.bind)(scope.$parent)
       , (newValue) ->
-        v = modelToText(newValue)
-        label.text(v)
+        lastBoundModel = newValue
+        lastValue = modelToText(newValue)
+        label.text(lastValue)
         if editing
-          input.val(v)
+          input.val(lastValue)
 
       scope.$watch (-> not attrs.enabled? or scope.$parent.$eval(attrs.enabled)), (n, o) ->
         _enabled = n
