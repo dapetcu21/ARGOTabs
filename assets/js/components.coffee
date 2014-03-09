@@ -148,82 +148,33 @@ define ['jquery', 'util', 'judgerules', 'templates', 'jquery.transit', 'undersco
     replace: true
     transclude: true
     link: (scope, element, attrs) ->
-      scope.editing = false
       label = element.find('.textedit-label')
       input = element.find('input')
+      inputContainer = element.find('.control-group')
 
-      scope.$watch ->
-        if not attrs.softValidator?
-          true
-        else
-          scope.softValidator {o: $parse(attrs.bind) scope.$parent}
-      , (valid) ->
-        if attrs.valid?
-          scope.valid = valid
-        if valid
-          scope.labelClass = 'valid'
-          scope.inputClass = ''
-        else
-          scope.labelClass = 'invalid'
-          scope.inputClass = 'error'
+      editing = false
+      _enabled = true
+      lastValue = null
+      lastValid = 2
+      lastBoundModel = null
 
-      scope.$watch ->
-        $parse(attrs.bind)(scope.$parent)
-      , (newValue) ->
+      textToModel = (v) ->
+        if attrs.setter?
+          scope.setter {o: v}
+        else
+          v
+
+      modelToText = (v) ->
         if attrs.getter?
-          scope.valueParsed = scope.getter {o: newValue}
+          scope.getter {o: v}
         else
-          scope.valueParsed = newValue
-      scope.$watch 'valueParsed', (newValue, oldValue) ->
-        nv = if attrs.setter?
-          scope.setter {o: newValue}
-        else
-          newValue
-        if (scope.pattern and typeof(newValue) == 'string' and not newValue.match(new RegExp '^' + scope.pattern + '$')) or
-           (attrs.validator? and not scope.validator {o: nv})
-          scope.valueParsed = oldValue
-        else
-          $parse(attrs.bind).assign scope.$parent, nv
+          v
 
-      scope.$watch ->
-        attrs.editing
-      , (newValue, oldValue) ->
-        if newValue?
-          if newValue and not oldValue
-            scope.beginEdit()
-          else if not newValue and oldValue
-            scope.endEdit()
-
-      scope.$watch (-> not attrs.enabled? or scope.$parent.$eval(attrs.enabled)), (n, o) ->
-        scope._enabled = n
-        if n
-          label[0].tabIndex = 0
-        else
-          label[0].removeAttribute 'tabIndex'
-
-      scope.beginEdit_ = ->
-        if not attrs.editing? and scope._enabled
-          scope.beginEdit()
-
-      focusCallback = ->
-        Util.safeApply scope, scope.beginEdit_
-      defocusCallback = ->
-        Util.safeApply scope, ->
-          if not attrs.editing?
-            scope.endEdit()
-
-      label.focus focusCallback
-      if element.parent()[0].tagName == 'TD'
-        element.parent().click focusCallback
-
-      input.blur defocusCallback
-      input.keypress (e) ->
-        if e.which == 13
-          defocusCallback()
-
-      scope.beginEdit = ->
-        return if scope.editing
-        scope.editing = true
+      beginEdit = ->
+        return if editing
+        editing = true
+        inputContainer.removeClass 'hidden-true'
+        label.addClass 'hidden-true'
 
         minW = parseInt scope.minWidth
         if isNaN minW
@@ -232,16 +183,106 @@ define ['jquery', 'util', 'judgerules', 'templates', 'jquery.transit', 'undersco
         if minW > rw
           rw = minW
         input.css 'width', rw
+        input.val(label.text())
 
         setTimeout ->
           input.focus()
           input.select()
         , 0
-      scope.endEdit = ->
-        scope.editing = false
 
-      if attrs.editing
-        scope.beginEdit()
+      endEdit = ->
+        editing = false
+        inputContainer.addClass 'hidden-true'
+        label.removeClass 'hidden-true'
+        if attrs.delayedWrite?
+          boundModel = textToModel(input.val())
+          moddedValue = modelToText(boundModel)
+          label.text(newValue)
+          Util.safeApply scope, ->
+            $parse(attrs.bind).assign scope.$parent, boundModel
+
+      focusCallback = ->
+        if _enabled
+          beginEdit()
+
+      defocusCallback = endEdit
+
+      element.click(focusCallback)
+      label.focus(focusCallback)
+      if element.parent()[0].tagName == 'TD'
+        element.parent().click focusCallback
+
+      input.blur(defocusCallback)
+
+      onChange = (e) ->
+        newValue = input.val()
+        if e.which == 13
+          defocusCallback()
+          return
+        return if newValue == lastValue
+        scopeDoings = []
+
+        if (scope.pattern and typeof(newValue) == 'string' and not newValue.match(new RegExp '^' + scope.pattern + '$')) or (attrs.validator? and not scope.validator {o: newValue})
+          input.val(lastValue)
+          return
+
+        boundModel = textToModel(newValue)
+        return if boundModel == lastBoundModel
+        moddedValue = modelToText(boundModel)
+
+        if moddedValue != newValue
+          newValue = moddedValue
+          input.val(moddedValue)
+
+        if not attrs.delayedWrite?
+          label.text(newValue)
+          scopeDoings.push ->
+            $parse(attrs.bind).assign scope.$parent, boundModel
+
+        valid =
+          if not attrs.softValidator?
+            true
+          else
+            scope.softValidator {o: boundModel}
+
+        if valid != lastValid
+          if attrs.valid?
+            scopeDoings.push ->
+              scope.valid = valid
+          if valid
+            element.addClass 'valid'
+            element.removeClass 'invalid'
+            input.removeClass 'error'
+          else
+            element.addClass 'invalid'
+            element.removeClass 'valid'
+            input.addClass 'error'
+
+        lastValid = valid
+        lastValue = newValue
+        lastBoundModel = boundModel
+
+        if scopeDoings.length
+          Util.safeApply scope, ->
+            for f in scopeDoings
+              f()
+
+      input.on('input', onChange)
+
+      scope.$watch ->
+        $parse(attrs.bind)(scope.$parent)
+      , (newValue) ->
+        v = modelToText(newValue)
+        label.text(v)
+        if editing
+          input.val(v)
+
+      scope.$watch (-> not attrs.enabled? or scope.$parent.$eval(attrs.enabled)), (n, o) ->
+        _enabled = n
+        if n
+          label[0].tabIndex = 0
+        else
+          label[0].removeAttribute 'tabIndex'
   ]
 
   mod.directive "multiCell", ->
