@@ -197,7 +197,7 @@ define ['jquery', 'util', 'judgerules', 'templates', 'jquery.transit', 'undersco
         if attrs.delayedWrite?
           boundModel = textToModel(input.val())
           moddedValue = modelToText(boundModel)
-          label.text(newValue)
+          label.text(moddedValue)
           Util.safeApply scope, ->
             $parse(attrs.bind).assign scope.$parent, boundModel
 

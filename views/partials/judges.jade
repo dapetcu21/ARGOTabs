@@ -13,7 +13,7 @@ table(editable-table, reorders, model='tournament.judges', visible='tournament.t
     script(type='text/html')
       td {{$index + 1}}
       td
-        text-edit-cell(bind='o.name')
+        text-edit-cell(bind='o.name', delayed-write)
       td(ng-init='initRepeat(this)')
         multi-cell(bind='o.club', choices='tournament.clubs', nil-placeholder='unaffiliated', choice-name='o.name')
       td
