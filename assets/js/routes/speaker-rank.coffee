@@ -40,8 +40,6 @@ define ["player", "util", "underscore"], (Player, Util) ->
               return -1
             return 1
 
-          console.log players
-
           maxScoreDec = 0
           maxReplyDec = 0
           maxHighLowDec = 0

@@ -37,9 +37,9 @@ define ['util'], (Util) ->
         maxScore: 0
         score: 0
         reply: 0 #average
-        ballots: 0
         replyBallots: 0
         scoreHighLow: 0
+
       for roundId in rounds
         roundId = roundId.id if typeof roundId == 'object'
         round = @tournament.roundWithId roundId
@@ -51,49 +51,50 @@ define ['util'], (Util) ->
         else if @team == ballot.teams[1]
           side = 1
         else continue
-        speaker = -1
-        for i in [0...4]
+
+        didReply = ballot.roles[side][3] == this
+        didSpeech = false
+        for i in [0...3]
           if ballot.roles[side][i] == this
-            speaker = i
+            didSpeech = true
             break
-        continue if speaker == -1
 
         if ballot.presence[side]
           if ballot.presence[1-side] and ballot.teams[1-side]
-            if speaker != 3
+            if didSpeech
               o.roundsPlayed++
-              for vote in ballot.votes
-                score = vote.scores[side][speaker]
-                o.rawScore += score * vote.ballots
-                o.scoreCount += vote.ballots
-                if score < o.minScore
-                  o.minScore = score
-                if score > o.maxScore
-                  o.maxScore = score
-            else
+              for speaker in [0...3]
+                continue if ballot.roles[side][speaker] != this
+                for vote in ballot.votes
+                  score = vote.scores[side][speaker]
+                  o.rawScore += score * vote.ballots
+                  o.scoreCount += vote.ballots
+                  if score < o.minScore
+                    o.minScore = score
+                  if score > o.maxScore
+                    o.maxScore = score
+            if didReply
               o.roundsReplyed++
               for vote in ballot.votes
                 score = vote.scores[side][3]
                 o.rawReply += score * vote.ballots
                 o.replyCount += vote.ballots
           else
-            if speaker != 3
+            if didSpeech
               o.byes += round.ballotsPerMatchSolved()
               o.roundsPlayed++
-            else
+            if didReply
               o.replyByes += round.ballotsPerMatchSolved()
               o.roundsReplyed++
-      o.ballots = o.scoreCount + o.byes
+      allScores = o.scoreCount + o.byes
       o.replyBallots = o.replyCount + o.replyByes
       o.score = if o.scoreCount then o.rawScore / o.scoreCount else if o.byes then -1 else 0
       o.reply = if o.replyCount then o.rawReply / o.replyCount else if o.replyByes then -1 else 0
-      if o.ballots > 2
+      if allScores > 2
         if o.scoreCount
-          o.scoreHighLow = (o.rawScore + o.score * o.byes - o.minScore - o.maxScore) / (o.ballots - 2)
+          o.scoreHighLow = (o.rawScore + o.score * o.byes - o.minScore - o.maxScore) / (allScores - 2)
         else
           o.scoreHighLow = -1
       else
         o.scoreHighLow = 0
-      o.wins = o.rawWins + o.byeWins
-      o.ballots = o.rawBallots + o.byeBallots
       return o
