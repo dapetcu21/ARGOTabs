@@ -1,7 +1,14 @@
 define ['team'], (Team) -> [
   (ui) ->
-    ui.app.controller 'EditableController', ['$scope', ($scope) ->
+    ui.app.controller 'EditableController', ['$scope', '$element', ($scope, $element) ->
       $scope.editPlayers = false
+
+      $scope.addPlayer = (team) ->
+        team.addPlayer()
+        setTimeout ->
+          $element.find('.item:last-child .textedit-label').focus()
+        , 0
+
       $scope.removePlayer = (team, index) ->
         team.removePlayerAtIndex(index)
         $scope.editPlayers = not not team.players.length
