@@ -36,7 +36,7 @@
         | Enforce side constraint
         input(type='checkbox', ng-model='pairOpts.hardSides')
 
-      label(ng-show='pairOpts.algorithm == 0').checkbox
+      label(ng-show='pairOpts.algorithm == 0 || pairOpts.algorithm == 2').checkbox
         | Prevent club matches
         input(type='checkbox', ng-model='pairOpts.noClubMatches')
 
