@@ -21,6 +21,10 @@ define ['jquery', 'filereader', 'alertcontroller', 'tournament', 'backends', 'lo
             setTimeout ->
               discl.addClass 'in'
             , 0
+            discl.find('a').click (e) ->
+              e.preventDefault()
+              window.location = e.currentTarget.href
+              return false
           else
             discl.addClass 'in'
         onShow: onReady
