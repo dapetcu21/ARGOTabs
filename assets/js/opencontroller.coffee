@@ -14,10 +14,20 @@ define ['jquery', 'filereader', 'alertcontroller', 'tournament', 'backends', 'lo
         width: 350
         height: if @closeable then 310 else 250
         htmlMessage: templates.openModal()
+        onShown: ->
+          discl = $ templates.disclaimer()
+          discl.appendTo $('.modal-backdrop')
+          if @closeable
+            setTimeout ->
+              discl.addClass 'in'
+            , 0
+          else
+            discl.addClass 'in'
         onShow: onReady
         onDismiss: onDismiss
 
       @openModal = openModal = $('#open-modal')
+
 
       openModal.find('#omodal-add-a1').click =>
         openModal.find('.omodal-add-div').transition
