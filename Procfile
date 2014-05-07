@@ -1,1 +1,1 @@
-web: sh sprout_fix/run.sh
+web: node server.js
