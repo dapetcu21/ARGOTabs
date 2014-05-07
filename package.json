@@ -10,6 +10,7 @@
     "rupture": "0.0.x",
     "roots": "pre",
     "client-templates": "0.0.x",
+    "roots-cache-manifest": "0.0.x",
     "connect": "2.6.x"
   },
   "engines": {

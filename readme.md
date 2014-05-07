@@ -27,6 +27,7 @@ Features
 * Customizable ranking criteria.
 * CSV export and printable layouts for any table.
 * Auto-save and backup of tournament files.
+* Offline app. After you load it once, you can access the app's link without internet.
 
 Planned Features
 -----------------
@@ -34,4 +35,4 @@ Planned Features
 * More statistics views.
 * GDrive integration.
 * Editable pairings.
-* Offline Chrome Packaged App.
+* Chrome Packaged App.
