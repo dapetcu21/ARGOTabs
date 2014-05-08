@@ -12,7 +12,7 @@ module.exports =
     manifest: "assets/manifest.appcache"
   )]
 
-  ignores: ['readme.md', '**/layout.*', '**/_*', '**/.gitignore', '**/.*.sw*', '**/.DS_Store', 'Procfile', 'server.js']
+  ignores: ['readme.md', '**/layout.*', '**/_*', '**/.gitignore', '**/.*.sw*', '**/.DS_Store', 'Procfile', 'server.js', 'vendor/**/*', '.*/**/*']
   watcher_ignores: ['**/*.sw*', 'node_modules/**/*']
 
   stylus:
