@@ -1,6 +1,4 @@
-#open-modal-table td
-  border-top: 0px
-  padding: 0px !important
+// Disclaimer
 
 .open-disclaimer
   position: absolute
@@ -19,6 +17,52 @@
 
 .fade .open-disclaimer
   transition: opacity 0.2s linear
+
+// The loading screen
+
+.loading-screen
+  width: 200%
+  height: 200%
+  top: -50%
+  left: -50%
+  background: #333333
+  position: fixed
+  overflow: hidden
+  z-index: 10000
+  display: table
+  vertical-align: middle
+
+#open-modal+.modal-backdrop
+#open-tournament-error+.modal-backdrop
+  background: #333333
+
+#open-modal+.modal-backdrop.in
+#open-tournament-error+.modal-backdrop.in
+  opacity: 1
+
+#open-modal-table
+  margin-bottom: 0px
+
+.loading-screen h3
+  display: table-cell
+  text-align: center
+  font-size: 200%
+  vertical-align: middle
+  color: #fff
+  text-shadow: 0px 2px 3px #000
+
+#open-modal.modal
+  transition: transform 0.3s, opacity 0.3s linear, top 0.3s ease-out
+  -webkit-transition: -webkit-transform 0.3s, opacity 0.3s linear, top 0.3s ease-out
+
+#open-modal.dropbox
+  transform: scale(1.2)
+
+// The actual modal
+
+#open-modal-table td
+  border-top: 0px
+  padding: 0px !important
 
 .omodal-add-padding
   padding: 10px

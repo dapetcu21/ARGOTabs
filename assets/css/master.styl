@@ -1,17 +1,13 @@
-/*
 @import '../components/bootstrap/css/bootstrap.css'
 @import '../components/bootstrap/css/bootstrap-responsive.css'
 @import '../components/font-awesome/css/font-awesome.css'
-*/
+@import '../components/rainbow/themes/github.css'
 
-red-color = #a81313
-green-color = #1e6917
-blue-color = #12588a
-gray-color = #808080
-yellow-color = #a88713
+@import _common
 
-@import _ballotSheet
+@import _index
 @import _openModal
+@import _ballotSheet
 @import _saveAs
 @import _rounds
 @import _rooms
@@ -20,51 +16,8 @@ yellow-color = #a88713
 @import _teams
 @import _judges
 @import _clubs
-@import _general
 @import _editableTable
 
-.sidebar-nav
-  padding: 9px 0;
-
-body
-  padding-top: 60px;
-
-@media (max-width: 980px)
-  body
-    padding-top: 0px;
-  .loading-screen
-    top: 0px
-
-@media screen
-  .print-only
-    display: none !important
-
-@media print
-  .dont-print
-    display: none !important
-  .print-full-width
-    width: 100% !important
-    margin: auto !important
-  .table,
-  .table td,
-  .table th
-    border-radius: 0px
-    border-collapse: collapse
-  .table .controls *
-    display: none !important
-  .table .controls
-    width: 0px !important
-    padding: 0px !important
-    border: 0px !important
-  .table.table-bordered .controls
-    border-width: 1px
-  .table-bordered
-    border-width: 1px
-
-
-
-.full-width
-  width: 100%
 
 .nowrap
   white-space: nowrap
@@ -75,36 +28,6 @@ body
 .strong
   font-weight: bold
 
-.loading-screen
-  width: 200%
-  height: 200%
-  top: -50%
-  left: -50%
-  background: #333333
-  position: fixed
-  overflow: hidden
-  z-index: 10000
-  display: table
-  vertical-align: middle
-
-#open-modal+.modal-backdrop
-#open-tournament-error+.modal-backdrop
-  background: #333333
-
-#open-modal+.modal-backdrop.in
-#open-tournament-error+.modal-backdrop.in
-  opacity: 1
-
-#open-modal-table
-  margin-bottom: 0px
-
-.loading-screen h3
-  display: table-cell
-  text-align: center
-  font-size: 200%
-  vertical-align: middle
-  color: #fff
-  text-shadow: 0px 2px 3px #000
 
 .radio-container label
   padding-left: 10px
@@ -114,13 +37,6 @@ body
 
 .radio-container label input
   margin: 0 5px
-
-#open-modal.modal
-  transition: transform 0.3s, opacity 0.3s linear, top 0.3s ease-out
-  -webkit-transition: -webkit-transform 0.3s, opacity 0.3s linear, top 0.3s ease-out
-
-#open-modal.dropbox
-  transform: scale(1.2)
 
 .hidden-true
   display: none !important

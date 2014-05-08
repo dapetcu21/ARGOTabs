@@ -1,0 +1,38 @@
+red-color = #a81313
+green-color = #1e6917
+blue-color = #12588a
+gray-color = #808080
+yellow-color = #a88713
+
+/* Printable layout */
+
+@media screen
+  .print-only
+    display: none !important
+
+@media print
+  .dont-print
+    display: none !important
+  .print-full-width
+    width: 100% !important
+    margin: auto !important
+  .table,
+  .table td,
+  .table th
+    border-radius: 0px
+    border-collapse: collapse
+  .table .controls *
+    display: none !important
+  .table .controls
+    width: 0px !important
+    padding: 0px !important
+    border: 0px !important
+  .table.table-bordered .controls
+    border-width: 1px
+  .table-bordered
+    border-width: 1px
+
+.full-width
+  width: 100%
+
+/***/
