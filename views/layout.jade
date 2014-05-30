@@ -8,8 +8,10 @@ html(manifest='manifest.appcache')
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
 
     title Tabs
-    link(rel='stylesheet', href='css/master.css')
+    link(rel='stylesheet', href='common.css')
+    link(rel='stylesheet', href='screen.css', media='screen')
+    link(rel='stylesheet', href='print.css', media='print')
   body
     block content
 
-    script(data-main="js/main", src="js/require.js")
+    script(data-main='main', src='require.js')

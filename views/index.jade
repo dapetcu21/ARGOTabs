@@ -30,26 +30,6 @@ block content
     .row-fluid
       .span2.dont-print
         .well.sidebar-nav
-          ul(ng-controller='RoutesList').nav.nav-list
-            li.nav-header Tournament
-            nav-li(href="/") Dashboard
-            li.nav-header Participants
-            nav-li(href="/teams") Teams
-            nav-li(href="/clubs") Clubs
-            nav-li(href="/judges") Judges
-            nav-li(href="/rooms") Rooms
-            li.nav-header Statistics
-            nav-li(href="/team-rank") Team rank
-            nav-li(href="/speaker-rank") Speaker rank
-            //nav-li(href="/judge-avg") Judge averages
-            li.nav-header Rounds
-            nav-li(ng-repeat='round in tournament.rounds', href='/rounds/{{$index+1}}') 
-              | Round {{$index+1}} 
-              a(href='', ng-click='removeRound($index)').pull-right.unstyled.remove-round
-                i.fa.fa-fw.fa-times-circle.pull-right
-            li
-              a(href='', ng-click='addRound()')
-                i.fa.fa-fw.fa-plus
-                |  New round
+          ul#sidebar-nav.nav.nav-list
             
       div(ng-view).span10.print-full-width

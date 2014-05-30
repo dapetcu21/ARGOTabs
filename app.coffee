@@ -7,8 +7,9 @@ module.exports =
   extensions: [ClientTemplates(
     base: "views/templates/"
     pattern: "*.jade"
-    out: "js/templates.js"
-  ), CacheManifest(
+    out: "core/templates.js"
+  )
+  , CacheManifest(
     manifest: "assets/manifest.appcache"
   )]
 
