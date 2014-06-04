@@ -29,7 +29,7 @@ define ['models/team', 'angular'], (Team) ->
     sidebarCategory: -> 'Participants'
     sidebarItem: ->
       name: 'Teams'
-      sortToken: 1
+      sortToken: 2
     angularModules: -> ['teams']
     route: -> '/teams'
     routeOpts: ->

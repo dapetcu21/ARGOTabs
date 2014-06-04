@@ -1,4 +1,4 @@
-define ['extensions/index', 'underscore', 'angular-route'], (extensionsArray, _) ->
+define ['ext_scripts', 'underscore', 'angular-route'], (extensionsArray, _) ->
   class Extensions
     constructor: (ui) ->
       @extensions = extensions = []
@@ -48,8 +48,8 @@ define ['extensions/index', 'underscore', 'angular-route'], (extensionsArray, _)
               if typeof opts != 'object'
                 @throwError(ext, 'if "route" is present, "routeOpts" should return an object')
               $routeProvider.when route, opts
-            else if typeof route = 'function'
-              route($routeProvider)
+            else if typeof route == 'function'
+              route.bind(ext)($routeProvider)
             else
               @throwError(ext, '"route" should return a string or a function')
       ]

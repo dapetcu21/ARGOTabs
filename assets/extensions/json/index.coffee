@@ -1,6 +1,7 @@
 define ['rainbow'], ->
-  (ui, $routeProvider) ->
-    $routeProvider.when '/json',
+  class JsonView
+    route: -> '/json'
+    routeOpts: ->
       template: '<div id="json-view"></div>'
       controller: [ '$scope', ($scope) ->
         $scope.$watch 'tournament', (value) ->
