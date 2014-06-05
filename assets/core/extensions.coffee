@@ -83,8 +83,8 @@ define ['ext_scripts', 'underscore', 'angular-route'], (extensionsArray, _) ->
               item =
                 name: item
             if typeof item == 'object'
-              if not item.name?
-                @throwError(ext, '"sidebarItem" must have a "name"')
+              if not item.name? and not item.html?
+                @throwError(ext, '"sidebarItem" must have a "name" or a "html"')
             else
               @throwError(ext, '"sidebarItem" should return a string or an object')
             if not item.href?
@@ -110,5 +110,8 @@ define ['ext_scripts', 'underscore', 'angular-route'], (extensionsArray, _) ->
           else
             o.name
         for item in items
-          html += '<nav-li href="'+item.href+'">'+item.name+'</nav-li>'
+          if item.html?
+            html += item.html
+          else
+            html += '<nav-li href="'+item.href+'">'+item.name+'</nav-li>'
       $('#sidebar-nav').html(html)

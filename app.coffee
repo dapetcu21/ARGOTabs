@@ -3,7 +3,6 @@ rupture         = require 'rupture'
 ClientTemplates = require 'client-templates'
 CacheManifest   = require 'roots-cache-manifest'
 fs              = require 'fs'
-W               = require 'when'
 
 module.exports = options =
   extensions: [ClientTemplates(

@@ -679,11 +679,39 @@ define ['models/team', 'models/judge', 'models/round', 'core/util', 'core/alertc
           $(document).bind "keydown keypress", enterForSelection
   ]
 
+  module.controller 'SidebarRemoveRound', ['$scope', '$element', '$location', ($scope, $element, $location) ->
+    $scope.removeRound = ->
+      i = $scope.$index
+      new AlertController
+        buttons: ['Cancel', 'Delete']
+        cancelButtonIndex: 0
+        primaryButtonIndex: 1
+        title: 'Delete Round ' + (i+1)
+        width: 400
+        htmlMessage: '<p>Are you sure you want to delete Round '+(i+1)+'?</p><p>This will remove the pairing, all ballots and all scores associated with this round. Most mistakes can be corrected without deleting the whole round.</p>'
+        onClick: (alert, bIndex, bName) =>
+          if bIndex == 1
+            $scope.$apply =>
+              if $location.path().match(/^\/round/)
+                $location.path('/')
+              t = $scope.tournament
+              r = t.rounds[i]
+              t.rounds.splice i, 1
+              r.destroy()
+              alert.modal('hide')
+  ]
+
+  module.controller 'SidebarNewRound', ['$scope', ($scope) ->
+    $scope.addRound = ->
+      tournament = $scope.tournament
+      tournament.rounds.push new Round tournament
+  ]
+
   class Rounds
     angularModules: -> ['rounds']
     sidebarCategory: -> 'Rounds'
     sidebarItem: ->
-      name: 'Rounds'
+      html: templates.roundsSidebar()
     route: -> '/rounds/:roundIndex'
     routeOpts: ->
       templateUrl: 'partials/rounds.html'
