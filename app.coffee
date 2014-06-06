@@ -32,18 +32,27 @@ module.exports = options =
   stylus:
     use: [autoprefixer(), rupture()]
 
-options.before = (roots) ->
-  ext_path = roots.root + '/assets/extensions'
-  gen_path = roots.root + '/gen'
-  script_loader_path = gen_path + '/ext_scripts.coffee'
+getPaths = (roots) ->
+  path =
+    ext: roots.root + '/assets/extensions'
+    gen: roots.root + '/gen'
+  path.script_loader = path.gen + '/ext_scripts.coffee'
+  path.css_loader =
+    common: path.gen + '/_ext_common.styl',
+    screen: path.gen + '/_ext_screen.styl',
+    print: path.gen + '/_ext_print.styl',
+  path
 
-  dir = fs.readdirSync ext_path
+options.before = (roots) ->
+  path = getPaths(roots)
+
+  dir = fs.readdirSync path.ext
   scripts = []
   css_common = []
   css_screen = []
   css_print = []
   for extension in dir
-    ext_dir = ext_path + '/' + extension
+    ext_dir = path.ext + '/' + extension
     if fs.existsSync(ext_dir + '/index.coffee') or fs.existsSync(ext_dir + '/index.js')
       scripts.push extension
     if fs.existsSync(ext_dir + '/common.styl')
@@ -53,21 +62,33 @@ options.before = (roots) ->
     if fs.existsSync(ext_dir + '/print.styl')
       css_print.push extension
 
-  if not fs.existsSync gen_path
-    fs.mkdirSync gen_path
+  if not fs.existsSync path.gen
+    fs.mkdirSync path.gen
   script_loader = 'define [\n' +
     scripts.map((x) -> '  \'extensions/'+x+'/index\',\n').join('') +
     '  ], -> arguments\n'
-  fs.writeFileSync(script_loader_path, script_loader)
-  return false
+  fs.writeFileSync(path.script_loader, script_loader)
+
+  writeCss = (files, out_path, suffix) ->
+    contents = files.map((x) -> '@import \'../assets/extensions/'+x+'/'+suffix+'\'\n').join('')
+    fs.writeFileSync(out_path, contents)
+
+  writeCss css_common, path.css_loader.common, 'common'
+  writeCss css_screen, path.css_loader.screen, 'screen'
+  writeCss css_print, path.css_loader.print, 'print'
+  return
 
 options.after = (roots) ->
-  ext_path = roots.root + '/assets/extensions'
-  gen_path = roots.root + '/gen'
-  script_loader_path = gen_path + '/ext_scripts.coffee'
-
-  if fs.existsSync script_loader_path
-    fs.unlinkSync script_loader_path
-  if fs.existsSync gen_path
-    fs.rmdirSync gen_path
-  return true
+  path = getPaths(roots)
+  files_to_delete = [
+    path.script_loader,
+    path.css_loader.common,
+    path.css_loader.screen,
+    path.css_loader.print
+  ]
+  for file in files_to_delete
+    if fs.existsSync file
+      fs.unlinkSync file
+  if fs.existsSync path.gen
+    fs.rmdirSync path.gen
+  return
