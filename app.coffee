@@ -32,10 +32,10 @@ module.exports = options =
   stylus:
     use: [autoprefixer(), rupture()]
 
-getPaths = (roots) ->
+getPaths = (root) ->
   path =
-    ext: roots.root + '/assets/extensions'
-    gen: roots.root + '/gen'
+    ext: root + '/assets/extensions'
+    gen: root + '/gen'
   path.script_loader = path.gen + '/ext_scripts.coffee'
   path.css_loader =
     common: path.gen + '/_ext_common.styl',
@@ -43,27 +43,52 @@ getPaths = (roots) ->
     print: path.gen + '/_ext_print.styl',
   path
 
+isFile = (path) ->
+  try
+    fs.statSync(path).isFile()
+  catch
+    false
+
+isDir = (path) ->
+  try
+    fs.statSync(path).isDirectory()
+  catch
+    false
+
+path = getPaths(__dirname)
+dir = fs.readdirSync path.ext
+scripts = []
+templates = []
+css_common = []
+css_screen = []
+css_print = []
+for extension in dir
+  ext_dir = path.ext + '/' + extension
+  if !isDir(ext_dir)
+    continue
+  if isFile(ext_dir + '/index.coffee') or isFile(ext_dir + '/index.js')
+    scripts.push extension
+  if isFile(ext_dir + '/common.styl')
+    css_common.push extension
+  if isFile(ext_dir + '/screen.styl')
+    css_screen.push extension
+  if isFile(ext_dir + '/print.styl')
+    css_print.push extension
+  if isDir(ext_dir + '/templates')
+    templates.push extension
+
+for x, i in templates
+  options.extensions.push ClientTemplates(
+    base: "assets/extensions/"+x+"/templates/"
+    pattern: "*.jade"
+    out: "extensions/"+x+"/templates.js"
+    category: "extensiontemplates" + i
+  )
+
 options.before = (roots) ->
-  path = getPaths(roots)
-
-  dir = fs.readdirSync path.ext
-  scripts = []
-  css_common = []
-  css_screen = []
-  css_print = []
-  for extension in dir
-    ext_dir = path.ext + '/' + extension
-    if fs.existsSync(ext_dir + '/index.coffee') or fs.existsSync(ext_dir + '/index.js')
-      scripts.push extension
-    if fs.existsSync(ext_dir + '/common.styl')
-      css_common.push extension
-    if fs.existsSync(ext_dir + '/screen.styl')
-      css_screen.push extension
-    if fs.existsSync(ext_dir + '/print.styl')
-      css_print.push extension
-
-  if not fs.existsSync path.gen
+  try
     fs.mkdirSync path.gen
+
   script_loader = 'define [\n' +
     scripts.map((x) -> '  \'extensions/'+x+'/index\',\n').join('') +
     '  ], -> arguments\n'
@@ -79,7 +104,6 @@ options.before = (roots) ->
   return
 
 options.after = (roots) ->
-  path = getPaths(roots)
   files_to_delete = [
     path.script_loader,
     path.css_loader.common,
@@ -87,8 +111,8 @@ options.after = (roots) ->
     path.css_loader.print
   ]
   for file in files_to_delete
-    if fs.existsSync file
+    try
       fs.unlinkSync file
-  if fs.existsSync path.gen
+  try
     fs.rmdirSync path.gen
   return

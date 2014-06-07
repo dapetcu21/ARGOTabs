@@ -1,4 +1,4 @@
-define ['models/team', 'models/judge', 'models/round', 'core/util', 'core/alertcontroller', 'core/templates', 'angular'], (Team, Judge, Round, Util, AlertController, templates) ->
+define ['models/team', 'models/judge', 'models/round', 'core/util', 'core/alertcontroller', './templates', 'angular'], (Team, Judge, Round, Util, AlertController, templates) ->
   module = angular.module 'rounds', []
   module.controller 'RoomController', ['$scope', ($scope) ->
     ballot = $scope.round.ballots[$scope.$index]
