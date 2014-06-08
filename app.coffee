@@ -6,7 +6,7 @@ fs              = require 'fs'
 
 module.exports = options =
   extensions: [ClientTemplates(
-    base: "views/templates/"
+    base: "assets/templates/"
     pattern: "*.jade"
     out: "core/templates.js"
   )
@@ -24,17 +24,20 @@ module.exports = options =
     'Procfile',
     'server.js',
     'vendor/**/*',
+    'src/extensions/*/{common,screen,print}.styl',
+    'src/extensions/*/css/**',
+    'assets/css/**',
     '.*/**/*']
 
   watcher_ignores: ['**/*.sw*', 'node_modules/**/*']
-  dump_dirs: ['assets', 'views', 'gen']
+  dump_dirs: ['src', 'assets', 'gen']
 
   stylus:
     use: [autoprefixer(), rupture()]
 
 getPaths = (root) ->
   path =
-    ext: root + '/assets/extensions'
+    ext: root + '/src/extensions'
     gen: root + '/gen'
   path.script_loader = path.gen + '/ext_scripts.coffee'
   path.css_loader =
@@ -79,7 +82,7 @@ for extension in dir
 
 for x, i in templates
   options.extensions.push ClientTemplates(
-    base: "assets/extensions/"+x+"/templates/"
+    base: "src/extensions/"+x+"/templates/"
     pattern: "*.jade"
     out: "extensions/"+x+"/templates.js"
     category: "extensiontemplates" + i
@@ -95,7 +98,7 @@ options.before = (roots) ->
   fs.writeFileSync(path.script_loader, script_loader)
 
   writeCss = (files, out_path, suffix) ->
-    contents = files.map((x) -> '@import \'../assets/extensions/'+x+'/'+suffix+'\'\n').join('')
+    contents = files.map((x) -> '@import \'../src/extensions/'+x+'/'+suffix+'\'\n').join('')
     fs.writeFileSync(out_path, contents)
 
   writeCss css_common, path.css_loader.common, 'common'
