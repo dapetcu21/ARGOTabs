@@ -27,6 +27,9 @@ define [
         @extensions.setUpSidebar()
         #TO DO: bootstrap only after tournament has been loaded from cache
         @injector = angular.bootstrap document, ['argotabs']
+        @rootApply (sc) ->
+          sc.tournament = Tournament.placeholderTournament
+          console.log('placeholder')
         @loadSession =>
           @setTournament null
           new OpenController this, =>
@@ -229,6 +232,7 @@ define [
 
     getTournament: -> @tournament
     setTournament: (tournament) ->
+      console.log(tournament)
       @tournament = tournament
       if tournament
         @rootApply (sc) ->
