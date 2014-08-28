@@ -197,16 +197,16 @@ define ['jquery', 'core/util', 'B64', './templates', 'underscore', 'angular', 'j
             $this = $(this)
             return if not eligibleForExport $this, true
             csv.push serializeTr $this, true
-          txt = ''
+          txt = []
           for row, i in csv
-            txt += '\r\n' if i
+            txt.push '\r\n' if i
             for cell, j in row
-              txt += separator if j
+              txt.push separator if j
               if /[\t\n,;"]/.test cell
-                txt += '"' + cell.replace(/"/g, '""') + '"'
+                txt.push '"' + cell.replace(/"/g, '""') + '"'
               else
-                txt += cell
-          data = B64.encode txt
+                txt.push cell
+          data = B64.encode txt.join('')
           link = $('<a id="downloader" download="' + fileName + '" href="data:application/octet-stream;base64,' + data + '"></a>')
             .appendTo $("body")
           link[0].click()
