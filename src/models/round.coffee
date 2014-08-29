@@ -282,6 +282,9 @@ define ['core/util', './ballot', './judge', './sorter', './judgerules', './team'
             return zero
           return r
 
+      # To prevent edge case when no restrictions are applicable
+      restrictions.conditions.push () -> 1
+
       if opts.hardSides
         restrictions.conditions.push (a, b) ->
           if a.stats.side? and b.stats.side? and a.stats.side == b.stats.side then 1 else 0
