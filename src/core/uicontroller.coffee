@@ -26,9 +26,9 @@ define [
       $(document).ready =>
         @extensions.setUpRoutes()
         @extensions.setUpSidebar()
-        #TO DO: bootstrap only after tournament has been loaded from cache
-        @injector = angular.bootstrap document, ['argotabs'], (sc) ->
-          sc.tournament = Tournament.placeholderTournament
+        @previousRoute = window.location.href
+        history.replaceState(null, '', '/#loading')
+        @injector = angular.bootstrap document, ['argotabs']
         @loadSession =>
           @setTournament null
           new OpenController this, =>
@@ -84,12 +84,17 @@ define [
 
     loadSession: (onFail) ->
       lastURL = Cookies.get 'ARGOTabs_lastURL'
+      locationURL = @previousRoute.match /^[^#]*#\/url=([^\/]*)(.*)$/
+      if locationURL
+        lastURL = decodeURIComponent(locationURL[1])
+        @previousRoute = locationURL[2]
       try
         if lastURL
           source = Backend.load(lastURL)
           if !source.exists()
             throw new Error('Entry for ' + lastURL + 'does not exist')
-          @setTournament new Tournament(source)
+          @setTournament new Tournament(source), =>
+            window.location.href = @previousRoute
         else
           throw new Error('No session to resume')
       catch e
@@ -219,7 +224,7 @@ define [
                     thisFunction(alert, index, null, true)
 
     getTournament: -> @tournament
-    setTournament: (tournament) ->
+    setTournament: (tournament, cb = (->), errcb = (->)) ->
       @tournament = tournament
       if tournament
         @rootApply (sc) ->
@@ -230,6 +235,7 @@ define [
             sc.tournament = tournament
             sc.tournamentLoaded = true
             sc.loadingTournament = false
+            cb()
         ), ((err) =>
           @setTournament null
           console.log(err.stack)
@@ -249,6 +255,7 @@ define [
               if bIndex == 0
                 new OpenController this, ->
                   alert.modal('hide')
+          errcb(err)
         )
       else
         @saveSession null
