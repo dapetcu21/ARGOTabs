@@ -5,14 +5,15 @@ define [
   './alertcontroller',
   './extensions'
   '../models/tournament',
-  '../models/backends/index',
-  '../models/backends/localbackend',
+  '../models/backend',
   './util',
   './templates',
   'angular'
   'jquery',
   'jquery.bootstrap'
-], (B64, Cookies, OpenController, AlertController, Extensions, Tournament, Backends, LocalBackend, Util, templates) ->
+], (B64, Cookies, OpenController, AlertController, Extensions, Tournament, Backend, Util, templates) ->
+  LocalBackend = Backend.backendForSchema('local')
+
   class UIController
     constructor: ->
       @extensions = new Extensions(this)
@@ -26,10 +27,8 @@ define [
         @extensions.setUpRoutes()
         @extensions.setUpSidebar()
         #TO DO: bootstrap only after tournament has been loaded from cache
-        @injector = angular.bootstrap document, ['argotabs']
-        @rootApply (sc) ->
+        @injector = angular.bootstrap document, ['argotabs'], (sc) ->
           sc.tournament = Tournament.placeholderTournament
-          console.log('placeholder')
         @loadSession =>
           @setTournament null
           new OpenController this, =>
@@ -79,28 +78,22 @@ define [
 
     saveSession: (tournament) ->
       if tournament?
-        Cookies.set 'lastBackend', Util.getObjectClass tournament.backend
-        Cookies.set 'lastFileName', tournament.backend.fileName()
+        Cookies.set 'ARGOTabs_lastURL', tournament.source.url()
       else
-        Cookies.expire 'lastBackend'
-        Cookies.expire 'lastFileName'
+        Cookies.expire 'ARGOTabs_lastURL'
 
     loadSession: (onFail) ->
-      lastBackend = Cookies.get 'lastBackend'
-      lastFileName = Cookies.get 'lastFileName'
-      found = false
-      if lastBackend and lastFileName
-        for backend in Backends
-          if Util.getClass(backend) == lastBackend
-            try
-              backend.listFiles (fileList) =>
-                if fileList.indexOf(lastFileName) != -1
-                  @setTournament new Tournament(new backend(lastFileName))
-                  found = true
-            catch e
-              console.log e.message
-            break
-      if not found
+      lastURL = Cookies.get 'ARGOTabs_lastURL'
+      try
+        if lastURL
+          source = Backend.load(lastURL)
+          if !source.exists()
+            throw new Error('Entry for ' + lastURL + 'does not exist')
+          @setTournament new Tournament(source)
+        else
+          throw new Error('No session to resume')
+      catch e
+        console.log e
         onFail()
 
     save: (fn, autosave = false) ->
@@ -168,15 +161,10 @@ define [
       link.remove()
 
     saveaslocal: ->
-      invalid = {}
-      LocalBackend.listFiles (fileList) ->
-        for file in fileList
-          invalid[file] = true
-
       new AlertController
         title: "Save as"
         htmlMessage: templates.saveAs
-          value: @tournament.backend.fileName() + " (2)"
+          value: @tournament.source.fileName() + " (2)"
         buttons: ['Cancel', 'Save']
         cancelButtonIndex: 0
         width: 400
@@ -186,16 +174,16 @@ define [
 
           textBox.bind 'input propertychange', =>
             newName = textBox[0].value
-            if invalid[newName]
+            if LocalBackend.load(LocalBackend.urlFromFileName(newName)).exists()
               controlGroup.addClass 'error'
             else
               controlGroup.removeClass 'error'
 
-          if invalid[textBox[0].value]
+          if LocalBackend.load(LocalBackend.urlFromFileName(textBox[0].value)).exists()
             controlGroup.addClass 'error'
 
           textBox.keypress (e) =>
-            if e.which == 13
+            if e.which == 14
               alert.find('.btn-primary').click()
 
         onShown: (alert) =>
@@ -206,13 +194,13 @@ define [
           if index == 1
             thisFunction = arguments.callee
             newName = alert.find('.saveas-text')[0].value
-            if not invalid[newName]
+            source = LocalBackend.load(LocalBackend.urlFromFileName(newName))
+            if not source.exists()
               if not force
                 alert.find('.btn-primary').button('loading')
               try
-                be = new LocalBackend(newName)
                 data = @tournament.toFile()
-                be.save data, (=>
+                source.save data, (=>
                   alert.modal('hide')), force
               catch e
                 alert.find('.btn-primary').button('reset')
@@ -232,7 +220,6 @@ define [
 
     getTournament: -> @tournament
     setTournament: (tournament) ->
-      console.log(tournament)
       @tournament = tournament
       if tournament
         @rootApply (sc) ->
@@ -245,6 +232,7 @@ define [
             sc.loadingTournament = false
         ), ((err) =>
           @setTournament null
+          console.log(err.stack)
           new AlertController
             buttons: ['OK']
             primaryButtonIndex: 0
@@ -254,7 +242,7 @@ define [
             height: 200
             title: 'Error'
             message: "Can't open tournament: " + err.message
-            onShow: ->
+            onShow: =>
               @rootApply (sc) ->
                 sc.loadingTournament = false
             onClick: (alert, bIndex, bName) =>

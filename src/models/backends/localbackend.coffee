@@ -1,20 +1,26 @@
-define ['../backend'], (Backend) ->
-  class LocalBackend extends Backend
-    constructor: (@fName) ->
+define ['../backend_import', '../source'], (Backend, Source) ->
+  class LocalSource extends Source
+    constructor: () ->
+      super
       @loadDate = new Date()
       @date = this.modifiedDate()
+      @fName = @fileName()
 
-    @icon = '<i class="fa fa-fw fa-file"></i>'
+    exists: ->
+      localStorage.hasOwnProperty(@fName + '.atab')
 
     modifiedDate: ->
       date = localStorage.getItem(@fName + '.mdate')
       if date? then new Date(parseInt(date.match(/\d+/)[0])) else @loadDate
 
-    load: (fn, fnErr) ->
-      obj = localStorage.getItem(@fName + ".atab")
-      obj ?= ""
-      @loadDate = new Date()
-      fn(obj)
+    load: (fn, fnErr = ->) ->
+      try
+        obj = localStorage.getItem(@fName + ".atab")
+        obj ?= ""
+        @loadDate = new Date()
+        fn(obj)
+      catch err
+        fnErr err
       return
 
     save: (obj, fn, force=false) ->
@@ -34,20 +40,29 @@ define ['../backend'], (Backend) ->
       localStorage.removeItem(@fName + '.atab')
       localStorage.removeItem(@fName + '.mdate')
 
+    canRename: (newName) ->
+      !localStorage.hasOwnProperty(newName + '.atab')
+
     rename: (newName) ->
       @load (obj) =>
         @delete()
+        @_url = @backend.urlFromFileName(newName)
         @fName = newName
         @save obj, (->), true
 
-    @listFiles: (fn)->
+  class LocalBackend extends Backend
+    icon: -> '<i class="fa fa-fw fa-file"></i>'
+    schemas: -> ['local']
+    list: (fn) ->
       result = []
       for i in [0...localStorage.length]
         v = localStorage.key(i).match(/^(.*)\.atab$/)
         if (v and v[1])
-          result.push(v[1])
-      fn(result)
+          fn @load @urlFromFileName v[1]
       return
+    load: (url) ->
+      new LocalSource(@, url)
 
-    fileName: ->
-      @fName
+    urlFromFileName: (fname) ->
+      return 'local://localhost/' + encodeURIComponent(fname + '.atab')
+

@@ -1,13 +1,14 @@
 define [
   './alertcontroller',
   '../models/tournament',
-  '../models/backends/index',
-  '../models/backends/localbackend',
+  '../models/backend',
   './templates',
   'filereader',
   'jquery',
   'jquery.transit'
-], (AlertController, Tournament, Backends, LocalBackend, templates) ->
+], (AlertController, Tournament, Backend, templates) ->
+  LocalBackend = Backend.backendForSchema('local')
+
   class OpenController
     constructor: (@uiController, onReady = (->), onDismiss = (->)) ->
       @closeable = @uiController.getTournament()?
@@ -58,9 +59,10 @@ define [
         textBox.keypress (e) =>
           if e.which == 13 and not textBox[0].readOnly
             newName = textBox[0].value
-            if @filenameAvailable newName, backend
+            source = LocalBackend.load(LocalBackend.urlFromFileName(newName))
+            if !source.exists()
               textBox[0].readOnly = true
-              @newItem newName, LocalBackend
+              @newItem source
               @resetAdd()
               return false
           return true
@@ -68,7 +70,8 @@ define [
         controlGroup = textBox.parent()
         textBox.bind 'input propertychange', =>
           newName = textBox[0].value
-          if @filenameAvailable newName, LocalBackend
+          source = LocalBackend.load(LocalBackend.urlFromFileName(newName))
+          if !source.exists()
             controlGroup.removeClass 'error'
           else
             controlGroup.addClass 'error'
@@ -76,11 +79,7 @@ define [
         openModal.find('.omodal-add-div').transition {x: '-66.66%'}, ->
           textBox.focus()
 
-      @fileLists = {}
-      for backend in Backends
-        backend.listFiles (fileNames) =>
-          for name in fileNames
-            @addItem name, backend
+      Backend.list @addItem.bind(@)
 
       openModal.find('#omodal-btn-upload').click =>
         openModal.find('.omodal-file').click()
@@ -93,14 +92,10 @@ define [
       div.transition {x : 0}, =>
         div.find('#omodal-add-page3').html ""
 
-    addItem: (itemName, backend) ->
+    addItem: (source) ->
       item =
-        name: itemName
-        icon: backend.icon or '<i class="fa fa-fw fa-question"></i>'
-
-      fl = @fileLists[backend]
-      fl = @fileLists[backend] = {} if not fl?
-      fl[itemName] = true
+        name: source.fileName(),
+        icon: source.backend.icon() or '<i class="fa fa-fw fa-question"></i>'
 
       itemNode = $(templates.openModalAddItem item)
       itemNode.insertBefore @openModal.find("#open-modal-add-tr")
@@ -114,15 +109,13 @@ define [
           newName = textBox[0].value
           if textBox[0].ongoingDeletion
             if newName == "confirm deletion of file"
-              bk = new backend(itemName)
-              if @uiController.tournament? and bk.fileName() == @uiController.tournament.backend.fileName()
+              if @uiController.tournament? and source.url() == @uiController.tournament.source.url()
                 @uiController.setTournament null
                 btn = $('#open-modal .modal-footer .modal-cancel')
                 btn.addClass 'disabled'
                 btn.css 'pointer-events', 'none'
                 $('#open-modal .modal-header .modal-cancel').remove()
-              bk.delete()
-              delete fl[itemName]
+              source.delete()
               itemNode.remove()
 
               textBox[0].readOnly = true
@@ -130,19 +123,16 @@ define [
                 x: 0
               return false
           else
-            if newName == itemName
+            if newName == item.name
               textBox[0].readOnly = true
               animDiv.transition
                 x: 0
               return false
-            if @filenameAvailable newName, backend
-              be = new backend(itemName)
-              be.rename(newName)
+            if source.canRename newName
+              source.rename(newName)
               textBox[0].readOnly = true
-              delete fl[itemName]
-              fl[newName] = true
               itemNode.find('.omodal-label').html(newName)
-              itemName = newName
+              item.name = newName
               animDiv.transition
                 x: 0
               return false
@@ -154,7 +144,7 @@ define [
         valid = if ongoingDeletion
           newName == "confirm deletion of file"
         else
-          newName == itemName or @filenameAvailable newName, backend
+          newName == item.name or source.canRename(newName)
 
         if valid
           controlGroup.removeClass 'error'
@@ -174,7 +164,7 @@ define [
 
       itemNode.find('.omodal-btn-edit').click =>
         textBox[0].placeholder = 'Type the new file name'
-        textBox[0].value = itemName
+        textBox[0].value = item.name
         textBox[0].readOnly = false
         textBox[0].ongoingDeletion = false
         validateEntry()
@@ -191,21 +181,14 @@ define [
           textBox.focus()
 
       itemNode.find('.omodal-a').click =>
-        to = new Tournament(new backend(itemName))
+        to = new Tournament(source)
         @openModal.modal 'hide'
         @uiController.setTournament to
 
-    newItem: (item, backend) ->
-      be = new backend(item)
-      be.save (JSON.stringify
-        name: item), =>
-        @addItem item, backend
-      
-    filenameAvailable: (fileName, backend) ->
-      return false if fileName == ""
-      fl = @fileLists[backend]
-      return true if not fl?
-      return not fl[fileName]
+    newItem: (source) ->
+      source.save (JSON.stringify
+        name: source.fileName()), =>
+        @addItem source
 
     prepareFileReader: ->
       dragClass: "dropbox"
@@ -216,11 +199,10 @@ define [
           return (file.name.match /\.atab$/)?
         loadend: (e, file) =>
           name = (file.name.match /^(.*?)(\.atab)?$/)[1]
-          while not @filenameAvailable name, LocalBackend
+          while (source = LocalBackend.load(LocalBackend.urlFromFileName(name))) and source.exists()
             name = name + ' (2)'
-          be = new LocalBackend(name)
-          be.save e.target.result, =>
-            @addItem name, LocalBackend
+          source.save e.target.result, =>
+            @addItem source
         groupend: =>
           @resetAdd()
 

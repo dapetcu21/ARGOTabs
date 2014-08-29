@@ -1,5 +1,10 @@
 define ->
   class Util
+    @parseUrl: (url) ->
+      a = document.createElement('a') #hacky, but works
+      a.href = url
+      return a
+
     @deepCopy: (v, exceptions = []) ->
       aux = {}
       for exp in exceptions

@@ -1,6 +1,6 @@
-define ['./backends/placeholderbackend', 'core/util', './club', './team', './judge', './room', './player', './round', './sorter', './judgerules'], (PlaceholderBackend, Util, Club, Team, Judge, Room, Player, Round, Sorter, JudgeRules) ->
+define ['./backend', 'core/util', './club', './team', './judge', './room', './player', './round', './sorter', './judgerules'], (Backend, Util, Club, Team, Judge, Room, Player, Round, Sorter, JudgeRules) ->
   class Tournament
-    constructor: (@backend) ->
+    constructor: (@source) ->
       @clubs = []
       @teams = []
       @judges = []
@@ -26,54 +26,56 @@ define ['./backends/placeholderbackend', 'core/util', './club', './team', './jud
       @loaded = false
 
     load: (fn, fnErr = ->) ->
-      @backend.load ((loadedString) =>
+      @source.load ((model) =>
         try
-          model = JSON.parse(loadedString)
-        catch error
-          fnErr error
+          if typeof(model) == 'string'
+            model = JSON.parse(model)
+          @loadFromModel model
+        catch err
+          fnErr err
           return
-
-        model ?= {}
-        for key, value of model
-          this[key] = value
-
-        for club, i in @clubs
-          @clubs[i] = new Club(this, club)
-        for team, i in @teams
-          @teams[i] = new Team(this, team)
-        for judge, i in @judges
-          @judges[i] = new Judge(this, judge)
-        for room, i in @rooms
-          @rooms[i] = new Room(this, room)
-        for player, i in @players
-          @players[i] = new Player(this, player)
-        for round, i in @rounds
-          @rounds[i] = new Round(this, round)
-
-        for club in @clubs
-          club.unpackCycles()
-        for team in @teams
-          team.unpackCycles()
-        for judge in @judges
-          judge.unpackCycles()
-        for room in @rooms
-          room.unpackCycles()
-        for player in @players
-          player.unpackCycles()
-        for round in @rounds
-          round.unpackCycles()
-
-        @speakerRankSorter = Sorter.speakerRankSorter model.speakerRankSorter
-        @teamRankSorter = Sorter.teamRankSorter model.teamRankSorter
-        @pairRankSorter = Sorter.teamRankSorter model.pairRankSorter
-        @judgeRules = JudgeRules.mainRules this, model.judgeRules
-
-        @lastData = @toFile()
-        @loaded = true
         fn()
-      ), ((error) =>
-        fnErr error
-      )
+        return
+      ), fnErr
+
+    loadFromModel: (model) ->
+      model ?= {}
+      for key, value of model
+        this[key] = value
+
+      for club, i in @clubs
+        @clubs[i] = new Club(this, club)
+      for team, i in @teams
+        @teams[i] = new Team(this, team)
+      for judge, i in @judges
+        @judges[i] = new Judge(this, judge)
+      for room, i in @rooms
+        @rooms[i] = new Room(this, room)
+      for player, i in @players
+        @players[i] = new Player(this, player)
+      for round, i in @rounds
+        @rounds[i] = new Round(this, round)
+
+      for club in @clubs
+        club.unpackCycles()
+      for team in @teams
+        team.unpackCycles()
+      for judge in @judges
+        judge.unpackCycles()
+      for room in @rooms
+        room.unpackCycles()
+      for player in @players
+        player.unpackCycles()
+      for round in @rounds
+        round.unpackCycles()
+
+      @speakerRankSorter = Sorter.speakerRankSorter model.speakerRankSorter
+      @teamRankSorter = Sorter.teamRankSorter model.teamRankSorter
+      @pairRankSorter = Sorter.teamRankSorter model.pairRankSorter
+      @judgeRules = JudgeRules.mainRules this, model.judgeRules
+
+      @lastData = @toFile()
+      @loaded = true
 
     roundWithId: (id) ->
       if typeof id == 'string'
@@ -84,7 +86,7 @@ define ['./backends/placeholderbackend', 'core/util', './club', './team', './jud
       null
 
     toJSON: ->
-      model = Util.copyObject this, ['backend', 'lastData', 'loaded']
+      model = Util.copyObject this, ['source', 'lastData', 'loaded']
       model.rankFromTeams = {all:@rankFromTeams.all}
       for r in @rounds
         v = @rankFromTeams[r.id]
@@ -109,20 +111,18 @@ define ['./backends/placeholderbackend', 'core/util', './club', './team', './jud
     
     saveData: (data, fn, force = false) ->
       return if !@loaded
-      @backend.save data, =>
+      @source.save data, =>
         @lastData = data
         fn()
       , force
 
     clubWithName: (s) ->
       for c in @clubs
-        console.log c.name, s
         if c.name == s
           return c
       return null
 
     addClub: (s) ->
-      console.log "addClub", s
       club = new Club this
       @clubs.push club
       club.name = s
@@ -165,5 +165,5 @@ define ['./backends/placeholderbackend', 'core/util', './club', './team', './jud
       for r in @rounds
         r.judgeRules.entityDestroyed e
 
-    @placeholderTournament: new Tournament(new PlaceholderBackend())
+    @placeholderTournament: new Tournament(Backend.load('placeholder://localhost/Placeholder Tournament.atab'))
     @placeholderTournament.load ->

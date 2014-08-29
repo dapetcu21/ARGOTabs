@@ -1,1 +1,4 @@
-define ['./localbackend'], () -> arguments
+define [
+  './localbackend',
+  './placeholderbackend',
+], () -> arguments
