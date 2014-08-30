@@ -27,7 +27,7 @@ define [
         @extensions.setUpRoutes()
         @extensions.setUpSidebar()
         @previousRoute = window.location.href
-        history.replaceState(null, '', '/#loading')
+        history.replaceState(null, '', '/#/loading')
         @injector = angular.bootstrap document, ['argotabs']
         @loadSession =>
           @setTournament null
@@ -87,7 +87,10 @@ define [
       locationURL = @previousRoute.match /^[^#]*#\/url=([^\/]*)(.*)$/
       if locationURL
         lastURL = decodeURIComponent(locationURL[1])
-        @previousRoute = locationURL[2]
+        @previousRoute = '#' + locationURL[2]
+      console.log @previousRoute
+      @previousRoute =  '#' + @previousRoute.replace(/^[^#]*#?/, '')
+      console.log @previousRoute
       try
         if lastURL
           source = Backend.load(lastURL)
@@ -98,8 +101,8 @@ define [
         else
           throw new Error('No session to resume')
       catch e
-        console.log e
         onFail()
+        window.location.href = @previousRoute
 
     save: (fn, autosave = false) ->
       fn ?= ->
