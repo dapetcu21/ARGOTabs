@@ -6,12 +6,13 @@ define [
   './extensions'
   '../models/tournament',
   '../models/backend',
+  '../models/backends/jsonsource',
   './util',
   './templates',
   'angular'
   'jquery',
   'jquery.bootstrap'
-], (B64, Cookies, OpenController, AlertController, Extensions, Tournament, Backend, Util, templates) ->
+], (B64, Cookies, OpenController, AlertController, Extensions, Tournament, Backend, JSONSource, Util, templates) ->
   LocalBackend = Backend.backendForSchema('local')
 
   class UIController
@@ -31,7 +32,7 @@ define [
         @injector = angular.bootstrap document, ['argotabs']
         @loadSession =>
           @setTournament null
-          new OpenController this, =>
+          @open =>
             @rootApply (scope) ->
               scope.tournamentLoaded = true
 
@@ -49,6 +50,9 @@ define [
 
         $('.action-download').click =>
           @download()
+
+        $('.action-download-censored').click =>
+          @downloadCensored()
 
         $('.action-saveaslocal').click =>
           @saveaslocal()
@@ -68,12 +72,14 @@ define [
       ]
       return
 
-    open: ->
+    open: (fn = ->) ->
       @save =>
-        new OpenController this, (=>
+        @openController = new OpenController this, (=>
           @saveSession null
+          fn()
         ), (=>
           @saveSession @tournament
+          @openController = null
         )
 
     saveSession: (tournament) ->
@@ -82,15 +88,13 @@ define [
       else
         Cookies.expire 'ARGOTabs_lastURL'
 
-    loadSession: (onFail) ->
+    loadSession: (onFail = (->), onOpen = (->)) ->
       lastURL = Cookies.get 'ARGOTabs_lastURL'
-      locationURL = @previousRoute.match /^[^#]*#\/url=([^\/]*)(.*)$/
+      locationURL = @previousRoute.match(/^[^#]*#\/url\/([^#]*)#?(.*)$/)
       if locationURL
         lastURL = decodeURIComponent(locationURL[1])
         @previousRoute = '#' + locationURL[2]
-      console.log @previousRoute
       @previousRoute =  '#' + @previousRoute.replace(/^[^#]*#?/, '')
-      console.log @previousRoute
       try
         if lastURL
           source = Backend.load(lastURL)
@@ -98,15 +102,17 @@ define [
             throw new Error('Entry for ' + lastURL + 'does not exist')
           @setTournament new Tournament(source), =>
             window.location.href = @previousRoute
+            onOpen()
         else
           throw new Error('No session to resume')
       catch e
         onFail()
         window.location.href = @previousRoute
+      return
 
     save: (fn, autosave = false) ->
       fn ?= ->
-      if @tournament
+      if @tournament && @tournament.source.canSave()
         btn = $('.action-save')
         btns = $('.view-save')
         btn.button 'loading'
@@ -167,6 +173,18 @@ define [
       link = $('#downloader')
       link[0].click()
       link.remove()
+
+    downloadCensored: ->
+      return if not @tournament
+      source = new JSONSource(@tournament.toFile())
+      newTournament = new Tournament(source)
+      newTournament.load =>
+        newTournament.censor()
+        data = B64.encode newTournament.toFile()
+        $('body').append '<a id="downloader" download="' + @tournament.name + ' (censored).atab" href="data:application/octet-stream;base64,' + data + '"></a>'
+        link = $('#downloader')
+        link[0].click()
+        link.remove()
 
     saveaslocal: ->
       new AlertController
@@ -256,7 +274,7 @@ define [
                 sc.loadingTournament = false
             onClick: (alert, bIndex, bName) =>
               if bIndex == 0
-                new OpenController this, ->
+                @open ->
                   alert.modal('hide')
           errcb(err)
         )

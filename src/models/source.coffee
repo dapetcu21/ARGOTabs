@@ -5,7 +5,8 @@ define [], ->
     save: -> throw new Error("save(): Not implemented")
     delete: -> throw new Error("delete(): Not implemented")
     rename: -> throw new Error("rename(): Not implemented")
-    canRenae: -> false
+    canRename: -> false
+    canSave: -> true
     url: -> @_url
     exists: -> true
     fileName: ->

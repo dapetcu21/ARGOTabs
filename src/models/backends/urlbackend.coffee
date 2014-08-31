@@ -6,7 +6,6 @@ define ['../backend_import', '../source'], (Backend, Source) ->
         dataType: 'text',
 
       xhr.done (data) ->
-        console.log(data)
         fn(data)
 
       xhr.fail fnErr

@@ -13,7 +13,7 @@ define [
     constructor: (@uiController, onReady = (->), onDismiss = (->)) ->
       @closeable = @uiController.getTournament()?
 
-      new AlertController
+      @alertController = new AlertController
         title: "Open tournament file"
         id: "open-modal"
         closeable: @closeable

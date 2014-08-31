@@ -12,12 +12,14 @@ define ['core/util'], (Util) ->
           round.registerJudge this
 
     @rankStrings = ['A', 'B', 'C', 'D']
-    for i in [4..31]
+    for i in [4..30]
       @rankStrings.push null
+    @rankStrings.push 'Censored'
     @rankStrings.push 'Shd'
 
     @ranks = [0, 1, 2, 3, 32]
     @shadowRank = 32
+    @censoredRank = 31
 
     unpackCycles: ->
       @club = Util.unpackCycle @club, @tournament.clubs

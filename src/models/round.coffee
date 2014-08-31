@@ -147,6 +147,15 @@ define ['core/util', './ballot', './judge', './sorter', './judgerules', './team'
     sortBallots: ->
       @ballots.sort (a,b) -> a.skillIndex - b.skillIndex
 
+    censor: ->
+      @judgeRules = JudgeRules.mainRules @tournament
+      @caMode = false
+      _.each @ballots, (ballot) ->
+        delete ballot.skillIndex = 0
+      @ballots.sort (a, b) ->
+        return -1 if not b.room?
+        return  1 if not a.room?
+        Util.naturalSort a.room.name, b.room.name
 
     pairingTeams: ->
       id = @id

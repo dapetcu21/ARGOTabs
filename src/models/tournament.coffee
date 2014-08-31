@@ -122,6 +122,15 @@ define ['./backend', 'core/util', './club', './team', './judge', './room', './pl
           return c
       return null
 
+    censor: ->
+      _.each @judges, (judge) ->
+        judge.rank = Judge.censoredRank
+
+      @judges = _.shuffle @judges
+
+      @judgeRules = JudgeRules.mainRules @
+      _.each @rounds, (round) -> round.censor()
+
     addClub: (s) ->
       club = new Club this
       @clubs.push club
