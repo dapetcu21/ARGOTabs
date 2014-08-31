@@ -104,6 +104,9 @@ options.before = (roots) ->
   writeCss css_common, path.css_loader.common, 'common'
   writeCss css_screen, path.css_loader.screen, 'screen'
   writeCss css_print, path.css_loader.print, 'print'
+
+  if typeof roots == 'function'
+    roots()
   return
 
 options.after = (roots) ->
@@ -118,4 +121,7 @@ options.after = (roots) ->
       fs.unlinkSync file
   try
     fs.rmdirSync path.gen
+
+  if typeof roots == 'function'
+    roots()
   return
