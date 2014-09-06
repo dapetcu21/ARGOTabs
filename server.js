@@ -2,9 +2,12 @@
 var connect = require('connect');
 
 function startServer() {
-  connect().use(connect.logger('dev'))
-    .use(connect.static('public'))
-    .listen(process.env.PORT || 3000);
+  var srv = connect()
+  if (!process.env.PRODUCTION) {
+    srv.use(connect.logger('dev'));
+  }
+  srv.use(connect.static('public'))
+  srv.listen(process.env.PORT || 3000);
 }
 
 if (process.env.PRODUCTION) {

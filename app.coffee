@@ -88,7 +88,7 @@ for x, i in templates
     category: "extensiontemplates" + i
   )
 
-options.before = (roots) ->
+options.before = (roots, cb) ->
   try
     fs.mkdirSync path.gen
 
@@ -105,11 +105,14 @@ options.before = (roots) ->
   writeCss css_screen, path.css_loader.screen, 'screen'
   writeCss css_print, path.css_loader.print, 'print'
 
-  if typeof roots == 'function'
-    roots()
+  if typeof(cb) is 'function'
+    cb()
+  else
+    if typeof(roots) is 'function'
+      roots()
   return
 
-options.after = (roots) ->
+options.after = (roots, cb) ->
   files_to_delete = [
     path.script_loader,
     path.css_loader.common,
@@ -122,6 +125,9 @@ options.after = (roots) ->
   try
     fs.rmdirSync path.gen
 
-  if typeof roots == 'function'
-    roots()
+  if typeof(cb) is 'function'
+    cb()
+  else
+    if typeof(roots) is 'function'
+      roots()
   return
