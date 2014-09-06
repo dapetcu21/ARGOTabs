@@ -16,6 +16,9 @@
   "engines": {
     "node": "0.10.x"
   },
+  "scripts": {
+    "postinstall": "./postinstall.sh"
+  },
   "repository": {
     "type": "git",
     "url": "git@github.com:dapetcu21/argotabs.git"

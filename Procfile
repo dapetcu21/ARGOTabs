@@ -1,1 +1,1 @@
-web: node server.js
+web: PRODUCTION=true node server.js
