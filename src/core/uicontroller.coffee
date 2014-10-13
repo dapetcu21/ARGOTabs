@@ -179,7 +179,7 @@ define [
       source = new JSONSource(@tournament.toFile())
       newTournament = new Tournament(source)
       newTournament.load =>
-        newTournament.censor()
+        newTournament.censor(@extensions)
         data = B64.encode newTournament.toFile()
         $('body').append '<a id="downloader" download="' + @tournament.name + ' (censored).atab" href="data:application/octet-stream;base64,' + data + '"></a>'
         link = $('#downloader')

@@ -24,6 +24,11 @@ define ['ext_scripts', 'underscore', 'angular-route'], (extensionsArray, _) ->
         @throwError('"' + member + '" is not a function')
       f.bind(instance)()
 
+    censor: (tournament) ->
+      for ext in @extensions
+        if ext.censor
+          ext.censor(tournament)
+
     angularModules: () ->
       modules = []
       for ext in @extensions

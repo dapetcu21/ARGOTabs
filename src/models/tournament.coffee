@@ -122,7 +122,9 @@ define ['./backend', 'core/util', './club', './team', './judge', './room', './pl
           return c
       return null
 
-    censor: ->
+    censor: (ext) ->
+      ext.censor(@) if ext
+
       _.each @judges, (judge) ->
         judge.rank = Judge.censoredRank
 
