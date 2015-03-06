@@ -1,4 +1,4 @@
-define ['core/util'], (Util)->
+define ['core/util', './uuid'], (Util, UUID)->
   class Club
     constructor: (@tournament, other) ->
       if other
@@ -6,6 +6,7 @@ define ['core/util'], (Util)->
           this[key] = value
       @name ?= ""
       @teams ?= []
+      @id ?= UUID 'club_'
       @judges ?= []
 
     unpackCycles: ->

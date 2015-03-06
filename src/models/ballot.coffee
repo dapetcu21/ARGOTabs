@@ -1,4 +1,4 @@
-define ['core/util', 'underscore'], (Util, _) ->
+define ['core/util', 'underscore', './uuid'], (Util, UUID) ->
   class Ballot
     constructor: (@round, other) ->
       if other
@@ -8,6 +8,7 @@ define ['core/util', 'underscore'], (Util, _) ->
       @presence ?= [true, true]
       @room ?= null
       @locked ?= false
+      @id ?= UUID 'ballot_'
       @votes ?= []
       @judges ?= []
       @shadows ?= []

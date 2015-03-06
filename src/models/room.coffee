@@ -1,10 +1,11 @@
-define ['core/util'], (Util)->
+define ['core/util', './uuid'], (Util, UUID)->
   class Room
     constructor: (@tournament, other) ->
       if other
         for key, value of other
           this[key] = value
       @name ?= ""
+      @id ?= UUID 'room_'
       @floor ?= ""
       @rounds ?= {}
       if not other

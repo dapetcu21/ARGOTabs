@@ -1,4 +1,4 @@
-define ['core/util'], (Util) ->
+define ['core/util', './uuid'], (Util, UUID) ->
   class Judge
     constructor: (@tournament, other) ->
       if other
@@ -6,6 +6,7 @@ define ['core/util'], (Util) ->
           this[key] = value
       @name ?= ""
       @rank ?= 0
+      @id ?= UUID 'judge_'
       @rounds ?= {}
       if not other
         for round in @tournament.rounds

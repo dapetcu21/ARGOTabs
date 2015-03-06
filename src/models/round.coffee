@@ -1,10 +1,10 @@
-define ['core/util', './ballot', './judge', './sorter', './judgerules', './team', 'underscore'], (Util, Ballot, Judge, Sorter, JudgeRules, Team, _) ->
+define ['core/util', './ballot', './judge', './sorter', './judgerules', './team', './uuid'], (Util, Ballot, Judge, Sorter, JudgeRules, Team, UUID) ->
  class Round
     constructor: (@tournament, other) ->
       if other
         for key, value of other
           this[key] = value
-      @id ?= Math.floor(Math.random() * 100000000)
+      @id ?= UUID 'round_'
       @tableOpts ?= {}
       @teams ?= []
       @judges ?= []

@@ -1,10 +1,11 @@
-define ['core/util'], (Util) ->
+define ['core/util', './uuid'], (Util, UUID) ->
   class Player
     constructor: (@tournament, other) ->
       if other
         for key, value of other
           this[key] = value
-      @name ?= "Unnamed"
+      @name ?= 'Unnamed'
+      @id ?= UUID 'player_'
 
     unpackCycles: ->
       @team = Util.unpackCycle @team, @tournament.teams

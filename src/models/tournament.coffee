@@ -1,6 +1,7 @@
-define ['./backend', 'core/util', './club', './team', './judge', './room', './player', './round', './sorter', './judgerules'], (Backend, Util, Club, Team, Judge, Room, Player, Round, Sorter, JudgeRules) ->
+define ['./backend', 'core/util', './club', './team', './judge', './room', './player', './round', './sorter', './judgerules', './uuid'], (Backend, Util, Club, Team, Judge, Room, Player, Round, Sorter, JudgeRules, UUID) ->
   class Tournament
     constructor: (@source) ->
+      @id = UUID 'tournament_'
       @clubs = []
       @teams = []
       @judges = []
