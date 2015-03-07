@@ -470,7 +470,23 @@ define ['core/util', './ballot', './judge', './sorter', './judgerules', './team'
         ropts = o.rounds[id]
         ropts.participates && !ropts.ballot && o.rank == Judge.shadowRank
       freeJ = @freeJudges = []
-      judges.sort (a,b) -> a.rank - b.rank
+
+      participationScores = {}
+      _.each judges, (judge) ->
+        sum = 0
+        _.each @rounds, (round) ->
+          ropts = judge.rounds[round.id]
+          if ropts && ropts.participates && ropts.ballot && ropts.ballot.locked
+            sum += ropts.shadow ? 1 : 2
+        participationScores[judge.id] = sum
+
+      judges.sort (a,b) ->
+        cmp = a.rank - b.rank
+        if cmp != 0
+          return cmp
+        psa = participationScores[a.id]
+        psb = participationScores[b.id]
+        return psa - psb
 
       noBallots = ballots.length
       noJudges = judges.length
