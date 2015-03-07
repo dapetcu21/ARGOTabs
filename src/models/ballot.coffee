@@ -1,4 +1,4 @@
-define ['core/util', 'underscore', './uuid'], (Util, UUID) ->
+define ['core/util', 'underscore', './uuid'], (Util, _, UUID) ->
   class Ballot
     constructor: (@round, other) ->
       if other
