@@ -79,8 +79,6 @@ define ['./backend', 'core/util', './club', './team', './judge', './room', './pl
       @loaded = true
 
     roundWithId: (id) ->
-      if typeof id == 'string'
-        id = parseInt id
       for round in @rounds
         if round.id == id
           return round

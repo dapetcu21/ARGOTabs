@@ -166,10 +166,25 @@ define [
       else
         fn()
 
+    downloadName: ->
+      date = new Date
+      [
+        @tournament.name,
+        [
+          date.getFullYear(),
+          date.getMonth(),
+          date.getDay(),
+        ].join('-'), [
+          date.getHours(),
+          date.getMinutes(),
+          date.getSeconds()
+        ].join('-')
+      ].join('_')
+
     download: ->
       return if not @tournament
       data = B64.encode @tournament.toFile()
-      $('body').append '<a id="downloader" download="' + @tournament.name + '.atab" href="data:application/octet-stream;base64,' + data + '"></a>'
+      $('body').append '<a id="downloader" download="' + @downloadName() + '.atab" href="data:application/octet-stream;base64,' + data + '"></a>'
       link = $('#downloader')
       link[0].click()
       link.remove()
@@ -181,7 +196,7 @@ define [
       newTournament.load =>
         newTournament.censor(@extensions)
         data = B64.encode newTournament.toFile()
-        $('body').append '<a id="downloader" download="' + @tournament.name + ' (censored).atab" href="data:application/octet-stream;base64,' + data + '"></a>'
+        $('body').append '<a id="downloader" download="' + @downloadName() + ' (censored).atab" href="data:application/octet-stream;base64,' + data + '"></a>'
         link = $('#downloader')
         link[0].click()
         link.remove()
