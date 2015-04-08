@@ -1,7 +1,6 @@
 autoprefixer    = require 'autoprefixer-stylus'
 rupture         = require 'rupture'
 ClientTemplates = require 'client-templates'
-CacheManifest   = require 'roots-cache-manifest'
 fs              = require 'fs'
 
 module.exports = options =
@@ -9,9 +8,6 @@ module.exports = options =
     base: "assets/templates/"
     pattern: "*.jade"
     out: "core/templates.js"
-  )
-  , CacheManifest(
-    manifest: "assets/manifest.appcache"
   )]
 
   ignores: [
