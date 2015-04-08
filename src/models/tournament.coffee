@@ -80,7 +80,7 @@ define ['./backend', 'core/util', './club', './team', './judge', './room', './pl
 
     roundWithId: (id) ->
       for round in @rounds
-        if round.id == id
+        if '' + round.id == '' + id
           return round
       null
 
