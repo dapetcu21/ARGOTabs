@@ -41,9 +41,27 @@
         label
           input(type='radio', ng-model='tournament.evenBrackets', ng-value='1')
           span &nbsp;pulling up teams with weakest previous opponents
+
     .well.pair-rules-group.settings-group
       strong Pairing rank criteria
       sorter-criteria(bind='tournament.pairRankSorter')
+
+    .well.settings-group.format-group
+      strong Format settings
+      div
+        span Constructive speech points range:&nbsp;
+        text-edit-cell(bind='tournament.minConstructiveScore', input-width='50', pattern='[0-9.]*', setter='parseFloat(o)')
+          i.fa.fa-fw.fa-edit.bottom-line
+        span &nbsp;to&nbsp;
+        text-edit-cell(bind='tournament.maxConstructiveScore', input-width='50', pattern='[0-9.]*', setter='parseFloat(o)')
+          i.fa.fa-fw.fa-edit.bottom-line
+      div
+        span Reply speech points range:&nbsp;
+        text-edit-cell(bind='tournament.minReplyScore', input-width='50', pattern='[0-9.]*', setter='parseFloat(o)')
+          i.fa.fa-fw.fa-edit.bottom-line
+        span &nbsp;to&nbsp;
+        text-edit-cell(bind='tournament.maxReplyScore', input-width='50', pattern='[0-9.]*', setter='parseFloat(o)')
+          i.fa.fa-fw.fa-edit.bottom-line
 
   .span6
     .well.judge-settings-group.settings-group
