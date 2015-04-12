@@ -84,6 +84,8 @@ define ['core/util', './player', './uuid'], (Util, Player, UUID) ->
         roundsBotched: 0 #zeros
         prop: 0
         opp: 0
+        margin: 0
+
       for roundId in rounds
         roundId = roundId.id if typeof roundId == 'object'
         round = @tournament.roundWithId roundId
@@ -98,17 +100,40 @@ define ['core/util', './player', './uuid'], (Util, Player, UUID) ->
           if ballot.presence[1-side] and ballot.teams[1-side]
             o.roundsPlayed++
             score = 0
+            positiveMargin = 0
+            negativeMargin = 0
+            positiveMarginCount = 0
+            negativeMarginCount = 0
             replyScore = 0
             ballots = 0
             wins = 0
             for vote in ballot.votes
+              margin = 0
               for i in [0...4]
                 score += vote.scores[side][i] * vote.ballots
+                margin += vote.scores[side][i] * vote.ballots
+                margin -= vote.scores[1-side][i] * vote.ballots
               replyScore += vote.scores[side][3] * vote.ballots
               ballots += vote.ballots
               wins += if side then vote.opp else vote.prop
+              if margin >= 0
+                positiveMargin += margin
+                positiveMarginCount += vote.ballots
+              else
+                negativeMargin -= margin
+                negativeMarginCount += vote.ballots
+
+            if positiveMarginCount
+              positiveMargin /= positiveMarginCount
+            if negativeMarginCount
+              negativeMargin /= negativeMarginCount
+
             if wins > ballots - wins
               o.rawWins++
+              o.margin += positiveMargin
+            else
+              o.margin -= negativeMargin
+
             o.rawBallots += wins
             if ballots
               score /= ballots

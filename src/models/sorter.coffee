@@ -1,4 +1,4 @@
-define [], ->
+define ['underscore'], (_) ->
   newCrit = (name, crit, operand = '>', equality = '==') ->
     funcString = '(function(a,b) { 
       if (a.'+crit+operand+'b.'+crit+') return -1;
@@ -8,8 +8,9 @@ define [], ->
     funcString = funcString.replace /[ ][ ]+/g, ''
     return {
       name: name
+      id: crit
       func: eval funcString
-      toJSON: -> {name:this.name, func:funcString}
+      toJSON: -> {name:this.name, func:funcString, id: this.id}
     }
       
   class Sorter
@@ -18,10 +19,13 @@ define [], ->
         criteria = criteria.criteria
       @criteria = criteria
       for criterion in criteria
+        if not typeof criterion.id?
+          criterion.id = Sorter.legacyNames[criterion.name]
+
         if typeof criterion.func == 'string'
           criterion.funcString = criterion.func
           criterion.func = eval criterion.func
-          criterion.toJSON =  -> {name:this.name, func:this.funcString}
+          criterion.toJSON =  -> {name:this.name, func:this.funcString, id: this.id}
 
     compareObjects: (a,b) ->
       return true if not @criteria?
@@ -33,25 +37,45 @@ define [], ->
 
     boundComparator: -> @compareObjects.bind this
 
+    @sorterFromBlueprint: (o, blueprint) ->
+      if not o?
+        return new Sorter blueprint
+
+      if o.criteria?
+        o = o.criteria
+
+      visited = {}
+
+      _.each o, (crit) ->
+        visited[crit.id or Sorter.legacyNames[crit.name]] = true
+
+      _.each blueprint, (crit) ->
+        if not visited[crit.id]
+          o.push crit
+
+      return new Sorter o
+
     @teamRankSorter: (o) ->
-      new Sorter if o? then o else [
-      #new Sorter [
+      Sorter.sorterFromBlueprint o, [
         newCrit('Ballots', 'ballots'),
         newCrit('Score', 'score'),
         newCrit('H/L Score', 'scoreHighLow'),
+        newCrit('Win Margin', 'margin'),
         newCrit('Wins', 'wins')
         newCrit('Reply Score', 'reply')
       ]
 
     @speakerRankSorter: (o) ->
-      new Sorter if o? then o else [
-      #new Sorter [
-        newCrit('H/L Score', 'scoreHighLow'),
+      Sorter.sorterFromBlueprint o, [
         newCrit('Score', 'score'),
+        newCrit('H/L Score', 'scoreHighLow'),
         newCrit('Reply Score', 'reply')
       ]
 
-
-
-
+    @legacyNames:
+      'Ballots': 'ballots'
+      'Score': 'score'
+      'H/L Score': 'scoreHighLow'
+      'Wins': 'wins'
+      'Reply Score': 'reply'
 

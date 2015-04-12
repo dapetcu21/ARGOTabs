@@ -44,17 +44,21 @@ define ["models/team", "core/util", "underscore", "./templates"], (Team, Util, _
             maxScoreDec = 0
             maxReplyDec = 0
             maxHighLowDec = 0
+            maxMarginDec = 0
             for team in teams
               scoreDec = Util.decimalsOf team.stats.score, 2
               replyDec = Util.decimalsOf team.stats.reply, 2
               highLowDec = Util.decimalsOf team.stats.scoreHighLow, 2
+              marginDec = Util.decimalsOf team.stats.margin, 2
               maxScoreDec = scoreDec if scoreDec > maxScoreDec
               maxReplyDec = replyDec if replyDec > maxReplyDec
               maxHighLowDec = highLowDec if highLowDec > maxHighLowDec
+              maxMarginDec = marginDec if marginDec > maxMarginDec
 
             $scope.scoreDec = maxScoreDec
             $scope.replyDec = maxReplyDec
             $scope.highLowDec = maxHighLowDec
+            $scope.marginDec = maxMarginDec
 
           roundIds = null
           Util.installScopeUtils $scope

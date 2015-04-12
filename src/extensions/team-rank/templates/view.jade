@@ -9,9 +9,10 @@ h3.print-only.text-center {{tournament.name}} - Team rank
           th(data-auto-index=2) Club
           th(data-auto-index=3) Ballots
           th(data-auto-index=4) Wins
-          th(data-auto-index=5) Reply
-          th(data-auto-index=6) Score
-          th(data-auto-index=7) H/L
+          th(data-auto-index=5) Score
+          th(data-auto-index=6) H/L
+          th(data-auto-index=7) Margin
+          th(data-auto-index=8) Reply
       tbody(editable-tbody)
         script(type='text/html')
           td {{$index + 1}}
@@ -19,9 +20,10 @@ h3.print-only.text-center {{tournament.name}} - Team rank
           td: span(class='muted-{{o.club == null}}') {{namePlaceholder(o.club, 'unaffiliated').name}}
           td: span.right {{o.stats.ballots}}
           td: span.right {{o.stats.wins}}
-          td: span.right {{toFixed(o.stats.reply, replyDec)}}
           td: span.right {{toFixed(o.stats.score, scoreDec)}}
           td: span.right {{toFixed(o.stats.scoreHighLow, highLowDec)}}
+          td: span.right {{toFixed(o.stats.margin, marginDec)}}
+          td: span.right {{toFixed(o.stats.reply, replyDec)}}
 
   .span2.dont-print
     .well.settings-group
