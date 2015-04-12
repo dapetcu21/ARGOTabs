@@ -503,6 +503,20 @@ define ['models/team', 'models/judge', 'models/round', 'core/util', 'core/alertc
           max = tournament.maxConstructiveScore
           margin = 1
         score <= min + margin || score >= max - margin
+
+      sc.parseScoreEntry = (role, score) ->
+        orig = r = parseFloat(score)
+        if role == 3
+          min = tournament.minReplyScore
+          max = tournament.maxReplyScore
+        else
+          min = tournament.minConstructiveScore
+          max = tournament.maxConstructiveScore
+        while r > max
+          r /= 10
+        if r < min
+          return orig
+        return r
       
       sc.winner = (vote) ->
         if vote.prop > vote.opp

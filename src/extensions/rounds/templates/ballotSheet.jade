@@ -57,7 +57,7 @@ div(ng-show='presence[0] && presence[1]')
         - function sideCells(side) {
           - for (var i = 0; i < 4; i++) {
             td(class='valid-{{valid#{side}#{i}}}').nowrap
-              text-edit-cell(bind='o.scores[#{side}][#{i}]', enabled='!o.total', valid='valid#{side}#{i}', input-width='17', pattern='[0-9.]*', setter='parseFloat(o)', getter='truncFloat(o, 2)', soft-validator='validateScore(#{i}, o)')
+              text-edit-cell(bind='o.scores[#{side}][#{i}]', enabled='!o.total', valid='valid#{side}#{i}', input-width='17', pattern='[0-9.]*', setter='parseScoreEntry(#{i}, o)', getter='truncFloat(o, 2)', soft-validator='validateScore(#{i}, o)')
               i(ng-show='valid#{side}#{i} && scoreWarning(#{i}, o.scores[#{side}][#{i}])').fa.fa-exclamation.icon-dobitoc
           - } }
         - function sideTotal(side) {
