@@ -2,16 +2,16 @@
   "name": "argo-tabs",
   "description": "Tabulation software for World Schools Debate competitions",
   "dependencies": {
-    "autoprefixer-stylus": "0.0.x",
+    "autoprefixer-stylus": "^0.5.0",
     "client-templates": "^0.2.0",
-    "coffee-script": "1.x.x",
-    "connect": "2.6.x",
-    "jade": "1.x.x",
-    "marked": "0.3.x",
-    "roots": "~3.x",
-    "roots-cache-manifest": "0.0.x",
-    "rupture": "0.0.x",
-    "stylus": "0.42.x"
+    "coffee-script": "^1.9.1",
+    "express": "^4.12.3",
+    "jade": "^1.9.2",
+    "marked": "^0.3.3",
+    "roots": "^3.0.4",
+    "roots-cache-manifest": "0.0.3",
+    "rupture": "^0.6.1",
+    "stylus": "^0.50.0"
   },
   "engines": {
     "node": "0.10.x"

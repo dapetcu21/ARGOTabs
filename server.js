@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-var connect = require('connect');
-var srv = connect()
-srv.use(connect.static('public'))
-srv.listen(process.env.PORT || 3000);
+var express = require('express');
+var app = express();
+
+app.use(express.static('public'))
+app.listen(process.env.PORT || 3000);
