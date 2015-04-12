@@ -12,6 +12,7 @@ define [
   'angular'
   'jquery',
   'jquery.bootstrap'
+  './update-notifier',
 ], (B64, Cookies, OpenController, AlertController, Extensions, Tournament, Backend, JSONSource, Util, templates) ->
   LocalBackend = Backend.backendForSchema('local')
 
