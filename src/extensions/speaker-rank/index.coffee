@@ -33,6 +33,14 @@ define ["models/player", "core/util", "underscore", "./templates"], (Player, Uti
                 r.push round
             return r
 
+          $scope.formatBreakdown = (breakdown) ->
+            breakdown = _.map breakdown, (score) ->
+              if not score?
+                '-'
+              else
+                score.toFixed(Util.decimalsOf(score, 2))
+            breakdown.join(' ')
+
           $scope.refreshStats = (rounds) ->
             tournament = ui.tournament
             players = $scope.players = tournament.players.slice(0)

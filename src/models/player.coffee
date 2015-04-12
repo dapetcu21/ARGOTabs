@@ -40,9 +40,12 @@ define ['core/util', './uuid'], (Util, UUID) ->
         reply: 0 #average
         replyBallots: 0
         scoreHighLow: 0
+        breakdown: []
 
       for roundId in rounds
         roundId = roundId.id if typeof roundId == 'object'
+        o.breakdown.push(null)
+
         round = @tournament.roundWithId roundId
         continue if not @team?
         ballot = @team.rounds[roundId].ballot
@@ -60,6 +63,9 @@ define ['core/util', './uuid'], (Util, UUID) ->
             didSpeech = true
             break
 
+        roundScore = 0
+        roundScoreCount = 0
+
         if ballot.presence[side]
           if ballot.presence[1-side] and ballot.teams[1-side]
             if didSpeech
@@ -68,6 +74,8 @@ define ['core/util', './uuid'], (Util, UUID) ->
                 continue if ballot.roles[side][speaker] != this
                 for vote in ballot.votes
                   score = vote.scores[side][speaker]
+                  roundScore += score * vote.ballots
+                  roundScoreCount += vote.ballots
                   o.rawScore += score * vote.ballots
                   o.scoreCount += vote.ballots
                   if score < o.minScore
@@ -87,6 +95,10 @@ define ['core/util', './uuid'], (Util, UUID) ->
             if didReply
               o.replyByes += round.ballotsPerMatchSolved()
               o.roundsReplyed++
+
+        if roundScoreCount
+          o.breakdown[o.breakdown.length - 1] = (roundScore / roundScoreCount)
+
       allScores = o.scoreCount + o.byes
       o.replyBallots = o.replyCount + o.replyByes
       o.score = if o.scoreCount then o.rawScore / o.scoreCount else if o.byes then -1 else 0

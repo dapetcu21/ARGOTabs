@@ -10,9 +10,10 @@ h3.print-only.text-center {{tournament.name}} - Speaker rank
           th(data-auto-index=3) Club
           th(data-auto-index=5) H/L
           th(data-auto-index=6) Score
-          th(data-auto-index=7) Speeches
-          th(data-auto-index=8) Reply
-          th(data-auto-index=9) Replies
+          th(data-auto-index=7) Round Breakdown
+          th(data-auto-index=8) Speeches
+          th(data-auto-index=9) Reply
+          th(data-auto-index=10) Replies
       tbody(editable-tbody)
         script(type='text/html')
           td {{$index + 1}}
@@ -21,6 +22,7 @@ h3.print-only.text-center {{tournament.name}} - Speaker rank
           td: span(class='muted-{{o.team.club == null}}') {{namePlaceholder(o.team.club, 'unaffiliated').name}}
           td: span.right {{toFixed(o.stats.scoreHighLow, highLowDec)}}
           td: span.right {{toFixed(o.stats.score, scoreDec)}}
+          td: span {{formatBreakdown(o.stats.breakdown)}}
           td: span.right {{o.stats.roundsPlayed}}
           td: span.right {{toFixed(o.stats.reply, replyDec)}}
           td: span.right {{o.stats.roundsReplyed}}
