@@ -63,13 +63,16 @@ define ['core/util', 'underscore', './uuid'], (Util, _, UUID) ->
       judges = @judges
       n = judges.length
       votes = []
+      tournament = @round.tournament
+      avgCons = (tournament.minConstructiveScore + tournament.maxConstructiveScore) / 2
+      avgReply = (tournament.minReplyScore + tournament.maxReplyScore) / 2
       newVote = (judge, bal = 1) ->
         v = {}
         v.judge = judge
         v.ballots = bal
         v.prop = bal
         v.opp = 0
-        v.scores = [[70, 70, 70, 35], [70, 70, 70, 35]]
+        v.scores = [[avgCons, avgCons, avgCons, avgReply], [avgCons, avgCons, avgCons, avgReply]]
         return v
       if n
         if n >= b

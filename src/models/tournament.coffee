@@ -25,6 +25,10 @@ define ['./backend', 'core/util', './club', './team', './judge', './room', './pl
       @rankFromTeams ?= {all:true}
       @rankFromSpeakers ?= {all:true}
       @loaded = false
+      @minConstructiveScore = 60
+      @maxConstructiveScore = 80
+      @minReplyScore = 30
+      @maxReplyScore = 40
 
     load: (fn, fnErr = ->) ->
       @source.load ((model) =>

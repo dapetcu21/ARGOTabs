@@ -482,13 +482,34 @@ define ['models/team', 'models/judge', 'models/round', 'core/util', 'core/alertc
       sc.votes = ballot.getVotesForBallots noBallots
       sc.speakers = [ballot.teams[0].players, ballot.teams[1].players]
       n = sc.votes.length
-
+      
+      tournament = $scope.tournament
+      sc.validateScore = (role, score) ->
+        if role == 3
+          min = tournament.minReplyScore
+          max = tournament.maxReplyScore
+        else
+          min = tournament.minConstructiveScore
+          max = tournament.maxConstructiveScore
+        sc.validateMinMax(score, min, max)
+      
+      sc.scoreWarning = (role, score) ->
+        if role == 3
+          min = tournament.minReplyScore
+          max = tournament.maxReplyScore
+          margin = 0.5
+        else
+          min = tournament.minConstructiveScore
+          max = tournament.maxConstructiveScore
+          margin = 1
+        score <= min + margin || score >= max - margin
+      
       sc.winner = (vote) ->
         if vote.prop > vote.opp
           "prop"
         else
           "opp"
-
+      
       sc.roles = ballot.getSpeakerRoles()
       sc.presence = [ballot.presence[0], ballot.presence[1]]
       sc.sides = ['Prop', 'Opp']
@@ -543,10 +564,12 @@ define ['models/team', 'models/judge', 'models/round', 'core/util', 'core/alertc
       sc.lockJudgesInfo = not ballot.locked and not sc.noJudgesWarning
 
       if n > 1
+        avgCons = (tournament.minConstructiveScore + tournament.maxConstructiveScore) / 2
+        avgReply = (tournament.minReplyScore + tournament.maxReplyScore) / 2
         sc.votes.push total =
           judge:
             name: "Total"
-          scores: [[70, 70, 70, 35], [70, 70, 70, 35]]
+          scores: [[avgCons, avgCons, avgCons, avgReply], [avgCons, avgCons, avgCons, avgReply]]
           total: true
           aux:
             decisionValid: true

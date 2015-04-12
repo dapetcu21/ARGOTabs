@@ -21,7 +21,7 @@ table(editable-table, show-gear='false', model='roles')#roles-table
   tbody(editable-tbody)
     script(type='text/html')
       td.nowrap
-        input(type='checkbox', ng-model='presence[$index]').presence-check
+        input(type='checkbox', ng-model='presence[$index]', tabindex='-1').presence-check
         span(class="{{sidesClass[$index]}}").strong {{sides[$index]}}
       - for (var i = 0; i < 4; i++) {
         td.nowrap
@@ -57,8 +57,8 @@ div(ng-show='presence[0] && presence[1]')
         - function sideCells(side) {
           - for (var i = 0; i < 4; i++) {
             td(class='valid-{{valid#{side}#{i}}}').nowrap
-              text-edit-cell(bind='o.scores[#{side}][#{i}]', enabled='!o.total', valid='valid#{side}#{i}', input-width='17', pattern='[0-9.]*', setter='parseFloat(o)', getter='truncFloat(o, 2)', soft-validator='validateMinMax(o, #{i==3 ? 30 : 60}, #{i==3 ? 40 : 80})')
-              i(ng-show='valid#{side}#{i} && (o.scores[#{side}][#{i}] <= #{i==3 ? 30.5 : 61} || o.scores[#{side}][#{i}] >= #{i==3 ? 39.5 : 79})').fa.fa-exclamation.icon-dobitoc
+              text-edit-cell(bind='o.scores[#{side}][#{i}]', enabled='!o.total', valid='valid#{side}#{i}', input-width='17', pattern='[0-9.]*', setter='parseFloat(o)', getter='truncFloat(o, 2)', soft-validator='validateScore(#{i}, o)')
+              i(ng-show='valid#{side}#{i} && scoreWarning(#{i}, o.scores[#{side}][#{i}])').fa.fa-exclamation.icon-dobitoc
           - } }
         - function sideTotal(side) {
           td {{truncFloat(o.scores[#{side}][0] + o.scores[#{side}][1] + o.scores[#{side}][2] + o.scores[#{side}][3], 2)}}
