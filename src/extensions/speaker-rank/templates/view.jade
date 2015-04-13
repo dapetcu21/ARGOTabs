@@ -20,8 +20,8 @@ h3.print-only.text-center {{tournament.name}} - Speaker rank
           td {{o.name}}
           td {{o.team.name}}
           td: span(class='muted-{{o.team.club == null}}') {{namePlaceholder(o.team.club, 'unaffiliated').name}}
-          td: span.right {{toFixed(o.stats.score, scoreDec)}}
-          td: span.right {{toFixed(o.stats.scoreHighLow, highLowDec)}}
+          td: span.right {{toFixed(tournament.speakerRankShowTotals ? o.stats.rawScore : o.stats.score, scoreDec)}}
+          td: span.right {{toFixed(tournament.speakerRankShowTotals ? o.stats.rawHighLow : o.stats.scoreHighLow, highLowDec)}}
           td: span {{formatBreakdown(o.stats.breakdown)}}
           td: span.right {{o.stats.roundsPlayed}}
           td: span.right {{toFixed(o.stats.reply, replyDec)}}
@@ -37,6 +37,13 @@ h3.print-only.text-center {{tournament.name}} - Speaker rank
         label.checkbox(ng-repeat='o in tournament.rounds', ng-show='!tournament.rankFromSpeakers.all')
           input(type='checkbox', ng-model='tournament.rankFromSpeakers[o.id]')
           | Round {{$index+1}}
+
+    .well.settings-group
+      strong Score display
+        label.checkbox
+          input(type='checkbox', ng-model='tournament.speakerRankShowTotals')
+          | Show the raw totals
+        
     .well.settings-group
       strong Ranking criteria
       sorter-criteria(bind='tournament.speakerRankSorter', on-update='refreshStats()')

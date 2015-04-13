@@ -103,11 +103,18 @@ define ['core/util', './uuid'], (Util, UUID) ->
       o.replyBallots = o.replyCount + o.replyByes
       o.score = if o.scoreCount then o.rawScore / o.scoreCount else if o.byes then -1 else 0
       o.reply = if o.replyCount then o.rawReply / o.replyCount else if o.replyByes then -1 else 0
+      o.scoreHighLow = 0
+
       if allScores > 2
+        o.highLowScoreCount = allScores - 2
         if o.scoreCount
-          o.scoreHighLow = (o.rawScore + o.score * o.byes - o.minScore - o.maxScore) / (allScores - 2)
+          o.rawHighLow = o.rawScore + o.score * o.byes - o.minScore - o.maxScore
+          o.scoreHighLow = o.rawHighLow / o.highLowScoreCount
         else
+          o.rawHighLow = -1
           o.scoreHighLow = -1
       else
+        o.highLowScoreCount = 0
+        o.rawHighLow = 0
         o.scoreHighLow = 0
       return o

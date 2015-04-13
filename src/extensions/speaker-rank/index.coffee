@@ -41,6 +41,27 @@ define ["models/player", "core/util", "underscore", "./templates"], (Player, Uti
                 score.toFixed(Util.decimalsOf(score, 2))
             breakdown.join(' ')
 
+          $scope.refreshDecimals = ->
+            players = $scope.players
+            if not players? then return
+
+            maxScoreDec = 0
+            maxReplyDec = 0
+            maxHighLowDec = 0
+            showTotals = ui.tournament.speakerRankShowTotals
+            for player in players
+              scoreDec = Util.decimalsOf (if showTotals then player.stats.rawScore else player.stats.score), 2
+              highLowDec = Util.decimalsOf (if showTotals then player.stats.rawHighLow else player.stats.scoreHighLow), 2
+              replyDec = Util.decimalsOf player.stats.reply, 2
+              maxScoreDec = scoreDec if scoreDec > maxScoreDec
+              maxReplyDec = replyDec if replyDec > maxReplyDec
+              maxHighLowDec = highLowDec if highLowDec > maxHighLowDec
+
+            $scope.scoreDec = maxScoreDec
+            $scope.replyDec = maxReplyDec
+            $scope.highLowDec = maxHighLowDec
+
+
           $scope.refreshStats = (rounds) ->
             tournament = ui.tournament
             players = $scope.players = tournament.players.slice(0)
@@ -55,24 +76,14 @@ define ["models/player", "core/util", "underscore", "./templates"], (Player, Uti
               if ain
                 return -1
               return 1
+            $scope.refreshDecimals()
 
-            maxScoreDec = 0
-            maxReplyDec = 0
-            maxHighLowDec = 0
-            for player in players
-              scoreDec = Util.decimalsOf player.stats.score, 2
-              replyDec = Util.decimalsOf player.stats.reply, 2
-              highLowDec = Util.decimalsOf player.stats.scoreHighLow, 2
-              maxScoreDec = scoreDec if scoreDec > maxScoreDec
-              maxReplyDec = replyDec if replyDec > maxReplyDec
-              maxHighLowDec = highLowDec if highLowDec > maxHighLowDec
-
-            $scope.scoreDec = maxScoreDec
-            $scope.replyDec = maxReplyDec
-            $scope.highLowDec = maxHighLowDec
 
           roundIds = null
           Util.installScopeUtils $scope
+
+          $scope.$watch (-> ui.tournament.speakerRankShowTotals), (v) ->
+            $scope.refreshDecimals()
 
           $scope.$watch (-> JSON.stringify roundIds = baseRoundIds()), (v) ->
             $scope.refreshStats baseRounds roundIds
