@@ -20,8 +20,8 @@ h3.print-only.text-center {{tournament.name}} - Team rank
           td: span(class='muted-{{o.club == null}}') {{namePlaceholder(o.club, 'unaffiliated').name}}
           td: span.right {{o.stats.ballots}}
           td: span.right {{o.stats.wins}}
-          td: span.right {{toFixed(o.stats.score, scoreDec)}}
-          td: span.right {{toFixed(o.stats.scoreHighLow, highLowDec)}}
+          td: span.right {{toFixed(tournament.teamRankShowTotals ? o.stats.score * tournament.ballotsPerMatch : o.stats.score, scoreDec)}}
+          td: span.right {{toFixed(tournament.teamRankShowTotals ? o.stats.scoreHighLow * tournament.ballotsPerMatch : o.stats.scoreHighLow, highLowDec)}}
           td: span.right {{toFixed(o.stats.margin, marginDec)}}
           td: span.right {{toFixed(o.stats.reply, replyDec)}}
 
@@ -35,6 +35,13 @@ h3.print-only.text-center {{tournament.name}} - Team rank
         label.checkbox(ng-repeat='o in tournament.rounds', ng-show='!tournament.rankFromTeams.all')
           input(type='checkbox', ng-model='tournament.rankFromTeams[o.id]')
           | Round {{$index+1}}
+
+    .well.settings-group
+      strong Score display
+        label.checkbox
+          input(type='checkbox', ng-model='tournament.teamRankShowTotals')
+          | Show the raw totals
+
     .well.settings-group
       strong Ranking criteria
       sorter-criteria(bind='tournament.teamRankSorter', on-update='refreshStats()')
