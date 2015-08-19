@@ -309,7 +309,7 @@ define ['core/util', './ballot', './judge', './sorter', './judgerules', './team'
               count++
           return count
 
-      if opts.noClubMatches and (opts.algorithm == 0 or opts.algorithm == 2)
+      if opts.noClubMatches and (opts.algorithm == 0 or opts.algorithm == 2 or opts.algorithm == 3)
         restrictions.conditions.push (a, b) ->
           if a.club? and b.club? and a.club == b.club then 1 else 0
 
