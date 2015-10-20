@@ -678,13 +678,13 @@ define ['models/team', 'models/judge', 'models/round', 'core/util', 'core/alertc
               for i in [0..1]
                 for j in [0..2]
                   nr = vote.scores[i][j]
-                  if nr < 60 or nr > 80
+                  if nr < tournament.minConstructiveScore or nr > tournament.maxConstructiveScore
                     voteError = true
                     if pres
                       sc.$apply -> sc.outOfRangeError = true
                       return
                 nr = vote.scores[i][3]
-                if nr < 30 or nr > 40
+                if nr < tournament.minReplyScore or nr > tournament.maxReplyScore
                   voteError = true
                   if pres
                     sc.$apply -> sc.outOfRangeError = true
