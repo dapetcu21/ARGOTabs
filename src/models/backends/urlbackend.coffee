@@ -2,7 +2,7 @@ define ['../backend_import', '../source'], (Backend, Source) ->
   class URLSource extends Source
     load: (fn, fnErr = ->) ->
       xhr = $.ajax
-        url: @url(),
+        url: @url().replace('http://argotabdbro.herokuapp.com', 'https://argotabdbro.herokuapp.com')
         dataType: 'text',
 
       xhr.done (data) ->
@@ -18,5 +18,3 @@ define ['../backend_import', '../source'], (Backend, Source) ->
 
     load: (url) -> new URLSource(@, url)
     fetch: (fn) -> return
-
-
