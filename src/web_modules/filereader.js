@@ -13,7 +13,7 @@
     var syncDetectionScript = "self.addEventListener('message', function(e) { postMessage(!!FileReaderSync); }, false);";
     var fileReaderEvents = ['loadstart', 'progress', 'load', 'abort', 'error', 'loadend'];
 
-    var FileReaderJS = window.FileReaderJS = {
+    var FileReaderJS = module.exports = {
         enabled: false,
         setupInput: setupInput,
         setupDrop: setupDrop,
@@ -42,6 +42,8 @@
             }
         }
     };
+
+    var jQuery = require('jquery');
 
     // Setup jQuery plugin (if available)
     if (typeof(jQuery) !== "undefined") {

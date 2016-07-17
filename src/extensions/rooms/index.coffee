@@ -1,4 +1,4 @@
-define ['models/room', './templates'], (Room, templates) ->
+define ['../models/room', './templates'], (Room, templates) ->
   class Rooms
     constructor: (@ui) ->
     sidebarCategory: -> 'Participants'

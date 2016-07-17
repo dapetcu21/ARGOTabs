@@ -1,4 +1,4 @@
-define ['underscore'], (_) ->
+define ['lodash'], (_) ->
   newCrit = (name, crit, operand = '>', equality = '==') ->
     funcString = '(function(a,b) { 
       if (a.'+crit+operand+'b.'+crit+') return -1;

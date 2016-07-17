@@ -4,6 +4,7 @@
  * License: MIT
  */
 (function(window, angular, undefined) {'use strict';
+  module.exports = angular;
 
 /**
  * @ngdoc overview
@@ -16,7 +17,7 @@
  *
  * ## Example
  * See {@link ngRoute.$route#example $route} for an example of configuring and using `ngRoute`.
- * 
+ *
  * {@installModule route}
  *
  * <div doc-module-components="ngRoute"></div>
@@ -33,7 +34,7 @@ var ngRouteModule = angular.module('ngRoute', ['ng']).
  * @description
  *
  * Used for configuring routes.
- * 
+ *
  * ## Example
  * See {@link ngRoute.$route#example $route} for an example of configuring and using `ngRoute`.
  *

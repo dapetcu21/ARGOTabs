@@ -1,4 +1,4 @@
-define ["models/player", "core/util", "underscore", "./templates"], (Player, Util, _, templates) ->
+define ["models/player", "core/util", "lodash", "./templates"], (Player, Util, _, templates) ->
   class SpeakerRank
     constructor: (@ui) ->
     sidebarCategory: -> 'Statistics'

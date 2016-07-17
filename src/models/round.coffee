@@ -1,4 +1,4 @@
-define ['core/util', './ballot', './judge', './sorter', './judgerules', './team', './uuid'], (Util, Ballot, Judge, Sorter, JudgeRules, Team, UUID) ->
+define ['../core/util', './ballot', './judge', './sorter', './judgerules', './team', './uuid'], (Util, Ballot, Judge, Sorter, JudgeRules, Team, UUID) ->
  class Round
     constructor: (@tournament, other) ->
       if other

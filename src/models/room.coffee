@@ -1,4 +1,4 @@
-define ['core/util', './uuid'], (Util, UUID)->
+define ['../core/util', './uuid'], (Util, UUID)->
   class Room
     constructor: (@tournament, other) ->
       if other

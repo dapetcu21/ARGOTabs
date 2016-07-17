@@ -1,4 +1,4 @@
-define ['core/util', './player', './uuid'], (Util, Player, UUID) ->
+define ['../core/util', './player', './uuid'], (Util, Player, UUID) ->
   class Team
     constructor: (@tournament, other) ->
       if other

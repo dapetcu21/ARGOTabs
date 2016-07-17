@@ -1,4 +1,4 @@
-define ['jquery', 'core/util', 'models/judgerules', './templates', 'underscore', 'jquery.transit', 'angular', 'jquery.event.drag', 'html2canvas'], ($, Util, JudgeRules, templates, _) ->
+define ['jquery', '../core/util', '../models/judgerules', './templates', 'lodash', 'jquery.transit', 'angular', 'jquery.event.drag', 'html2canvas'], ($, Util, JudgeRules, templates, _) ->
   mod = angular.module "components", []
   mod.directive 'navLi', ->
     restrict: 'E'

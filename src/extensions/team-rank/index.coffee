@@ -1,4 +1,4 @@
-define ["models/team", "core/util", "underscore", "./templates"], (Team, Util, _, templates) ->
+define ["models/team", "core/util", "lodash", "./templates"], (Team, Util, _, templates) ->
   class TeamRank
     constructor: (@ui) ->
     sidebarCategory: -> 'Statistics'

@@ -1,4 +1,4 @@
-define ['models/judge', './templates'], (Judge, templates) ->
+define ['../models/judge', './templates'], (Judge, templates) ->
   class Judges
     constructor: (@ui) ->
     sidebarCategory: -> 'Participants'

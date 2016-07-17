@@ -1,4 +1,4 @@
-define ['core/util', './judge', './team', './club'], (Util, Judge, Team, Club) ->
+define ['../core/util', './judge', './team', './club'], (Util, Judge, Team, Club) ->
   class JudgeRules
     newCriteria: (judge, verb, team) ->
       return {

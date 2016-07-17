@@ -2656,7 +2656,7 @@ _html2canvas.Util.Support = function (options, doc) {
     svgRendering: options.svgRendering && supportSVGRendering()
   };
 };
-window.html2canvas = function(elements, opts) {
+window.html2canvas = module.exports = function(elements, opts) {
   elements = (elements.length) ? elements : [elements];
   var queue,
   canvas,

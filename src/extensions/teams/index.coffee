@@ -1,4 +1,4 @@
-define ['models/team', './templates', 'angular'], (Team, templates) ->
+define ['../models/team', './templates', 'angular'], (Team, templates) ->
   module = angular.module 'teams', []
   module.controller 'EditableController', ['$scope', '$element', ($scope, $element) ->
     $scope.editPlayers = false
