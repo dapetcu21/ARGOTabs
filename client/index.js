@@ -1,4 +1,5 @@
 require('./core/css/index.styl');
+require('file?name=favicon.ico!./core/assets/favicon.ico');
 
 const UIController = require('./core/uicontroller')
 const templateIndex = require('./core/templates/index.jade');
