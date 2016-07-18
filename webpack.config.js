@@ -8,10 +8,10 @@ const localIdentName = debug ? 'localIdentName=[name]__[local]___[hash:base64:5]
 
 const config = {
   entry: {
-    main: ['babel-polyfill', './src'],
+    main: ['babel-polyfill', './client'],
   },
   output: {
-    path: './build',
+    path: './public',
     filename: '[name].js',
     publicPath: process.env.PUBLIC_PATH || '/',
   },
@@ -43,7 +43,7 @@ const config = {
     new ExtractText('bundle.css', { disable: debug, allChunks: true }),
     new HTMLWebpack({
       inject: true,
-      template: 'src/core/templates/index.html',
+      template: 'client/core/assets/index.html',
     }),
     new webpack.DefinePlugin({
       __DEV__: debug,

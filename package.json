@@ -36,8 +36,10 @@
   },
   "engines": {},
   "scripts": {
-    "start": "PUBLIC_PATH=\"http://localhost:8080/\" webpack-dev-server --inline --hot --content-base build",
-    "build": "NODE_ENV=production webpack"
+    "start": "node server",
+    "watch": "PUBLIC_PATH=\"http://localhost:8080/\" webpack-dev-server --inline --hot --content-base public",
+    "build": "NODE_ENV=production webpack",
+    "postinstall": "test \"$NODE_ENV\" = production && npm run build || true"
   },
   "repository": {
     "type": "git",
