@@ -1,5 +1,6 @@
-lodash = require 'lodash'
-module.exports = class Backend
+_ = require 'lodash'
+
+class Backend
   list: ->
   load: -> throw new Error("load(): Not implemented")
 
@@ -13,10 +14,12 @@ module.exports = class Backend
 
   @backendForSchema: (schema) ->
     for b in Backend.backends
-      if _.contains b.schemas(), schema
+      if _.includes b.schemas(), schema
         return b
     return null
 
   @backendForUrl: (url) ->
     schema = url.replace /:.*$/, ''
     Backend.backendForSchema(schema)
+
+module.exports = Backend

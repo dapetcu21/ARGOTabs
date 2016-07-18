@@ -3,8 +3,10 @@
  * (c) 2010-2014 Google, Inc. http://angularjs.org
  * License: MIT
  */
+
+require('angular');
+
 (function(window, angular, undefined) {'use strict';
-  module.exports = angular;
 
 /**
  * @ngdoc overview
@@ -917,5 +919,6 @@ function ngViewFillContentFactory($compile, $controller, $route) {
   };
 }
 
-
 })(window, window.angular);
+
+module.exports = window.angular;

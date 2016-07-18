@@ -181,4 +181,5 @@
 				e.preventDefault();
 		});
 
+	module.exports = $;
 }(require('jquery.bootstrap'));

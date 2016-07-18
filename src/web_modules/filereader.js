@@ -5,8 +5,8 @@
     See http://github.com/bgrins/filereader.js for documentation.
 */
 
-(function(window, document) {
 
+(function(window, document) {
     var FileReader = window.FileReader;
     var FileReaderSyncSupport = false;
     var workerScript = "self.addEventListener('message', function(e) { var data=e.data; try { var reader = new FileReaderSync; postMessage({ result: reader[data.readAs](data.file), extra: data.extra, file: data.file})} catch(e){ postMessage({ result:'error', extra:data.extra, file:data.file}); } }, false);";
@@ -49,7 +49,7 @@
     if (typeof(jQuery) !== "undefined") {
         jQuery.fn.fileReaderJS = function(opts) {
             return this.each(function() {
-                if ($(this).is("input")) {
+                if (jQuery(this).is("input")) {
                     setupInput(this, opts);
                 }
                 else {

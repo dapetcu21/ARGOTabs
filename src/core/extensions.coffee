@@ -1,4 +1,5 @@
 _ = require 'lodash'
+$ = require 'jquery'
 require 'angular-route'
 
 extensionsArray = []

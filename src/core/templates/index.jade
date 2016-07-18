@@ -1,0 +1,34 @@
+div(ng-controller='LoadingCtrl', ng-show="!loaded || !tournamentLoaded || loadingTournament").loading-screen
+    h3
+      i.fa.fa-spinner.fa.fa-spin.fa.fa-large
+      | &nbsp; Loading...
+
+.navbar.navbar-fixed-top.dont-print
+  .navbar-inner
+    .container-fluid
+      ul.nav
+        li.arrow-nav: a.action-open.brand
+          i.fa.fa-arrow-left.view-arrow
+          span.view-brand ARGO Tabs
+        li.divider-vertical
+          li: a(href="#").brand.view-title {{tournament.name}}
+
+      .btn-group.pull-right
+        button(data-loading-text="Saving...", data-saved-text="Saved").btn.btn-info.action-save.view-save Save
+        button(data-toggle="dropdown").btn.btn-info.dropdown-toggle.view-save
+          span.caret
+        ul.dropdown-menu
+          li.action-saveas-local
+            a(tabindex='-1').action-saveaslocal Save a copy
+          li.action-saveas-download
+            a(tabindex='-1').action-download Download
+          li.action-saveas-download-censored
+            a(tabindex='-1').action-download-censored Download censored copy
+  
+.container-fluid
+  .row-fluid
+    .span2.dont-print
+      .well.sidebar-nav
+        ul#sidebar-nav.nav.nav-list
+          
+    div(ng-view).span10.print-full-width

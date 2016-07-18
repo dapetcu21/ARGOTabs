@@ -8,7 +8,7 @@ const localIdentName = debug ? 'localIdentName=[name]__[local]___[hash:base64:5]
 
 const config = {
   entry: {
-    main: ['babel-polyfill', './src/main.coffee'],
+    main: ['babel-polyfill', './src'],
   },
   output: {
     path: './build',
@@ -21,6 +21,7 @@ const config = {
       { test: /\.jsx?$/, loader: 'babel-loader', exclude: /node_modules|web_modules/ },
       { test: /\.coffee$/, loader: 'coffee-loader', exclude: /node_modules|web_modules/ },
       { test: /\.json$/, loader: 'json' },
+      { test: /\.jade$/, loader: 'jade' },
       { test: /\.scss$/, loader: ExtractText.extract('style', `css?sourceMap&${localIdentName}!postcss!sass`) },
       { test: /\.sass$/, loader: ExtractText.extract('style', `css?sourceMap&${localIdentName}!postcss!sass?indentedSyntax=true`) },
       { test: /\.css$/, loader: ExtractText.extract('style', `css?sourceMap&${localIdentName}!postcss`) },
@@ -39,10 +40,10 @@ const config = {
   },
   plugins: [
     new ExtractText('bundle.css', { disable: debug, allChunks: true }),
-    // new HTMLWebpack({
-    //   inject: true,
-    //   template: 'src/assets/index.html',
-    // }),
+    new HTMLWebpack({
+      inject: true,
+      template: 'src/core/templates/index.html',
+    }),
     new webpack.DefinePlugin({
       __DEV__: debug,
     }),

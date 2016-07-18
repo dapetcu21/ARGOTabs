@@ -18,6 +18,7 @@
  * ========================================================== */
 
 var jQuery = require('jquery');
+module.exports = jQuery;
 
 !function ($) {
 
@@ -2023,6 +2024,4 @@ var jQuery = require('jquery');
       $spy.affix(data)
     })
   })
-
-
 }(jQuery);
