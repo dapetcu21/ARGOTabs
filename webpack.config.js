@@ -2,6 +2,7 @@ const HTMLWebpack = require('html-webpack-plugin');
 const ExtractText = require('extract-text-webpack-plugin');
 const webpack = require('webpack');
 const autoprefixer = require('autoprefixer');
+const AppCachePlugin = require('appcache-webpack-plugin');
 
 const debug = process.env.NODE_ENV !== 'production';
 const localIdentName = debug ? 'localIdentName=[name]__[local]___[hash:base64:5]' : 'localIdentName=[hash:base64:5]';
@@ -71,6 +72,10 @@ if (debug) {
 } else {
   config.plugins.push(new webpack.optimize.UglifyJsPlugin());
   config.plugins.push(new webpack.optimize.OccurenceOrderPlugin(true));
+  config.plugins.push(new AppCachePlugin({
+    settings: ['prefer-online'],
+    output: 'manifest.appcache'
+  }));
 }
 
 module.exports = config;
