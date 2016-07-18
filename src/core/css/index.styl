@@ -1,17 +1,17 @@
-@import '../components/bootstrap/css/bootstrap.css'
-@import '../components/bootstrap/css/bootstrap-responsive.css'
-@import '../components/font-awesome/css/font-awesome.css'
-@import '../components/rainbow/themes/github.css'
+@import '~bootstrap/css/bootstrap.css'
+@import '~bootstrap/css/bootstrap-responsive.css'
+@import '~font-awesome/css/font-awesome.css'
+@import '~rainbow-code/themes/css/github.css'
 
 @import common
-@import index
+@import indexPage
 @import openModal
 @import saveAs
 @import updateNotification
 
 .nowrap
   white-space: nowrap
- 
+
 .wrap
   white-space: normal
 
@@ -60,7 +60,7 @@ th:hover .sortarrow .arrow,
 .text-center
   text-align: center
 
-.editable-table td.controls, 
+.editable-table td.controls,
 .editable-table th.controls
   width: 24px
   vertical-align: middle
@@ -152,7 +152,7 @@ i.bottom-line
 
 i.bottom-line:hover
   opacity: 1
- 
+
 .heading table.stats
   margin-top: 10px
 
@@ -173,7 +173,7 @@ i.bottom-line:hover
   position:relative
   color: #0088cc
   top: 2px
- 
+
 .small-margin
   margin: 3px
 
@@ -297,11 +297,11 @@ li.active .remove-round:hover
   color: red-color
 
 .judge-rank.judge-rank-1
-  color: yellow-color 
+  color: yellow-color
 
 .judge-rank.judge-rank-2
   color: green-color
-  
+
 .judge-rank.judge-rank-3
   color: blue-color
 
@@ -311,7 +311,7 @@ li.active .remove-round:hover
 .judge-rank.judge-rank-32
   color: gray-color
 
-@media screen 
+@media screen
   .judge-box.valid-false
     background-color: red-color
     color: #ffffff
@@ -320,7 +320,7 @@ li.active .remove-round:hover
   .judge-box.valid-false .judge-rank
     color: #ffffff
 
-@media print 
+@media print
   #pairings.printca-true .judge-box.valid-false
     color: red-color
     border: 1px solid red-color
@@ -366,12 +366,12 @@ li.active .remove-round:hover
   color: green-color
 
 .judge-rule .verb-1 .multi-label
-  color: red-color 
+  color: red-color
 
 .judge-rule .multi-label.muted-true
   color: red-color
   opacity: 1
-  font-weight: bold 
+  font-weight: bold
 
 .judge-rule .remove-rule
   position: absolute
@@ -414,4 +414,3 @@ label.checkbox.inline
     overflow-y: auto
     height: 190px
     padding-bottom: 5px
-

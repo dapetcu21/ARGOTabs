@@ -1,4 +1,4 @@
-div(id=o.id, class=o.cssClass).modal.hide
+div(id=o.id, class=o.cssClass).modal
   .modal-header
     if o.closeable
       button(type="button", data-dismiss="modal", aria-hidden="true").close.modal-cancel &times;
@@ -32,4 +32,3 @@ div(id=o.id, class=o.cssClass).modal.hide
       .modal.fade {
         top: 20px;
       }
-

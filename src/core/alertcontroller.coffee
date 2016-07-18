@@ -60,8 +60,12 @@ class AlertController
     jq.on 'show', ->
       o.onShow jq if o.onShow
 
-    jq.modal if o.closeable then null else
+    opts = if o.closeable then {} else
       keyboard: false
       backdrop: 'static'
+
+    opts.show = true
+
+    jq.modal opts
 
 module.exports = AlertController

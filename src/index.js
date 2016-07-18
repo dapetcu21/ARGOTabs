@@ -1,3 +1,5 @@
+require('./core/css/index.styl');
+
 const UIController = require('./core/uicontroller')
 const templateIndex = require('./core/templates/index.jade');
 
