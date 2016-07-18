@@ -20,9 +20,6 @@ div(id=o.id, class=o.cssClass).modal
   if o.height
     style.
       @media (min-width: 767px) {
-        ##{o.id} {
-          margin-top: #{-o.height/ 2}px;
-        }
         ##{o.id} .modal-body {
           max-height: #{o.height - 80 - (o.buttons.length ? 60 : 0)}px;
         }
