@@ -1,4 +1,4 @@
-  function cacheUpdated() {
+function cacheUpdated() {
   var div = document.createElement('div');
   div.className = 'update-notification';
   div.innerHTML = 'Tabs has been updated to a new version. Click here to reload and start using it';

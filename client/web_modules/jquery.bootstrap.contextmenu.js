@@ -182,4 +182,4 @@
 		});
 
 	module.exports = $;
-}(require('jquery.bootstrap'));
+}(require('jquery.bootstrap')))
