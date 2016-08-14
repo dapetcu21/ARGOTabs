@@ -20,7 +20,6 @@ const config = {
   module: {
     loaders: [
       { test: /\.jsx?$/, loader: 'babel-loader', exclude: /node_modules|web_modules/ },
-      { test: /\.coffee$/, loader: 'coffee-loader', exclude: /node_modules|web_modules/ },
       { test: /\.json$/, loader: 'json' },
       { test: /\.jade$/, loader: 'jade' },
       { test: /\.scss$/, loader: ExtractText.extract('style', `css-loader?sourceMap&${localIdentName}!postcss!sass`) },
@@ -34,7 +33,7 @@ const config = {
     return [autoprefixer];
   },
   resolve: {
-    extensions: ['', '.js', '.jsx', '.json', '.coffee'],
+    extensions: ['', '.js', '.jsx', '.json'],
   },
   babel: {
     presets: ['es2015', 'react', 'stage-0'],
