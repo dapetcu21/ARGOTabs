@@ -126,7 +126,7 @@ define ['core/util', './judge', './team', './club'], (Util, Judge, Team, Club) -
       return vrb if crit.team == 2 and judge.club? and ta.club == tb.club and ta.club == judge.club
       return vrb if relevantTeam(ta) or relevantTeam(tb)
       return 2
-    
+
     isCompatible: (judge, ballot, next) ->
       for criterion in @criteria
         e = @evalCriterion criterion, judge, ballot
@@ -158,7 +158,7 @@ define ['core/util', './judge', './team', './club'], (Util, Judge, Team, Club) -
       ]
 
     addNewRule: ->
-      @criteria.unshift @newCriteria 0, 0, 0
+      @criteria.unshift @newCriteria 0, 1, 0
 
     removeRule: (index) ->
       @criteria.splice index, 1
