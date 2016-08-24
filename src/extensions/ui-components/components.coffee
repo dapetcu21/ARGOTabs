@@ -64,13 +64,13 @@ define ['jquery', 'core/util', 'models/judgerules', './templates', 'underscore',
       scope.addRule = ->
         scope.model.addNewRule()
         setTimeout ->
-          if item = Util.focusableElement element.find(".judge-rule:first-child")
+          if item = Util.focusableElement element.find(".vlist .item:last-child .judge-rule")
             item.focus()
         , 1
 
       scope.removeRule = (index) ->
         scope.model.removeRule index
-  
+
       @scope = scope
       return this
     ]
@@ -318,7 +318,7 @@ define ['jquery', 'core/util', 'models/judgerules', './templates', 'underscore',
         select.blur ->
           Util.safeApply scope, ->
             scope.endEdit()
-        
+
         scope.beginEdit = ->
           return if scope.editing or not scope._enabled
           scope.onBeginEdit()
@@ -352,7 +352,7 @@ define ['jquery', 'core/util', 'models/judgerules', './templates', 'underscore',
             return scope.choiceName
               o: o
           return scope.allowNil
-        
+
 #VLISTCELL
 
   mod.directive "vlistCell", ->
@@ -864,5 +864,3 @@ define ['jquery', 'core/util', 'models/judgerules', './templates', 'underscore',
         return
       return this
     ]
-
-

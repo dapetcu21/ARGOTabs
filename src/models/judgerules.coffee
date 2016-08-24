@@ -158,7 +158,7 @@ define ['core/util', './judge', './team', './club'], (Util, Judge, Team, Club) -
       ]
 
     addNewRule: ->
-      @criteria.unshift @newCriteria 0, 1, 0
+      @criteria.push @newCriteria 0, 1, 0
 
     removeRule: (index) ->
       @criteria.splice index, 1
