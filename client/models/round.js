@@ -1,12 +1,3 @@
-define([
-  "../core/util",
-  "./ballot",
-  "./judge",
-  "./sorter",
-  "./judgerules",
-  "./team",
-  "./uuid"
-
 const Util = require('../core/util');
 const Ballot = require('./ballot');
 const Judge = require('./judge');
@@ -1010,7 +1001,7 @@ class Round {
     var report = this.judgeShadowReportSolved();
 
     assign(
-      report ? freeJ.concat(shadowJudges) : shadowJudges
+      report ? freeJ.concat(shadowJudges) : shadowJudges,
       this.judgeShadowOrderSolved(),
       this.judgeShadowPrioritySolved(),
       true,
@@ -1023,16 +1014,16 @@ class Round {
     if (report) {
       freeJ.length = 0;
 
-      judges.forEach(function(o) {
+      judges.forEach(o => {
         if (!(o.rounds[id].ballot != null)) {
-          return freeJ.push(o);
+          freeJ.push(o);
         }
       });
     }
 
-    shadowJudges.forEach(function(o) {
+    shadowJudges.forEach(o => {
       if (!(o.rounds[id].ballot != null)) {
-        return freeJ.push(o);
+        freeJ.push(o);
       }
     });
 
