@@ -1,117 +1,117 @@
-const Backend = require('../backend_import');
-const Source = require('../source');
+const Backend = require('../backend_import')
+const Source = require('../source')
 
 class LocalSource extends Source {
-  constructor() {
-    super(...arguments);
-    this.loadDate = new Date();
-    this.date = this.modifiedDate();
-    this.fName = this.fileName();
+  constructor () {
+    super(...arguments)
+    this.loadDate = new Date()
+    this.date = this.modifiedDate()
+    this.fName = this.fileName()
   }
 
-  exists() {
-    return localStorage.hasOwnProperty(this.fName + ".atab");
+  exists () {
+    return localStorage.hasOwnProperty(this.fName + '.atab')
   }
 
-  modifiedDate() {
-    var date = localStorage.getItem(this.fName + ".mdate");
+  modifiedDate () {
+    var date = localStorage.getItem(this.fName + '.mdate')
 
     if (date != null) {
-      return new Date(parseInt(date.match(/\d+/)[0]));
+      return new Date(parseInt(date.match(/\d+/)[0]))
     } else {
-      return this.loadDate;
+      return this.loadDate
     }
   }
 
-  load(fn, fnErr = function() {}) {
+  load (fn, fnErr = function () {}) {
     try {
-      var obj = localStorage.getItem(this.fName + ".atab");
-      (obj != null ? obj : obj = "");
-      this.loadDate = new Date();
-      fn(obj);
+      var obj = localStorage.getItem(this.fName + '.atab');
+      (obj != null ? obj : obj = '')
+      this.loadDate = new Date()
+      fn(obj)
     } catch (err) {
-      fnErr(err);
+      fnErr(err)
     }
 
-    return;
+    return
   }
 
-  save(obj, fn, force = false) {
-    var e;
+  save (obj, fn, force = false) {
+    var e
 
     if (!force && this.modifiedDate().getTime() > this.loadDate.getTime()) {
       e = new Error(
         "This tournament was modified by an external program since we opened it. Make sure it's not open in another ARGO Tabs window"
-      );
+      )
 
-      e.canForce = "Save anyway";
-      throw e;
+      e.canForce = 'Save anyway'
+      throw e
     }
 
-    this.loadDate = new Date();
-    localStorage.setItem(this.fName + ".atab", obj);
-    localStorage.setItem(this.fName + ".mdate", this.loadDate.getTime());
-    fn();
-    return;
+    this.loadDate = new Date()
+    localStorage.setItem(this.fName + '.atab', obj)
+    localStorage.setItem(this.fName + '.mdate', this.loadDate.getTime())
+    fn()
+    return
   }
 
-  delete() {
-    localStorage.removeItem(this.fName + ".atab");
-    return localStorage.removeItem(this.fName + ".mdate");
+  delete () {
+    localStorage.removeItem(this.fName + '.atab')
+    return localStorage.removeItem(this.fName + '.mdate')
   }
 
-  canRename(newName) {
-    return !localStorage.hasOwnProperty(newName + ".atab");
+  canRename (newName) {
+    return !localStorage.hasOwnProperty(newName + '.atab')
   }
 
-  rename(newName) {
+  rename (newName) {
     return this.load(obj => {
-      this.delete();
-      this._url = this.backend.urlFromFileName(newName);
-      this.fName = newName;
-      return this.save(obj, (function() {}), true);
-    });
+      this.delete()
+      this._url = this.backend.urlFromFileName(newName)
+      this.fName = newName
+      return this.save(obj, (function () {}), true)
+    })
   }
 }
 
 class LocalBackend extends Backend {
-  icon() {
-    return "<i class=\"fa fa-fw fa-file\"></i>";
+  icon () {
+    return '<i class="fa fa-fw fa-file"></i>'
   }
 
-  schemas() {
-    return ["local"];
+  schemas () {
+    return ['local']
   }
 
-  list(fn) {
-    var result = [];
+  list (fn) {
+    var result = []
 
-    for (var i of (function() {
-        var results = [];
+    for (var i of (function () {
+      var results = []
 
-        for (var i = 0, ref = localStorage.length; (0 <= ref ? i < ref : i > ref); (0 <= ref ? i++ : i--)) {
-            results.push(i);
-        }
+      for (var i = 0, ref = localStorage.length; (0 <= ref ? i < ref : i > ref); (0 <= ref ? i++ : i--)) {
+        results.push(i)
+      }
 
-        return results;
+      return results
     }).apply(this)) {
-      var v = localStorage.key(i).match(/^(.*)\.atab$/);
+      var v = localStorage.key(i).match(/^(.*)\.atab$/)
 
       if ((v && v[1])) {
-        fn(this.load(this.urlFromFileName(v[1])));
+        fn(this.load(this.urlFromFileName(v[1])))
       }
     }
 
-    return;
+    return
   }
 
-  load(url) {
-    return new LocalSource(this, url);
+  load (url) {
+    return new LocalSource(this, url)
   }
 
-  urlFromFileName(fname) {
-    return "local://localhost/" + encodeURIComponent(fname + ".atab");
+  urlFromFileName (fname) {
+    return 'local://localhost/' + encodeURIComponent(fname + '.atab')
   }
 }
 
-module.exports = LocalBackend;
+module.exports = LocalBackend

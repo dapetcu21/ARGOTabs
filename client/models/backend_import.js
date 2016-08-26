@@ -1,36 +1,36 @@
-const _ = require("lodash");
+const _ = require('lodash')
 
 class Backend {
-  list() {}
+  list () {}
 
-  load() {
-    throw new Error("load(): Not implemented");
+  load () {
+    throw new Error('load(): Not implemented')
   }
 
-  static list(callback) {
+  static list (callback) {
     _.each(Backend.backends, backend => {
-      backend.list(callback);
-    });
+      backend.list(callback)
+    })
   }
 
-  static load(url) {
-    return Backend.backendForUrl(url).load(url);
+  static load (url) {
+    return Backend.backendForUrl(url).load(url)
   }
 
-  static backendForSchema(schema) {
+  static backendForSchema (schema) {
     for (var b of Backend.backends) {
       if (_.includes(b.schemas(), schema)) {
-        return b;
+        return b
       }
     }
 
-    return null;
+    return null
   }
 
-  static backendForUrl(url) {
-    var schema = url.replace(/:.*$/, "");
-    return Backend.backendForSchema(schema);
+  static backendForUrl (url) {
+    var schema = url.replace(/:.*$/, '')
+    return Backend.backendForSchema(schema)
   }
 }
 
-module.exports = Backend;
+module.exports = Backend

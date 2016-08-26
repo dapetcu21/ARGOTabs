@@ -1,47 +1,47 @@
-const Club = require('../../models/club');
-const templateView = require('./templates/view.jade');
+const Club = require('../../models/club')
+const templateView = require('./templates/view.jade')
 
-require('./common.styl');
+require('./common.styl')
 
 class Clubs {
-  constructor(ui) {
-    this.ui = ui;
+  constructor (ui) {
+    this.ui = ui
   }
 
-  sidebarCategory() {
-    return "Participants";
+  sidebarCategory () {
+    return 'Participants'
   }
 
-  sidebarItem() {
+  sidebarItem () {
     return {
-      name: "Clubs",
+      name: 'Clubs',
       sortToken: 1
-    };
+    }
   }
 
-  route() {
-    return "/clubs";
+  route () {
+    return '/clubs'
   }
 
-  routeOpts() {
+  routeOpts () {
     return {
       template: templateView(),
-      controller: ["$scope", $scope => {
+      controller: ['$scope', $scope => {
         $scope.addClub = () => {
-          var tournament = this.ui.tournament;
-          var club = new Club(tournament);
-          return tournament.clubs.push(club);
-        };
+          var tournament = this.ui.tournament
+          var club = new Club(tournament)
+          return tournament.clubs.push(club)
+        }
 
         $scope.removeClub = index => {
-          var array = this.ui.tournament.clubs;
-          var club = array[index];
-          club.destroy();
-          return array.splice(index, 1);
-        };
+          var array = this.ui.tournament.clubs
+          var club = array[index]
+          club.destroy()
+          return array.splice(index, 1)
+        }
       }]
-    };
+    }
   }
 }
 
-module.exports = Clubs;
+module.exports = Clubs

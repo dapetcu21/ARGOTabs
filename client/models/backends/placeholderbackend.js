@@ -1,30 +1,30 @@
-const Backend = require('../backend_import');
-const Source = require('../source');
+const Backend = require('../backend_import')
+const Source = require('../source')
 
 class PlaceholderSource extends Source {
-  load(fn) {
+  load (fn) {
     return fn({
-      name: "Placeholder tournament"
-    });
+      name: 'Placeholder tournament'
+    })
   }
 
-  save() {}
+  save () {}
 
-  url() {
-    return "placeholder://localhost/Placeholder tournament.atab";
+  url () {
+    return 'placeholder://localhost/Placeholder tournament.atab'
   }
 }
 
 class PlaceholderBackend extends Backend {
-  schemas() {
-    return ["placeholder"];
+  schemas () {
+    return ['placeholder']
   }
 
-  load(url) {
-    return new PlaceholderSource();
+  load (url) {
+    return new PlaceholderSource()
   }
 
-  fetch(callback) {}
+  fetch (callback) {}
 }
 
-module.exports = PlaceholderBackend;
+module.exports = PlaceholderBackend

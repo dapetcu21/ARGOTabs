@@ -1,23 +1,23 @@
-const Backend = require('../backend_import');
-const Source = require('../source');
+const Backend = require('../backend_import')
+const Source = require('../source')
 
 class JSONSource extends Source {
-  constructor(data) {
-    super({}, "data:nourl");
-    this.data = data;
+  constructor (data) {
+    super({}, 'data:nourl')
+    this.data = data
   }
 
-  load(fn, fnErr = function() {}) {
-    return fn(this.data);
+  load (fn, fnErr = function () {}) {
+    return fn(this.data)
   }
 
-  save() {
-    return;
+  save () {
+    return
   }
 
-  canSave() {
-    return false;
+  canSave () {
+    return false
   }
 }
 
-module.exports = JSONSource;
+module.exports = JSONSource

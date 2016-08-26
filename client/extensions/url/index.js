@@ -1,32 +1,32 @@
 class UrlRoute {
-  routeOpts() {
+  routeOpts () {
     return {
-      redirectTo: function(routeParams, location) {
-        var route = window.location.href;
+      redirectTo: function (routeParams, location) {
+        var route = window.location.href
 
-        setTimeout(function() {
-          var uic = window.ARGOTabs.uiController;
-          uic.previousRoute = route;
+        setTimeout(function () {
+          var uic = window.ARGOTabs.uiController
+          uic.previousRoute = route
 
-          return uic.loadSession((function() {}), function() {
-            uic.saveSession(uic.tournament);
+          return uic.loadSession((function () {}), function () {
+            uic.saveSession(uic.tournament)
 
             if (uic.openController) {
-              return uic.openController.openModal.modal("hide");
+              return uic.openController.openModal.modal('hide')
             }
-          });
-        }, 0);
+          })
+        }, 0)
 
-        return "/";
+        return '/'
       }
-    };
+    }
   }
 
-  route() {
-    return function($routeProvider) {
-      return $routeProvider.when("/url/:rest*", this.routeOpts());
-    };
+  route () {
+    return function ($routeProvider) {
+      return $routeProvider.when('/url/:rest*', this.routeOpts())
+    }
   }
 }
 
-module.exports = UrlRoute;
+module.exports = UrlRoute

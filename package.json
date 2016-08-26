@@ -47,6 +47,7 @@
     "babel-plugin-react-transform": "^2.0.2",
     "react-transform-catch-errors": "^1.0.2",
     "react-transform-hmr": "^1.0.4",
-    "redbox-react": "^1.2.2"
+    "redbox-react": "^1.2.2",
+    "standard": "^8.0.0"
   }
 }

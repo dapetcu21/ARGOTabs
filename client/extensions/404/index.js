@@ -1,19 +1,19 @@
-const templateView = require('./templates/view.jade');
+const templateView = require('./templates/view.jade')
 
 class NotFound {
-  routeOpts() {
-    return { template: templateView() };
+  routeOpts () {
+    return { template: templateView() }
   }
 
-  route() {
-    return function($routeProvider) {
-      $routeProvider.when("/404", this.routeOpts());
+  route () {
+    return function ($routeProvider) {
+      $routeProvider.when('/404', this.routeOpts())
 
       return $routeProvider.otherwise({
-        redirectTo: "/404"
-      });
-    };
+        redirectTo: '/404'
+      })
+    }
   }
 }
 
-module.exports = NotFound;
+module.exports = NotFound

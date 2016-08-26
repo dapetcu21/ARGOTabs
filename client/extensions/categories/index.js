@@ -1,36 +1,36 @@
 class TournamentCategory {
-  sidebarCategory() {
+  sidebarCategory () {
     return {
-      name: "Tournament",
+      name: 'Tournament',
       sortToken: 1
-    };
+    }
   }
 }
 
 class ParticipantsCategory {
-  sidebarCategory() {
+  sidebarCategory () {
     return {
-      name: "Participants",
+      name: 'Participants',
       sortToken: 2
-    };
+    }
   }
 }
 
 class StatisticsCategory {
-  sidebarCategory() {
+  sidebarCategory () {
     return {
-      name: "Statistics",
+      name: 'Statistics',
       sortToken: 3
-    };
+    }
   }
 }
 
 class RoundsCategory {
-  sidebarCategory() {
+  sidebarCategory () {
     return {
-      name: "Rounds",
+      name: 'Rounds',
       sortToken: 4
-    };
+    }
   }
 }
 
@@ -39,4 +39,4 @@ module.exports = [
   ParticipantsCategory,
   StatisticsCategory,
   RoundsCategory
-];
+]
