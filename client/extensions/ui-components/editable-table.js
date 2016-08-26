@@ -10,8 +10,8 @@ require('html2canvas');
 
 const templateSortArrow = require('./templates/sortArrow.jade');
 const templateEditableTable = require('./templates/editableTable.jade');
-const templateEditableTbody = require('./templates/editableTcontext.jade');
-const templateEditableTcontext = require('./templates/editableTable.jade');
+const templateEditableTbody = require('./templates/editableTbody.jade');
+const templateEditableTcontext = require('./templates/editableTcontext.jade');
 const templateEditableWidgets = require('./templates/editableWidgets.jade');
 
 var ngModule = angular.module("editable-table", []);

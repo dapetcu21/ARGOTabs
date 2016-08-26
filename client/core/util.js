@@ -1,3 +1,6 @@
+import $ from 'jquery';
+import { includes } from 'lodash';
+
 export function parseUrl(url) {
   var a = document.createElement("a");
   a.href = url;
@@ -206,10 +209,10 @@ export function installScopeUtils(scope) {
 }
 
 export function focusableElement(element, first = true) {
-  var minItem = null;
-  var minIndex = (first ? 1000001 : 0);
+  let minItem = null;
+  let minIndex = (first ? 1000001 : 0);
 
-  var traverse = function(index, el) {
+  const traverse = function(index, el) {
     var focusable;
 
     if ($(el).css("display") === "none" || $(el).css("visibility") === "hidden") {
@@ -219,29 +222,16 @@ export function focusableElement(element, first = true) {
     var tabIndex = parseInt(el.getAttribute("tabindex"));
 
     if (isNaN(tabIndex)) {
-      focusable = _.contains(["INPUT", "TEXTAREA", "OBJECT", "BUTTON"], el.tagName);
-      focusable = focusable || (_.contains(["A", "AREA"], el.tagName) && el[0].getAttribute("href"));
-
-      tabIndex = (() => {
-        if (focusable) {
-          return 0;
-        } else {
-          return -1;
-        }
-      })();
+      focusable = includes(["INPUT", "TEXTAREA", "OBJECT", "BUTTON"], el.tagName);
+      focusable = focusable || (includes(["A", "AREA"], el.tagName) && el[0].getAttribute("href"));
+      tabIndex = focusable ? 0 : -1;
     }
 
     if (first && tabIndex <= 0) {
       tabIndex = 1000000 - tabIndex;
     }
 
-    if (((() => {
-      if (first) {
-        return tabIndex < minIndex;
-      } else {
-        return tabIndex >= minIndex;
-      }
-    })())) {
+    if (first ? (tabIndex < minIndex) : (tabIndex >= minIndex)) {
       minIndex = tabIndex;
       minItem = el;
     }
@@ -249,10 +239,7 @@ export function focusableElement(element, first = true) {
     return $(el).children().each(traverse);
   };
 
-  for (var el of element) {
-    traverse(0, el);
-  }
-
+  element.each(traverse);
   return minItem;
 }
 
