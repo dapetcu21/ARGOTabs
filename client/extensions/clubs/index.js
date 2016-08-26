@@ -1,6 +1,8 @@
 const Club = require('../../models/club');
 const templateView = require('./templates/view.jade');
 
+require('./common.styl');
+
 class Clubs {
   constructor(ui) {
     this.ui = ui;
