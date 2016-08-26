@@ -3,7 +3,6 @@ var Tournament = require('../models/tournament')
 var Backend = require('../models/backend')
 var $ = require('jquery')
 require('jquery.transit')
-require('filereader')
 var templateDisclaimer = require('./templates/disclaimer.jade')
 var templateOpenModal = require('./templates/openModal.jade')
 var templateOpenModalAddLocal = require('./templates/openModalAddLocal.jade')
@@ -125,8 +124,42 @@ class OpenController {
       return openModal.find('.omodal-file').click()
     })
 
-    openModal.fileReaderJS(this.prepareFileReader())
-    openModal.find('.omodal-file').fileReaderJS(this.prepareFileReader())
+    const onHover = setTo => evt => {
+      evt.stopPropagation()
+      evt.preventDefault()
+      openModal.toggleClass('dropbox', setTo)
+    }
+
+    const onDrop = evt => {
+      onHover(false)(evt)
+      const files = evt.target.files || evt.originalEvent.dataTransfer.files || []
+      for (let i = 0; i < files.length; i++) {
+        this.processFile(files[i])
+      }
+      this.resetAdd()
+    }
+
+    openModal.on('dragover', onHover(true))
+    openModal.on('dragleave', onHover(false))
+    openModal.on('drop', onDrop)
+    openModal.find('.omodal-file').on('change', onDrop)
+  }
+
+  processFile (file) {
+    const reader = new window.FileReader()
+    reader.onload = e => {
+      let source
+      let name = (file.name.match(/^(.*?)(\.atab)?$/))[1]
+
+      while ((source = LocalBackend.load(LocalBackend.urlFromFileName(name))) && source.exists()) {
+        name = name + ' (2)'
+      }
+
+      source.save(e.target.result, () => {
+        this.addItem(source)
+      })
+    }
+    reader.readAsText(file)
   }
 
   resetAdd () {
@@ -274,7 +307,7 @@ class OpenController {
     return itemNode.find('.omodal-a').click(() => {
       var to = new Tournament(source)
       this.openModal.modal('hide')
-      return this.uiController.setTournament(to)
+      this.uiController.setTournament(to)
     })
   }
 
@@ -284,37 +317,6 @@ class OpenController {
     })), () => {
       return this.addItem(source)
     })
-  }
-
-  prepareFileReader () {
-    return {
-      dragClass: 'dropbox',
-      readAsDefault: 'Text',
-      readAsMap: {},
-
-      on: {
-        beforestart: function (file) {
-          return file.name.match(/\.atab$/) != null
-        },
-
-        loadend: (e, file) => {
-          var source
-          var name = (file.name.match(/^(.*?)(\.atab)?$/))[1]
-
-          while ((source = LocalBackend.load(LocalBackend.urlFromFileName(name))) && source.exists()) {
-            name = name + ' (2)'
-          }
-
-          return source.save(e.target.result, () => {
-            return this.addItem(source)
-          })
-        },
-
-        groupend: () => {
-          return this.resetAdd()
-        }
-      }
-    }
   }
 }
 

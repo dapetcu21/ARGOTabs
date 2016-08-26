@@ -155,33 +155,25 @@ class UIController {
           this._saveTimer = setTimeout(function () {
             btn.button('reset')
             btns.addClass('btn-info')
-            return btns.removeClass('btn-success')
+            btns.removeClass('btn-success')
           }, 1000)
 
-          return fn()
+          fn()
         }
 
         if (autosave) {
           if (!this.tournament.saveIfRequired(callback)) {
             this.autosaveStopped--
-            return btn.button('reset')
+            btn.button('reset')
           }
         } else {
-          return this.tournament.save(callback)
+          this.tournament.save(callback)
         }
       } catch (e) {
-        return new AlertController({
+        new AlertController({
           title: 'Saving error',
           message: e.message,
-
-          buttons: (() => {
-            if (e.canForce) {
-              return [e.canForce, 'OK']
-            } else {
-              return ['OK']
-            }
-          })(),
-
+          buttons: e.canForce ? [e.canForce, 'OK'] : ['OK'],
           cancelButtonIndex: (e.canForce ? 1 : 0),
 
           onClick: (alert, idx) => {
