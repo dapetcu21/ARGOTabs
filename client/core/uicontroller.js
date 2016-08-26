@@ -1,16 +1,17 @@
-var B64 = require('B64')
-var Cookies = require('cookies')
-var OpenController = require('./opencontroller')
-var AlertController = require('./alertcontroller')
-var Extensions = require('./extensions')
-var Tournament = require('../models/tournament')
-var Backend = require('../models/backend')
-var JSONSource = require('../models/backends/jsonsource')
-var Util = require('./util')
-var $ = require('jquery')
-var templateSaveAs = require('./templates/saveAs.jade')
-var templateAlert = require('./templates/alert.jade')
-var LocalBackend = Backend.backendForSchema('local')
+const B64 = require('B64')
+const Cookies = require('cookies')
+const OpenController = require('./opencontroller')
+const AlertController = require('./alertcontroller')
+const Extensions = require('./extensions')
+const Tournament = require('../models/tournament')
+const Backend = require('../models/backend')
+const JSONSource = require('../models/backends/jsonsource')
+const $ = require('jquery')
+const angular = require('angular')
+const templateSaveAs = require('./templates/saveAs.jade')
+const templateAlert = require('./templates/alert.jade')
+
+const LocalBackend = Backend.backendForSchema('local')
 
 class UIController {
   constructor () {
@@ -19,24 +20,22 @@ class UIController {
     this.app = app = angular.module('argotabs', this.extensions.angularModules())
 
     app.controller('LoadingCtrl', ['$scope', $scope => {
-      return $scope.loaded = true
+      $scope.loaded = true
     }])
 
     $(document).ready(() => {
       this.extensions.setUpRoutes()
       this.extensions.setUpSidebar()
-      this.previousRoute = window.location.href
-      history.replaceState(null, '', '/#/loading')
       this.injector = angular.bootstrap(document, ['argotabs'])
+
+      this.rootApply(scope => {
+        scope.tournamentLoaded = false
+        scope.loadingTournament = false
+      })
 
       this.loadSession(() => {
         this.setTournament(null)
-
-        return this.open(() => {
-          return this.rootApply(function (scope) {
-            return scope.tournamentLoaded = true
-          })
-        })
+        this.open()
       })
 
       $('.fixed-menu').mouseover(function () {
@@ -75,72 +74,63 @@ class UIController {
 
     setInterval(() => {
       if (!this.autosaveStopped) {
-        return this.save((function () {}), true)
+        this.save(() => {}, true)
       }
     }, 5000)
   }
 
   rootApply (fn) {
     this.injector.invoke(['$rootScope', function ($rootScope) {
-      return $rootScope.$apply(fn($rootScope))
+      $rootScope.$apply(fn($rootScope))
     }])
-
-    return
   }
 
-  open (fn = function () {}) {
-    return this.save(() => {
-      return this.openController = new OpenController(this, (() => {
+  open (fn = () => {}) {
+    this.save(() => {
+      this.openController = new OpenController(this, () => {
         this.saveSession(null)
-        return fn()
-      }), (() => {
+        fn()
+      }, () => {
         this.saveSession(this.tournament)
-        return this.openController = null
-      }))
+        this.openController = null
+      })
     })
   }
 
   saveSession (tournament) {
-    if (typeof tournament !== 'undefined' && tournament !== null) {
-      return Cookies.set('ARGOTabs_lastURL', tournament.source.url())
+    if (tournament) {
+      Cookies.set('ARGOTabs_lastURL', tournament.source.url())
     } else {
-      return Cookies.expire('ARGOTabs_lastURL')
+      Cookies.expire('ARGOTabs_lastURL')
     }
   }
 
   loadSession (onFail = (function () {}), onOpen = (function () {})) {
-    var source
-    var lastURL = Cookies.get('ARGOTabs_lastURL')
-    var locationURL = this.previousRoute.match(/^[^#]*#\/url\/([^#]*)#?(.*)$/)
+    let lastURL = Cookies.get('ARGOTabs_lastURL')
+    const locationURL = window.location.href.match(/^[^#]*#\/url\/([^#]*)#?(.*)$/)
 
     if (locationURL) {
       lastURL = decodeURIComponent(locationURL[1])
-      this.previousRoute = '#' + locationURL[2]
+      window.history.replaceState(null, '', '/#' + locationURL[2])
     }
-
-    this.previousRoute = '#' + this.previousRoute.replace(/^[^#]*#?/, '')
 
     try {
-      if (lastURL) {
-        source = Backend.load(lastURL)
-
-        if (!source.exists()) {
-          throw new Error('Entry for ' + lastURL + 'does not exist')
-        }
-
-        this.setTournament(new Tournament(source), () => {
-          window.location.href = this.previousRoute
-          return onOpen()
-        })
-      } else {
+      if (!lastURL) {
         throw new Error('No session to resume')
       }
+
+      const source = Backend.load(lastURL)
+
+      if (!source.exists()) {
+        throw new Error('Entry for ' + lastURL + 'does not exist')
+      }
+
+      this.setTournament(new Tournament(source), () => {
+        onOpen()
+      })
     } catch (e) {
       onFail()
-      window.location.href = this.previousRoute
     }
-
-    return
   }
 
   save (fn, autosave = false) {
@@ -195,19 +185,18 @@ class UIController {
           cancelButtonIndex: (e.canForce ? 1 : 0),
 
           onClick: (alert, idx) => {
-            var text
             var button
 
             if ((e.canForce && idx === 0)) {
               button = alert.find('.modal-footer').children().first()
-              button[0].dataset.loading - (text = 'Saving...')
+              button[0].dataset.loading = 'Saving...'
               button.button('loading')
 
               try {
-                return this.tournament.save((function () {
+                this.tournament.save(function () {
                   alert.modal('hide')
                   return fn()
-                }), true)
+                }, true)
               } catch (e) {
                 if (e.canForce) {
                   button.show()
@@ -341,11 +330,10 @@ class UIController {
             try {
               var data = this.tournament.toFile()
 
-              return source.save(data, (() => {
-                return alert.modal('hide')
-              }), force)
+              source.save(data, () => {
+                alert.modal('hide')
+              }, force)
             } catch (e) {
-              var text
               var btnDanger
               alert.find('.btn-primary').button('reset')
               alert.find('.saveas-error').remove()
@@ -365,11 +353,11 @@ class UIController {
 
               if (e.canForce) {
                 btnDanger = alert.find('.btn-danger')
-                btnDanger[0].dataset.loading - (text = 'Saving...')
+                btnDanger[0].dataset.loading = 'Saving...'
 
-                return btnDanger.click(() => {
+                btnDanger.click(() => {
                   btnDanger.button('loading')
-                  return thisFunction(alert, index, null, true)
+                  thisFunction(alert, index, null, true)
                 })
               }
             }
@@ -386,58 +374,58 @@ class UIController {
   setTournament (tournament, cb = (function () {}), errcb = (function () {})) {
     this.tournament = tournament
 
-    if (tournament) {
-      this.rootApply(function (sc) {
-        return sc.loadingTournament = true
-      })
-
-      return tournament.load((() => {
-        this.saveSession(tournament)
-
-        return this.rootApply(function (sc) {
-          sc.tournament = tournament
-          sc.tournamentLoaded = true
-          sc.loadingTournament = false
-          return cb()
-        })
-      }), (err => {
-        this.setTournament(null)
-        console.log(err.stack)
-
-        new AlertController({
-          buttons: ['OK'],
-          primaryButtonIndex: 0,
-          closeable: false,
-          animated: false,
-          id: 'open-tournament-error',
-          height: 200,
-          title: 'Error',
-          message: "Can't open tournament: " + err.message,
-
-          onShow: () => {
-            return this.rootApply(function (sc) {
-              return sc.loadingTournament = false
-            })
-          },
-
-          onClick: (alert, bIndex, bName) => {
-            if (bIndex === 0) {
-              return this.open(function () {
-                return alert.modal('hide')
-              })
-            }
-          }
-        })
-
-        return errcb(err)
-      }))
-    } else {
+    if (!tournament) {
       this.saveSession(null)
-
-      return this.rootApply(function (sc) {
-        return sc.tournament = Tournament.placeholderTournament
+      this.rootApply(function (sc) {
+        sc.tournament = null
+        sc.tournamentLoaded = false
       })
+      return
     }
+
+    this.rootApply(function (sc) {
+      sc.loadingTournament = true
+    })
+
+    tournament.load(() => {
+      this.saveSession(tournament)
+      this.rootApply(function (sc) {
+        sc.tournament = tournament
+        sc.tournamentLoaded = true
+        sc.loadingTournament = false
+        cb()
+      })
+    }, err => {
+      this.setTournament(null)
+      console.log(err.stack)
+
+      new AlertController({
+        buttons: ['OK'],
+        primaryButtonIndex: 0,
+        closeable: false,
+        animated: false,
+        id: 'open-tournament-error',
+        height: 200,
+        title: 'Error',
+        message: "Can't open tournament: " + err.message,
+
+        onShow: () => {
+          this.rootApply(function (sc) {
+            sc.loadingTournament = false
+          })
+        },
+
+        onClick: (alert, bIndex, bName) => {
+          if (bIndex === 0) {
+            return this.open(function () {
+              return alert.modal('hide')
+            })
+          }
+        }
+      })
+
+      errcb(err)
+    })
   }
 }
 

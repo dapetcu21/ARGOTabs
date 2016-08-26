@@ -1,3 +1,5 @@
+const $ = require('jquery')
+
 class JsonView {
   route () {
     return '/json'

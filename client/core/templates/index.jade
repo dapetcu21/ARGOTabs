@@ -1,9 +1,9 @@
-div(ng-controller='LoadingCtrl', ng-show="!loaded || !tournamentLoaded || loadingTournament").loading-screen
+div(ng-controller='LoadingCtrl', ng-show="!loaded || loadingTournament").loading-screen
     h3
       i.fa.fa-spinner.fa.fa-spin.fa.fa-large
       | &nbsp; Loading...
 
-.navbar.navbar-fixed-top.dont-print
+.navbar.navbar-fixed-top.dont-print(ng-if="!loadingTournament && tournamentLoaded")
   .navbar-inner
     .container-fluid
       ul.nav
@@ -24,8 +24,8 @@ div(ng-controller='LoadingCtrl', ng-show="!loaded || !tournamentLoaded || loadin
             a(tabindex='-1').action-download Download
           li.action-saveas-download-censored
             a(tabindex='-1').action-download-censored Download censored copy
-  
-.container-fluid
+            
+.container-fluid(ng-if="!loadingTournament && tournamentLoaded")
   .row-fluid
     .span2.dont-print
       .well.sidebar-nav
