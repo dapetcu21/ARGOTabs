@@ -1,5 +1,5 @@
 h3.print-only.text-center {{tournament.name}} - Teams
-table(editable-table, reorders, model='tournament.teams', visible='tournament.tableOpts.teams', add-item='addTeam()', can-remove-item='canRemoveTeam(o)', remove-item='removeTeam(index)')#teams-table
+table(editable-table, reorders='true', model='tournament.teams', visible='tournament.tableOpts.teams', add-item='addTeam()', can-remove-item='canRemoveTeam(o)', remove-item='removeTeam(index)')#teams-table
   thead
     tr
       th(data-auto-index=4) #

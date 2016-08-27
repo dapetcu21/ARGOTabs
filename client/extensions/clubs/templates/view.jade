@@ -1,5 +1,5 @@
 h3.print-only.text-center {{tournament.name}} - Clubs
-table(editable-table, reorders, model='tournament.clubs', visible='tournament.tableOpts.clubs', add-item='addClub()', remove-item='removeClub(index)')#clubs-table
+table(editable-table, reorders='true', model='tournament.clubs', visible='tournament.tableOpts.clubs', add-item='addClub()', remove-item='removeClub(index)')#clubs-table
   thead
     tr
       th(data-auto-index=4) #

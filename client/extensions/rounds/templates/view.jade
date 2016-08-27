@@ -28,7 +28,7 @@ div.tab-content
 
       h3.print-only.text-center {{round.getName()}} - Available teams
 
-      table(editable-table, model='round.teams', visible='round.tableOpts.teams', reorders)#round-teams-table
+      table(editable-table, model='round.teams', visible='round.tableOpts.teams', reorders='true')#round-teams-table
         thead
           tr
             th(data-auto-index=5) #
@@ -71,7 +71,7 @@ div.tab-content
         - var manualReplace = 'judgeReplace(fromList, fromIndex, toList, toIndex)';
         - var manualMove = 'judgeMove(fromList, fromIndex, toList, toIndex)';
         - var boxClass = free ? '' : 'valid-{{!showShadowConflicts || isCompatible(o, hlo)}}'
-        hlist-cell(bind='#{bind}', extension-element='#{ext}', extension-element-last='#{extLast}', edit-hidden='true', placeholder, reorders='#{reorders}', userdata='#{userdata}', drop-group='judge-drop', replace-class='judge-selected', on-start-drag='#{onStartDrag}', on-end-drag='#{onEndDrag}', group-test='#{groupTest}', group-replace-test='#{groupReplaceTest}', manual-replace='#{manualReplace}' manual-move='#{manualMove}').judge-list
+        hlist-cell(bind='#{bind}', extension-element='#{ext}', extension-element-last='#{extLast}', edit-hidden='true', placeholder='true', reorders='#{reorders}', userdata='#{userdata}', drop-group='judge-drop', replace-class='judge-selected', on-start-drag='#{onStartDrag}', on-end-drag='#{onEndDrag}', group-test='#{groupTest}', group-replace-test='#{groupReplaceTest}', manual-replace='#{manualReplace}' manual-move='#{manualMove}').judge-list
           span(class="#{boxClass}").judge-box
             span(class="judge-rank-{{hlo.rank}}").judge-rank {{rankStrings[hlo.rank]}}:&nbsp;
             | {{hlo.name}}
@@ -80,7 +80,7 @@ div.tab-content
 
       .row-fluid
         .span9.print-full-width
-          table(editable-table, model='round.ballots', visible='round.tableOpts.ballots', table-class='table table-bordered table-hover', row-clicked='editBallot($index)', reorders)#round-pairings-table
+          table(editable-table, model='round.ballots', visible='round.tableOpts.ballots', table-class='table table-bordered table-hover', row-clicked='editBallot($index)')#round-pairings-table
             thead
               tr
                 th(data-auto-index=6) #
@@ -96,7 +96,7 @@ div.tab-content
               script(type='text/html')
                 td {{$index + 1}}
                 td(ng-controller='RoomController', class='ballot-{{$index}}').room-cell
-                  hlist-cell(bind='currentRoom', edit-hidden='true', placeholder, reorders='!o.locked && o.room', drop-group='rooms-drop', replace-class='judge-selected', group-replace-test='toList.ud == null || !toList.ud.locked', group-test='toList.ud == null', userdata='o', replace-extensions='.room-cell.ballot-{{$index}}', manual-move='roomMove(fromList, fromIndex, toList, toIndex)', manual-replace='roomReplace(fromList, fromIndex, toList, toIndex)')
+                  hlist-cell(bind='currentRoom', edit-hidden='true', placeholder='true', reorders='!o.locked && o.room', drop-group='rooms-drop', replace-class='judge-selected', group-replace-test='toList.ud == null || !toList.ud.locked', group-test='toList.ud == null', userdata='o', replace-extensions='.room-cell.ballot-{{$index}}', manual-move='roomMove(fromList, fromIndex, toList, toIndex)', manual-replace='roomReplace(fromList, fromIndex, toList, toIndex)')
                     span(class='notavailable-{{hlo == null}}').room-na.dont-export N/A
                     span(ng-show='hlo != null').judge-box {{hlo.name}}
                 td: span(class='muted-{{o.teams[0] == null}} dont-export-{{o.teams[0] == null}}') {{namePlaceholder(o.teams[0],'Bye').name}}
@@ -154,7 +154,7 @@ div.tab-content
             div(ng-show='!round.freeRooms.length')
               | All rooms have been assigned
             div(ng-show='round.freeRooms.length')
-              hlist-cell(bind='round.freeRooms', replace-class='judge-selected' extension-element='.well.settings-group.free-rooms', edit-hidden='true', placeholder, reorders='true', drop-group='rooms-drop', group-replace-test='toList.ud == null || !toList.ud.locked', userdata='null', group-test='toList.ud == null', manual-move='roomMove(fromList, fromIndex, toList, toIndex)', manual-replace='roomReplace(fromList, fromIndex, toList, toIndex)')
+              hlist-cell(bind='round.freeRooms', replace-class='judge-selected' extension-element='.well.settings-group.free-rooms', edit-hidden='true', placeholder='true', reorders='true', drop-group='rooms-drop', group-replace-test='toList.ud == null || !toList.ud.locked', userdata='null', group-test='toList.ud == null', manual-move='roomMove(fromList, fromIndex, toList, toIndex)', manual-replace='roomReplace(fromList, fromIndex, toList, toIndex)')
                 span.judge-box {{hlo.name}}
 
   div#judges.tab-pane
@@ -174,7 +174,7 @@ div.tab-content
 
     h3.print-only.text-center {{round.getName()}} - Available judges
 
-    table(editable-table, model='round.judges', visible='round.tableOpts.judges', reorders)#round-judges-table
+    table(editable-table, model='round.judges', visible='round.tableOpts.judges', reorders='true')#round-judges-table
       thead
         tr
           th(data-auto-index=5) #
@@ -210,7 +210,7 @@ div.tab-content
 
     h3.print-only.text-center {{round.getName()}} - Available rooms
 
-    table(editable-table, model='round.rooms', visible='round.tableOpts.rooms', reorders)#round-rooms-table
+    table(editable-table, model='round.rooms', visible='round.tableOpts.rooms', reorders='true')#round-rooms-table
       thead
         tr
           th(data-auto-index=5) #

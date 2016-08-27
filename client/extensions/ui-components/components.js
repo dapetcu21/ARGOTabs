@@ -939,7 +939,7 @@ ngModule.directive('hlistCell', function () {
               var items = $(list).find('.item')
 
               if (canMove && !items.length) {
-                items.push($(list).find('.placeholder')[0])
+                items.push($(list).find('.hlist-placeholder')[0])
               }
 
               if (canReplace && sc.replaceExtensions) {

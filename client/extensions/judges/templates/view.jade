@@ -1,5 +1,5 @@
 h3.print-only.text-center {{tournament.name}} - Judges
-table(editable-table, reorders, model='tournament.judges', visible='tournament.tableOpts.judges', add-item='addJudge()', can-remove-item='canRemoveJudge(o)', remove-item='removeJudge(index)')#judges-table
+table(editable-table, reorders='true', model='tournament.judges', visible='tournament.tableOpts.judges', add-item='addJudge()', can-remove-item='canRemoveJudge(o)', remove-item='removeJudge(index)')#judges-table
   thead
     tr
       th(data-auto-index=4) #

@@ -247,17 +247,14 @@ ngModule.directive('editableTable', ['$parse', function ($parse) {
           id: scope.tableId
         })).appendTo($('body'))
 
-        scope.$watch(function () {
-          return attrs.showGear
-        }, function (value) {
-          return scope.showGear = (() => {
-            if (typeof value !== 'undefined' && value !== null) {
-              return $parse(value)(scope.$parent)
-            } else {
-              return true
-            }
-          })()
-        })
+        scope.$watch(
+          () => attrs.showGear,
+          value => {
+            scope.showGear = (typeof value !== 'undefined' && value !== null)
+              ? $parse(value)(scope.$parent)
+              : true
+          }
+        )
 
         scope.$watch(function () {
           return attrs.tableClass
