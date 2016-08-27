@@ -14,6 +14,39 @@ const templateAlert = require('./templates/alert.jade')
 const LocalBackend = Backend.backendForSchema('local')
 
 class UIController {
+  setUpUI () {
+    $('.fixed-menu').mouseover(function () {
+      var submenuPos = $(this).offset().left + 325
+      var windowPos = $(window).width()
+      var oldPos = $(this).offset().left + $(this).width()
+      var newPos = $(this).offset().left - $(this).width()
+
+      return $(this).find('ul').offset({
+        'left': (submenuPos > windowPos ? newPos : oldPos)
+      })
+    })
+
+    $('.action-open').click(() => {
+      return this.open()
+    })
+
+    $('.action-download').click(() => {
+      return this.download()
+    })
+
+    $('.action-download-censored').click(() => {
+      return this.downloadCensored()
+    })
+
+    $('.action-saveaslocal').click(() => {
+      return this.saveaslocal()
+    })
+
+    return $('.action-save').click(() => {
+      return this.save()
+    })
+  }
+
   constructor () {
     var app
     this.extensions = new Extensions(this)
@@ -23,9 +56,14 @@ class UIController {
       $scope.loaded = true
     }])
 
+    app.controller('AppCtrl', () => {
+      this.setUpUI()
+    })
+
     $(document).ready(() => {
       this.extensions.setUpRoutes()
       this.extensions.setUpSidebar()
+
       this.injector = angular.bootstrap(document, ['argotabs'])
 
       this.rootApply(scope => {
@@ -36,37 +74,6 @@ class UIController {
       this.loadSession(() => {
         this.setTournament(null)
         this.open()
-      })
-
-      $('.fixed-menu').mouseover(function () {
-        var submenuPos = $(this).offset().left + 325
-        var windowPos = $(window).width()
-        var oldPos = $(this).offset().left + $(this).width()
-        var newPos = $(this).offset().left - $(this).width()
-
-        return $(this).find('ul').offset({
-          'left': (submenuPos > windowPos ? newPos : oldPos)
-        })
-      })
-
-      $('.action-open').click(() => {
-        return this.open()
-      })
-
-      $('.action-download').click(() => {
-        return this.download()
-      })
-
-      $('.action-download-censored').click(() => {
-        return this.downloadCensored()
-      })
-
-      $('.action-saveaslocal').click(() => {
-        return this.saveaslocal()
-      })
-
-      return $('.action-save').click(() => {
-        return this.save()
       })
     })
 
