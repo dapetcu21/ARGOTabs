@@ -60,7 +60,7 @@ define [
 
         $('.action-save').click =>
           @save()
-      
+
       @autosaveStopped = 0
       setInterval =>
         if not @autosaveStopped
@@ -91,10 +91,11 @@ define [
 
     loadSession: (onFail = (->), onOpen = (->)) ->
       lastURL = Cookies.get 'ARGOTabs_lastURL'
-      locationURL = @previousRoute.match(/^[^#]*#\/url\/([^#]*)#?(.*)$/)
+      locationURL = @previousRoute.match(/^[^#]*#\/url\/(.*)$/)
       if locationURL
-        lastURL = decodeURIComponent(locationURL[1])
-        @previousRoute = '#' + locationURL[2]
+        urlMatch = decodeURIComponent(locationURL[1]).match(/^([^#]*)#?(.*)$/)
+        lastURL = urlMatch[1]
+        @previousRoute = '#' + urlMatch[2]
       @previousRoute =  '#' + @previousRoute.replace(/^[^#]*#?/, '')
       try
         if lastURL
@@ -298,4 +299,3 @@ define [
         @saveSession null
         @rootApply (sc) ->
           sc.tournament = Tournament.placeholderTournament
-
