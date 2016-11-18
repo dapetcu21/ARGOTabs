@@ -228,18 +228,20 @@ class Tournament {
   }
 
   addTeam (name, clubName, members) {
-    var club = this.clubWithName(clubName)
-
-    if (!(club != null)) {
-      club = this.addClub(clubName)
+    let club = null
+    if (clubName) {
+      club = this.clubWithName(clubName)
+      if (!club) { club = this.addClub(clubName) }
     }
 
-    var team = new Team(this)
+    const team = new Team(this)
     team.name = name
-    team.club = club
-    club.addTeam(team)
+    if (club) {
+      team.club = club
+      club.addTeam(team)
+    }
 
-    for (var m of members) {
+    for (let m of members) {
       var p = team.addPlayer()
       p.name = m
     }
@@ -249,11 +251,10 @@ class Tournament {
   }
 
   addJudge (name, clubName, rank = 0) {
-    var rank
-    var club = this.clubWithName(clubName)
-
-    if (!(club != null)) {
-      club = this.addClub(clubName)
+    let club = null
+    if (clubName) {
+      club = this.clubWithName(clubName)
+      if (!club) { club = this.addClub(clubName) }
     }
 
     if (rank === -1) {
@@ -262,9 +263,11 @@ class Tournament {
 
     var judge = new Judge(this)
     judge.name = name
-    judge.club = club
     judge.rank = rank
-    club.addJudge(judge)
+    if (club) {
+      judge.club = club
+      club.addJudge(judge)
+    }
     this.judges.push(judge)
     return judge
   }
