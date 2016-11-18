@@ -117,7 +117,7 @@ ngModule.directive('judgeRules', function () {
         return setTimeout(function () {
           var item
 
-          if (item = Util.focusableElement(element.find('.judge-rule:first-child'))) {
+          if (item = Util.focusableElement(element.find('.vlist .item:last-child .judge-rule'))) {
             return item.focus()
           }
         }, 1)
