@@ -829,10 +829,10 @@ class Round {
     var freeJ = this.freeJudges = [];
     var participationScores = {};
 
-    _.each(judges, function(judge) {
+    _.each(judges, judge => {
       var sum = 0;
 
-      _.each(this.rounds, function(round) {
+      _.each(this.rounds, round => {
         var ref;
         var ropts = judge.rounds[round.id];
 
@@ -846,7 +846,7 @@ class Round {
       return participationScores[judge.id] = sum;
     });
 
-    judges.sort(function(a, b) {
+    judges.sort((a, b) => {
       var cmp = a.rank - b.rank;
 
       if (cmp !== 0) {
