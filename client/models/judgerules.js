@@ -281,7 +281,7 @@ class JudgeRules {
   }
 
   addNewRule() {
-    return this.criteria.unshift(this.newCriteria(0, 0, 0));
+    return this.criteria.unshift(this.newCriteria(0, 1, 0));
   }
 
   removeRule(index) {
