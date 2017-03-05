@@ -1,52 +1,109 @@
 const HTMLWebpack = require('html-webpack-plugin')
-const ExtractText = require('extract-text-webpack-plugin')
+const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const webpack = require('webpack')
 const autoprefixer = require('autoprefixer')
 const AppCachePlugin = require('appcache-webpack-plugin')
+const path = require('path')
 
 const debug = process.env.NODE_ENV !== 'production'
-const localIdentName = debug ? 'localIdentName=[name]__[local]___[hash:base64:5]' : 'localIdentName=[hash:base64:5]'
+
+const browserList = [
+  '> 1%',
+  'last 2 versions',
+  'IE >= 11',
+  'Firefox ESR',
+  'iOS >= 9.3'
+]
+
+const babelLoader = {
+  loader: 'babel-loader',
+  options: {
+    presets: [
+      ['env', {
+        browsers: browserList,
+        modules: false
+      }],
+      'react'
+    ],
+    plugins: ['transform-class-properties']
+  }
+}
+
+const postCssLoader = {
+  loader: 'postcss-loader',
+  options: {
+    plugins: () => (
+      [autoprefixer({
+        browsers: browserList
+      })]
+    )
+  }
+}
+
+const cssLoader = {
+  loader: 'css-loader',
+  options: {
+    localIdentName: debug ? '[name]__[local]___[hash:base64:5]' : '[hash:base64:5]',
+    sourceMap: true
+  }
+}
 
 const config = {
   entry: {
-    main: ['babel-polyfill', './client']
+    main: ['babel-polyfill', path.resolve(__dirname, 'client')]
   },
   output: {
-    path: './public',
+    path: path.resolve(__dirname, 'public'),
     filename: '[name].js',
     publicPath: process.env.PUBLIC_PATH || '/'
   },
-  devtool: debug ? '#source-map' : null,
+  devtool: debug ? '#source-map' : false,
+  resolve: {
+    extensions: ['*', '.js', '.jsx', '.json'],
+    modules: ['web_modules', 'node_modules']
+  },
   module: {
-    loaders: [
-      { test: /\.jsx?$/, loader: 'babel-loader', exclude: /node_modules|web_modules/ },
-      { test: /\.json$/, loader: 'json' },
-      { test: /\.jade$/, loader: 'jade' },
-      { test: /\.scss$/, loader: ExtractText.extract('style', `css-loader?sourceMap&${localIdentName}!postcss!sass`) },
-      { test: /\.sass$/, loader: ExtractText.extract('style', `css-loader?sourceMap&${localIdentName}!postcss!sass?indentedSyntax=true`) },
-      { test: /\.styl$/, loader: ExtractText.extract('style', `css-loader?sourceMap&${localIdentName}!postcss!stylus`) },
-      { test: /\.css$/, loader: ExtractText.extract('style', `css-loader?sourceMap&${localIdentName}!postcss`) },
-      { test: /\.(png|jpg|woff2?|ttf|eot|svg)(\?|$)/, loader: 'file' }
+    rules: [
+      { test: /\.jsx?$/, use: babelLoader, exclude: /node_modules|web_modules/ },
+      { test: /\.json$/, use: 'json-loader' },
+      { test: /\.jade$/, use: 'jade-loader' },
+      {
+        test: /\.scss$/,
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: [cssLoader, postCssLoader, 'sass-loader']
+        })
+      }, {
+        test: /\.sass$/,
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: [cssLoader, postCssLoader, 'sass-loader?indentedSyntax=true']
+        })
+      }, {
+        test: /\.styl$/,
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: [cssLoader, postCssLoader, 'stylus-loader']
+        })
+      }, {
+        test: /\.css$/,
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: [cssLoader, postCssLoader]
+        })
+      },
+      { test: /\.(png|jpg|woff2?|ttf|eot|svg)(\?|$)/, use: 'file-loader' }
     ]
   },
-  postcss () {
-    return [autoprefixer]
-  },
-  resolve: {
-    extensions: ['', '.js', '.jsx', '.json']
-  },
-  babel: {
-    presets: ['es2015', 'react', 'stage-0'],
-    plugins: ['transform-decorators-legacy']
-  },
   plugins: [
-    new ExtractText('bundle.css', { disable: debug, allChunks: true }),
+    new ExtractTextPlugin({ filename: 'bundle.css', disable: debug, allChunks: true }),
     new HTMLWebpack({
       inject: true,
       template: 'client/core/assets/index.html'
     }),
     new webpack.DefinePlugin({
-      __DEV__: debug
+      __DEV__: debug,
+      'process.env.NODE_ENV': JSON.stringify(debug ? 'development' : 'production')
     })
   ],
   devServer: {
@@ -55,7 +112,7 @@ const config = {
 }
 
 if (debug) {
-  config.babel.plugins.push(
+  babelLoader.options.plugins.push(
     ['react-transform', {
       'transforms': [{
         'transform': 'react-transform-hmr',

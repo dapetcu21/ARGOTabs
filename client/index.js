@@ -1,5 +1,5 @@
 require('./core/css/index.styl')
-require('file?name=favicon.ico!./core/assets/favicon.ico')
+require('file-loader?name=favicon.ico!./core/assets/favicon.ico')
 
 const templateIndex = require('./core/templates/index.jade')
 
