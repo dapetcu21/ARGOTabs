@@ -1,6 +1,7 @@
 var _ = require('lodash')
 var $ = require('jquery')
 require('angular-route')
+require('ngreact')
 
 var extensionsArray = [
   require('../extensions/404'),
@@ -16,7 +17,8 @@ var extensionsArray = [
   require('../extensions/team-rank'),
   require('../extensions/teams'),
   require('../extensions/ui-components'),
-  require('../extensions/url')
+  require('../extensions/url'),
+  require('../extensions/react-test')
 ]
 
 module.exports = class Extensions {
@@ -26,6 +28,7 @@ module.exports = class Extensions {
 
     const crawl = extensionsArray => {
       for (var Ext of extensionsArray) {
+        if (Ext.default) { Ext = Ext.default }
         if (typeof Ext === 'object') {
           crawl(Ext)
         } else if (typeof Ext !== 'function') {
@@ -85,6 +88,7 @@ module.exports = class Extensions {
     }
 
     modules.push('ngRoute')
+    modules.push('react')
     return modules = _.uniq(modules)
   }
 
@@ -101,7 +105,26 @@ module.exports = class Extensions {
               opts = this.callMemberFunction(ext, 'routeOpts')
 
               if (typeof opts !== 'object') {
-                this.throwError(ext, 'if "route" is present, "routeOpts" should return an object')
+                const reactComponent = this.callMemberFunction(ext, 'reactComponent')
+                if (!reactComponent) {
+                  this.throwError(ext, 'if "route" is present and "reactComponent" is not, "routeOpts" should return an object')
+                }
+                const componentName = _.uniqueId('ReactComponent')
+                window.ARGOTabs.reactComponents = window.ARGOTabs.reactComponents || {}
+                window.ARGOTabs.reactComponents[componentName] = reactComponent
+                opts = {
+                  template: `<react-component name="ARGOTabs.reactComponents.${componentName}" props="reactProps" watch-depth="reference"/>`,
+                  controller: ['$scope', '$rootScope', ($scope, $rootScope) => {
+                    const dispatch = (f) => {
+                      f()
+                      $scope.reactProps = {
+                        tournament: $scope.tournament,
+                        dispatch
+                      }
+                    }
+                    dispatch(() => {})
+                  }]
+                }
               }
 
               $routeProvider.when(route, opts)

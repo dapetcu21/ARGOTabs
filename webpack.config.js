@@ -60,7 +60,10 @@ const config = {
   devtool: debug ? '#source-map' : false,
   resolve: {
     extensions: ['*', '.js', '.jsx', '.json'],
-    modules: ['web_modules', 'node_modules']
+    modules: ['web_modules', 'node_modules'],
+    alias: {
+      angular: path.resolve(__dirname, 'client', 'web_modules', 'angular.js')
+    }
   },
   module: {
     rules: [
