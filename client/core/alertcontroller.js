@@ -79,7 +79,6 @@ class AlertController {
     })
 
     jq.on('shown.bs.modal', function () {
-      console.log('shown')
       if (opts.onShown) {
         return opts.onShown(jq)
       }

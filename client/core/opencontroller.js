@@ -32,7 +32,7 @@ class OpenController {
       primaryButtonIndex: -1,
       cancelButtonIndex: 0,
       width: 350,
-      height: (this.closeable ? 310 : 250),
+      height: (this.closeable ? 60 : 0) + 350,
       htmlMessage: templateOpenModal(),
 
       onShown: function () {
