@@ -64,7 +64,7 @@ class AlertController {
       return jq.modal('hide')
     })
 
-    jq.on('hidden', function () {
+    jq.on('hidden.bs.modal', function () {
       jq.remove()
 
       if (opts.onDismissed) {
@@ -72,19 +72,20 @@ class AlertController {
       }
     })
 
-    jq.on('hide', function () {
+    jq.on('hide.bs.modal', function () {
       if (opts.onDismiss) {
         return opts.onDismiss(jq)
       }
     })
 
-    jq.on('shown', function () {
+    jq.on('shown.bs.modal', function () {
+      console.log('shown')
       if (opts.onShown) {
         return opts.onShown(jq)
       }
     })
 
-    jq.on('show', function () {
+    jq.on('show.bs.modal', function () {
       if (opts.onShow) {
         return opts.onShow(jq)
       }
