@@ -2,35 +2,34 @@ var $ = require('jquery.bootstrap')
 var templateModal = require('./templates/modal.jade')
 
 class AlertController {
-  constructor (opts) {
-    this.opts = opts || {}
+  constructor (opts = {}) {
+    this.opts = opts
 
-    var o = this.opts
-    o.buttons = o.buttons || [];
-    (o.cancelButtonIndex != null ? o.cancelButtonIndex : o.cancelButtonIndex = -1);
-    (o.primaryButtonIndex != null ? o.primaryButtonIndex : o.primaryButtonIndex = o.buttons.length - 1);
-    (o.title != null ? o.title : o.title = 'Alert');
-    (o.closeable != null ? o.closeable : o.closeable = true);
-    (o.cssClass != null ? o.cssClass : o.cssClass = '');
-    (o.animated != null ? o.animated : o.animated = true);
-    (o.tabIndex != null ? o.tabIndex : o.tabIndex = []);
-    (o.id != null ? o.id : o.id = 'modalid' + Math.round(Math.random() * 10000))
+    opts.buttons = opts.buttons || []
+    if (opts.cancelButtonIndex == null) { opts.cancelButtonIndex = -1 }
+    if (opts.primaryButtonIndex == null) { opts.primaryButtonIndex = opts.buttons.length - 1 }
+    opts.title = opts.title || 'Alert'
+    if (opts.closeable == null) { opts.closeable = true }
+    opts.cssClass = opts.cssClass || ''
+    if (opts.animated == null) { opts.animated = true }
+    opts.tabIndex = opts.tabIndex || []
+    opts.id = opts.id || 'modalid' + Math.round(Math.random() * 10000)
 
-    if (o.animated) {
-      o.cssClass = 'fade ' + o.cssClass
+    if (opts.animated) {
+      opts.cssClass = 'fade ' + opts.cssClass
     }
 
-    var jq = $(templateModal({ o: o }))
+    var jq = $(templateModal({ o: opts }))
 
-    jq.find('.modal-title').append(o.title)
+    jq.find('.modal-title').append(opts.title)
     var mbody = jq.find('.modal-body')
 
-    if (o.message) {
-      mbody.append('<p>' + o.message + '</p>')
+    if (opts.message) {
+      mbody.append('<p>' + opts.message + '</p>')
     }
 
-    if (o.htmlMessage) {
-      mbody.append(o.htmlMessage)
+    if (opts.htmlMessage) {
+      mbody.append(opts.htmlMessage)
     }
 
     $('body').append(jq)
@@ -42,7 +41,7 @@ class AlertController {
       }
     })
 
-    for (var v of o.tabIndex) {
+    for (var v of opts.tabIndex) {
       if (v >= buttons.length) {
         continue
       }
@@ -52,16 +51,16 @@ class AlertController {
 
     jq.find('.modal-button').click(function () {
       var button = parseInt(this.dataset.count)
-      var buttonName = o.buttons[button]
+      var buttonName = opts.buttons[button]
 
-      if (o.onClick) {
-        return o.onClick(jq, button, buttonName)
+      if (opts.onClick) {
+        return opts.onClick(jq, button, buttonName)
       }
     })
 
     jq.find('.modal-cancel').click(function () {
-      if (o.onCancel) {
-        o.onCancel(jq)
+      if (opts.onCancel) {
+        opts.onCancel(jq)
       }
 
       return jq.modal('hide')
@@ -70,31 +69,31 @@ class AlertController {
     jq.on('hidden', function () {
       jq.remove()
 
-      if (o.onDismissed) {
-        return o.onDismissed(jq)
+      if (opts.onDismissed) {
+        return opts.onDismissed(jq)
       }
     })
 
     jq.on('hide', function () {
-      if (o.onDismiss) {
-        return o.onDismiss(jq)
+      if (opts.onDismiss) {
+        return opts.onDismiss(jq)
       }
     })
 
     jq.on('shown', function () {
-      if (o.onShown) {
-        return o.onShown(jq)
+      if (opts.onShown) {
+        return opts.onShown(jq)
       }
     })
 
     jq.on('show', function () {
-      if (o.onShow) {
-        return o.onShow(jq)
+      if (opts.onShow) {
+        return opts.onShow(jq)
       }
     })
 
     opts = (() => {
-      if (o.closeable) {
+      if (opts.closeable) {
         return {}
       } else {
         return {
@@ -104,8 +103,15 @@ class AlertController {
       }
     })()
 
-    opts.show = true
-    jq.modal(opts)
+    const modalOpts = opts.closeable
+      ? { show: true }
+      : {
+        keyboard: false,
+        backdrop: 'static',
+        show: true
+      }
+
+    jq.modal(modalOpts)
   }
 }
 

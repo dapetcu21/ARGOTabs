@@ -78,8 +78,8 @@ div.tab-content
 
       h3.print-only.text-center {{round.getName()}} - Pairing
 
-      .row-fluid
-        .span9.print-full-width
+      .row
+        .col-sm-9.print-full-width
           table(editable-table, model='round.ballots', visible='round.tableOpts.ballots', table-class='table table-bordered table-hover', row-clicked='editBallot($index)')#round-pairings-table
             thead
               tr
@@ -117,7 +117,7 @@ div.tab-content
                   span(class="{{o.stats.classes[0]}}") {{o.stats.scores[0]}}&nbsp;
                   span(class="{{o.stats.winClass}}"): i.fa.fa-trophy
                   span(class="{{o.stats.classes[1]}}") &nbsp;{{o.stats.scores[1]}}
-        .span3.dont-print
+        .col-sm-3.dont-print
           .well.settings-group.ca-mode
             div
               label.checkbox.inline
@@ -229,8 +229,8 @@ div.tab-content
   div#settings.tab-pane
     h3.print-only.text-center {{round.getName()}} - Settings
 
-    .row-fluid
-      .span6
+    .row
+      .col-sm-6
         .well.settings-group
           strong Settings
           div
@@ -262,7 +262,7 @@ div.tab-content
           div(ng-show='!round.inheritPairRank')
             sorter-criteria(bind='round.pairRankSorter')
 
-      .span6
+      .col-sm-6
         .well.settings-group
           strong Judge assignment rules
           div

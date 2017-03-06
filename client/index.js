@@ -1,3 +1,7 @@
+require('bootstrap/dist/css/bootstrap.css')
+require('bootstrap/dist/css/bootstrap-theme.css')
+require('font-awesome/css/font-awesome.css')
+
 require('./core/css/index.styl')
 require('file-loader?name=favicon.ico!./core/assets/favicon.ico')
 

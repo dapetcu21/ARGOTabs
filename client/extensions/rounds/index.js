@@ -795,7 +795,7 @@ ngModule.controller('RoundController', [
         }
 
         $scope.manualPairing.push(p)
-        div = $('.manual-pairings .span8')
+        div = $('.manual-pairings .col-sm-8')
 
         div.animate({
           scrollTop: div[0].scrollHeight

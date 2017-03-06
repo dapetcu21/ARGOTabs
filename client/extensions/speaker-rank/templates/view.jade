@@ -1,6 +1,6 @@
 h3.print-only.text-center {{tournament.name}} - Speaker rank
-.row-fluid
-  .span10.print-full-width
+.row
+  .col-sm-10.print-full-width
     table(editable-table, model='players', visible='tournament.tableOpts.speakerRank')#speaker-rank-table
       thead
         tr
@@ -27,7 +27,7 @@ h3.print-only.text-center {{tournament.name}} - Speaker rank
           td: span.right {{toFixed(o.stats.reply, replyDec)}}
           td: span.right {{o.stats.roundsReplyed}}
 
-  .span2.dont-print
+  .col-sm-2.dont-print
     .well.settings-group
       strong Take into account:
       div

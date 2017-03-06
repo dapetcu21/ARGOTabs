@@ -217,7 +217,10 @@ module.exports = class Extensions {
 
     for (var name of sortedCategories) {
       category = categories[name]
-      html += '<li class="nav-header">' + name + '</li>'
+      html +=
+        '<div class="panel panel-default">' +
+          '<div class="panel-heading">' + name + '</div>' +
+          '<ul class="list-group">'
 
       var items = _.sortBy(category.items, function (o) {
         return (o.sortToken != null ? o.sortToken : o.name)
@@ -230,6 +233,8 @@ module.exports = class Extensions {
           html += '<nav-li href="' + item.href + '">' + item.name + '</nav-li>'
         }
       }
+
+      html += '</ul></div>'
     }
 
     return $('#sidebar-nav').html(html)

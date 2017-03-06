@@ -4,32 +4,35 @@ div(ng-controller='LoadingCtrl', ng-show="!loaded || loadingTournament").loading
       | &nbsp; Loading...
 
 div(ng-if='!loadingTournament && tournamentLoaded', ng-controller='AppCtrl')
-  .navbar.navbar-fixed-top.dont-print
-    .navbar-inner
-      .container-fluid
-        ul.nav
-          li.arrow-nav: a.action-open.brand
+  .navbar.navbar-default.navbar-fixed-top.dont-print
+    .container-fluid
+      div.navbar-header
+        span.arrow-nav
+          a.action-open.navbar-brand
             i.fa.fa-arrow-left.view-arrow
             span.view-brand ARGO Tabs
+            
+        ul.nav.navbar-nav
           li.divider-vertical
-            li: a(href="#").brand.view-title {{tournament.name}}
+            a(href="#").navbar-brand.view-title {{tournament.name}}
 
-        .btn-group.pull-right
-          button(data-loading-text="Saving...", data-saved-text="Saved").btn.btn-info.action-save.view-save Save
-          button(data-toggle="dropdown").btn.btn-info.dropdown-toggle.view-save
-            span.caret
-          ul.dropdown-menu
-            li.action-saveas-local
-              a(tabindex='-1').action-saveaslocal Save a copy
-            li.action-saveas-download
-              a(tabindex='-1').action-download Download
-            li.action-saveas-download-censored
-              a(tabindex='-1').action-download-censored Download censored copy
+      .btn-group.pull-right
+        button(data-loading-text="Saving...", data-saved-text="Saved").btn.navbar-btn.btn-info.action-save.view-save
+          span.hidden-xs Save
+          i.fa.fa-save.visible-xs-inline
+        button(data-toggle="dropdown").btn.navbar-btn.btn-info.dropdown-toggle.view-save
+          span.caret
+        ul.dropdown-menu
+          li.action-saveas-local
+            a(tabindex='-1').action-saveaslocal Save a copy
+          li.action-saveas-download
+            a(tabindex='-1').action-download Download
+          li.action-saveas-download-censored
+            a(tabindex='-1').action-download-censored Download censored copy
               
   .container-fluid
-    .row-fluid
-      .span2.dont-print
-        .well.sidebar-nav
-          ul#sidebar-nav.nav.nav-list
+    .row
+      .col-sm-2.dont-print
+        #sidebar-nav
             
-      div(ng-view).span10.print-full-width
+      div(ng-view).col-sm-10.print-full-width

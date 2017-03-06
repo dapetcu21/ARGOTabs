@@ -9,8 +9,8 @@
       tr
         td Debaters: {{tournament.players.length}}
         td Rounds: {{tournament.rounds.length}}
-.row-fluid
-  .span6
+.row
+  .col-sm-6
     .well.settings-group
       strong Global settings
       div
@@ -63,7 +63,7 @@
         text-edit-cell(bind='tournament.maxReplyScore', input-width='50', pattern='[0-9.]*', setter='parseFloat(o)')
           i.fa.fa-fw.fa-edit.bottom-line
 
-  .span6
+  .col-sm-6
     .well.judge-settings-group.settings-group
       strong Judge assignment settings
       div

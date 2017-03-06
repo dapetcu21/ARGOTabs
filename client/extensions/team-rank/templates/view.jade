@@ -1,6 +1,6 @@
 h3.print-only.text-center {{tournament.name}} - Team rank
-.row-fluid
-  .span10.print-full-width
+.row
+  .col-sm-10.print-full-width
     table(editable-table, model='teams', visible='tournament.tableOpts.teamRank')#team-rank-table
       thead
         tr
@@ -25,7 +25,7 @@ h3.print-only.text-center {{tournament.name}} - Team rank
           td: span.right {{toFixed(o.stats.margin, marginDec)}}
           td: span.right {{toFixed(o.stats.reply, replyDec)}}
 
-  .span2.dont-print
+  .col-sm-2.dont-print
     .well.settings-group
       strong Take into account:
       div
