@@ -129,7 +129,6 @@ if (debug) {
   )
 } else {
   config.plugins.push(new webpack.optimize.UglifyJsPlugin())
-  config.plugins.push(new webpack.optimize.OccurenceOrderPlugin(true))
   config.plugins.push(new AppCachePlugin({
     settings: ['prefer-online'],
     output: 'manifest.appcache'
