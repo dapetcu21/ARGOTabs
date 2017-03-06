@@ -1,4 +1,4 @@
-ul.nav.nav-tabs.dont-print
+ul.nav.nav-tabs.dont-print.rounds-tabs
   li.active
     a(href='#teams', data-toggle='tab') Teams
   li
@@ -11,7 +11,7 @@ ul.nav.nav-tabs.dont-print
 div.tab-content
   div#teams.tab-pane.active
     div#team-list(ng-show='!round.paired')
-      .control-group.dont-print
+      .form-group.dont-print
         .btn-group.inline-block
           button(ng-click='addAllTeams()').btn.btn-default
             i.fa.fa-fw.fa-check-square-o
@@ -48,7 +48,7 @@ div.tab-content
             td: span(class='muted-{{o.club == null}}') {{nilPlaceholder(o.club, {name:"unaffiliated"}).name}}
 
     div#pairings(ng-show='round.paired' class="printca-{{round.printCAMode}} showranks-{{showRanks}}")
-      .control-group.dont-print
+      .form-group.dont-print
         button(ng-click='shuffle()').btn.btn-default Shuffle
         = ' '
         button(ng-click='shuffleRooms()').btn.btn-default Shuffle in rooms
@@ -120,26 +120,26 @@ div.tab-content
         .col-sm-3.dont-print
           .well.settings-group.ca-mode
             div
-              label.checkbox.inline
+              label.checkbox
                 input(type='checkbox' ng-model='round.caMode')
                 span
                   strong CA Mode
             div(ng-show='round.caMode')
-              div: label.checkbox.inline
+              label.checkbox
                 input(type='checkbox' ng-model='round.showConflicts')
                 span Show judge conflicts
-              div: label.checkbox.inline
+              label.checkbox
                 input(type='checkbox' ng-model='round.showShadowConflicts')
                 span Show shadow conflicts
-              div: label.checkbox.inline
+              label.checkbox
                 input(type='checkbox' ng-model='round.showRanks')
                 span Show judge ranks
-              div: label.checkbox.inline
+              label.checkbox
                 input(type='checkbox' ng-model='round.printCAMode')
                 span Print all of the above
             div
-              span: strong Reassign:&nbsp;
-              div.btn-group.inline
+              div: strong Reassign:
+              div.btn-group
                 button(ng-click='assignJudges()').btn.btn-default Judges
                 button(ng-click='assignRooms()').btn.btn-default Rooms
 
@@ -158,8 +158,8 @@ div.tab-content
                 span.judge-box {{hlo.name}}
 
   div#judges.tab-pane
-    .control-group.dont-print
-      .btn-group.inline
+    .form-group.dont-print
+      .btn-group
         button(ng-click='addAllJudges()').btn.btn-default
           i.fa.fa-fw.fa-check-square-o
           |  all
@@ -197,8 +197,8 @@ div.tab-content
           td {{rankStrings[o.rank]}}
 
   div#rooms.tab-pane
-    .control-group.dont-print
-      .btn-group.inline
+    .form-group.dont-print
+      .btn-group
         button(ng-click='addAllRooms()').btn.btn-default
           i.fa.fa-fw.fa-check-square-o
           |  all
