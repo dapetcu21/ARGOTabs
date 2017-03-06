@@ -1,26 +1,26 @@
-.alert.alert-block <strong>Warning!</strong> Once you create a pairing, you can only undo it by deleting the round. You also can't remove teams that have been paired or judges that filled in at least a ballot sheet from the tournament.
+.alert.alert-warning <strong>Warning!</strong> Once you create a pairing, you can only undo it by deleting the round. You also can't remove teams that have been paired or judges that filled in at least a ballot sheet from the tournament.
 
-.settings-group
+.settings-group.pair-settings
   .row
     .col-sm-6
       div.pair-select
         .small-margin.inline Algorithm:
-        select(ng-model='pairOpts.algorithm', ng-options='algoName[algo] for algo in pairAlgorithms')
+        select(ng-model='pairOpts.algorithm', ng-options='algoName[algo] for algo in pairAlgorithms').inline.form-control
 
       label(ng-show='pairOpts.algorithm == 1').checkbox
-        | Manual sides 
+        span Manual sides 
         input(type='checkbox', ng-model='pairOpts.manualSides')
 
       label(ng-show='pairOpts.algorithm == 0 && prevRounds.length && (pairingTeams.length % 2)').checkbox
-        | Randomize bye
+        span Randomize bye
         input(type='checkbox', ng-model='pairOpts.randomBye')
 
       label(ng-show='pairOpts.algorithm != 0').checkbox
-        | Randomize room order
+        span Randomize room order
         input(type='checkbox', ng-model='pairOpts.shuffleRooms')
 
       label(ng-show='pairOpts.algorithm != 1').checkbox
-        | No teams meeting twice
+        span No teams meeting twice
         input(type='checkbox', ng-model='pairOpts.minimizeReMeet')
 
       div(ng-show='pairOpts.algorithm == 3')
@@ -30,14 +30,14 @@
     .col-sm-6
       div(ng-show='pairOpts.algorithm != 1 || !pairOpts.manualSides').pair-select
         .small-margin.inline Sides:
-        select(ng-model='pairOpts.sides', ng-options='sidesName(side) for side in sides')
+        select(ng-model='pairOpts.sides', ng-options='sidesName(side) for side in sides').inline.form-control
 
       label(ng-show='(pairOpts.algorithm != 1 || !pairOpts.manualSides) && pairOpts.sides', title='Checking this means that side constraints should take priority over pairing algorithm constraints.').checkbox
-        | Enforce side constraint
+        span Enforce side constraint
         input(type='checkbox', ng-model='pairOpts.hardSides')
 
       label(ng-show='pairOpts.algorithm == 0 || pairOpts.algorithm == 2 || pairOpts.algorithm == 3').checkbox
-        | Prevent club matches
+        span Prevent club matches
         input(type='checkbox', ng-model='pairOpts.noClubMatches')
 
       div(ng-show='pairOpts.algorithm == 3').radio-container

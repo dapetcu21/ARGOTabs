@@ -29,15 +29,19 @@
 .textedit-input
   margin: 0px !important
 
-.textedit-cell .control-group
+.textedit-cell > .form-group
   margin: 0px
-  display: inline;
+  display: inline
+
+.textedit-cell > .form-group > input
+  display: inline
 
 .textedit-cell.invalid .textedit-label
   color: #b94a48
 
 .multi-input
   margin: 0px !important
+  display: inline
 
 .sortarrow .arrow
   display: none
@@ -347,7 +351,7 @@ li.active .remove-round:hover
   z-index: 1000000
 
 .pair-select select
-  max-width: 185px
+  max-width: 180px
 
 .pair-select .small-margin
   position: relative
@@ -404,7 +408,7 @@ label.checkbox.inline
     position: relative
     margin-left: 0
     top: -1px
-    margin-right: 3px
+    margin-right: 0px
 
   padding-top: 0px
   margin-left: 5px !important

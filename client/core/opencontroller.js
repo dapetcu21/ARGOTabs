@@ -105,9 +105,9 @@ class OpenController {
         var source = LocalBackend.load(LocalBackend.urlFromFileName(newName))
 
         if (!source.exists()) {
-          return controlGroup.removeClass('error')
+          return controlGroup.removeClass('has-error')
         } else {
-          return controlGroup.addClass('error')
+          return controlGroup.addClass('has-error')
         }
       })
 
@@ -255,16 +255,16 @@ class OpenController {
       })()
 
       if (valid) {
-        controlGroup.removeClass('error')
+        controlGroup.removeClass('has-error')
 
         if (ongoingDeletion) {
-          return controlGroup.addClass('success')
+          return controlGroup.addClass('has-success')
         } else {
-          return controlGroup.removeClass('success')
+          return controlGroup.removeClass('has-success')
         }
       } else {
-        controlGroup.removeClass('success')
-        return controlGroup.addClass('error')
+        controlGroup.removeClass('has-success')
+        return controlGroup.addClass('has-error')
       }
     })
 

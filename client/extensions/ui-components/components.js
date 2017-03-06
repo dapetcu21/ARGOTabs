@@ -256,7 +256,7 @@ ngModule.directive('textEditCell', ['$parse', function ($parse) {
     link: function (scope, element, attrs) {
       var label = element.find('.textedit-label')
       var input = element.find('input')
-      var inputContainer = element.find('.control-group')
+      var inputContainer = element.find('.form-group')
       var editing = false
       var _enabled = true
       var lastValue = null
@@ -294,7 +294,7 @@ ngModule.directive('textEditCell', ['$parse', function ($parse) {
         var minW = parseInt(scope.minWidth)
 
         if (isNaN(minW)) {
-          minW = 100
+          minW = 150
         }
 
         var rw = label.outerWidth()
@@ -408,11 +408,11 @@ ngModule.directive('textEditCell', ['$parse', function ($parse) {
           if (valid) {
             element.addClass('valid')
             element.removeClass('invalid')
-            input.removeClass('error')
+            input.removeClass('has-error')
           } else {
             element.addClass('invalid')
             element.removeClass('valid')
-            input.addClass('error')
+            input.addClass('has-error')
           }
         }
 
@@ -516,7 +516,7 @@ ngModule.directive('multiCell', function () {
           var minW = parseInt(scope.minWidth)
 
           if (isNaN(minW)) {
-            minW = 100
+            minW = 150
           }
 
           var rw = label.outerWidth()

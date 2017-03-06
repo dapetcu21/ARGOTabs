@@ -1,6 +1,6 @@
 div(ng-click='beginEdit_()').inline.textedit-cell
   div(tabindex=0).inline.textedit-label {{valueParsed}}
-  div.control-group.hidden-true
-    input(type='text').textedit-input
+  div.form-group.hidden-true
+    input(type='text').textedit-input.form-control
   div.inline.textedit-extra {{extra}}
   span(ng-transclude)

@@ -248,17 +248,17 @@ div.tab-content
           div
             label.checkbox
               input(type='checkbox', ng-model='round.rankFrom.all')
-              | All previous rounds
+              span All previous rounds
             label.checkbox(ng-repeat='o in tournament.rounds', ng-show='o!=round && !round.rankFrom.all')
               input(type='checkbox', ng-model='round.rankFrom[o.id]')
-              | Round {{$index+1}}
+              span Round {{$index+1}}
 
         .well.settings-group
           strong Pairing rank criteria
           div
             label.checkbox
               input(type='checkbox', ng-model='round.inheritPairRank')
-              | Inherit from tournament settings
+              span Inherit from tournament settings
           div(ng-show='!round.inheritPairRank')
             sorter-criteria(bind='round.pairRankSorter')
 

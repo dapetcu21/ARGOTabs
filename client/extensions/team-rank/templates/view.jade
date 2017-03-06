@@ -31,16 +31,16 @@ h3.print-only.text-center {{tournament.name}} - Team rank
       div
         label.checkbox
           input(type='checkbox', ng-model='tournament.rankFromTeams.all')
-          | All rounds
+          span All rounds
         label.checkbox(ng-repeat='o in tournament.rounds', ng-show='!tournament.rankFromTeams.all')
           input(type='checkbox', ng-model='tournament.rankFromTeams[o.id]')
-          | Round {{$index+1}}
+          span Round {{$index+1}}
 
     .well.settings-group
       strong Score display
         label.checkbox
           input(type='checkbox', ng-model='tournament.teamRankShowTotals')
-          | Show the raw totals
+          span Show the raw totals
 
     .well.settings-group
       strong Ranking criteria
