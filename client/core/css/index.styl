@@ -62,7 +62,7 @@ th:hover .sortarrow .arrow,
 .editable-table .controls i
   font-size: 130%
 .editable-table td
-  vertical-align: middle
+  vertical-align: middle !important
 
 .editable-table .squeezedElement
   overflow: hidden
@@ -396,9 +396,16 @@ i.judge-icon:after
   background-image: url("../assets/stripes.png")
   background-repeat: repeat
 
+label
+  font-weight: normal
+
 label.checkbox.inline
-  position:relative
-  top: -1px
+  input
+    position: relative
+    margin-left: 0
+    top: -1px
+    margin-right: 3px
+
   padding-top: 0px
   margin-left: 5px !important
   margin-top: 0px

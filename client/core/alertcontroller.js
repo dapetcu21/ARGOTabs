@@ -15,9 +15,7 @@ class AlertController {
     opts.tabIndex = opts.tabIndex || []
     opts.id = opts.id || 'modalid' + Math.round(Math.random() * 10000)
 
-    if (opts.animated) {
-      opts.cssClass = 'fade ' + opts.cssClass
-    }
+    opts.cssClass = (opts.animated ? 'fade ' : 'modal-not-animated ') + opts.cssClass
 
     var jq = $(templateModal({ o: opts }))
 
@@ -91,17 +89,6 @@ class AlertController {
         return opts.onShow(jq)
       }
     })
-
-    opts = (() => {
-      if (opts.closeable) {
-        return {}
-      } else {
-        return {
-          keyboard: false,
-          backdrop: 'static'
-        }
-      }
-    })()
 
     const modalOpts = opts.closeable
       ? { show: true }

@@ -1,9 +1,8 @@
-nav-li(ng-repeat='round in tournament.rounds', href='/rounds/{{$index+1}}') 
+nav-li(ng-repeat='round in tournament.rounds', li-href='/rounds/{{$index+1}}') 
   div(ng-controller='SidebarRemoveRound')
     span Round {{$index+1}} 
     a(href='', ng-click='removeRound()').pull-right.unstyled.remove-round
       i.fa.fa-fw.fa-times-circle.pull-right
-li(ng-controller='SidebarNewRound')
-  a(href='', ng-click='addRound()')
-    i.fa.fa-fw.fa-plus
-    |  New round
+a(ng-controller='SidebarNewRound', class='list-group-item', ng-click='addRound()')
+  i.fa.fa-fw.fa-plus
+  |  New round

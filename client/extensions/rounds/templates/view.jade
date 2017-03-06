@@ -13,14 +13,14 @@ div.tab-content
     div#team-list(ng-show='!round.paired')
       .control-group.dont-print
         .btn-group.inline-block
-          button(ng-click='addAllTeams()').btn
+          button(ng-click='addAllTeams()').btn.btn-default
             i.fa.fa-fw.fa-check-square-o
             |  all
-          button(ng-click='removeAllTeams()').btn
+          button(ng-click='removeAllTeams()').btn.btn-default
             i.fa.fa-fw.fa-square-o
             |  all
         = ' '
-        button(ng-click='sortByRank()').btn Sort by pairing rank
+        button(ng-click='sortByRank()').btn.btn-default Sort by pairing rank
         = ' '
         button(ng-click='pair()').btn.btn-danger Pair
         = ' '
@@ -49,11 +49,11 @@ div.tab-content
 
     div#pairings(ng-show='round.paired' class="printca-{{round.printCAMode}} showranks-{{showRanks}}")
       .control-group.dont-print
-        button(ng-click='shuffle()').btn Shuffle
+        button(ng-click='shuffle()').btn.btn-default Shuffle
         = ' '
-        button(ng-click='shuffleRooms()').btn Shuffle in rooms
+        button(ng-click='shuffleRooms()').btn.btn-default Shuffle in rooms
         = ' '
-        button(ng-click='sortBallots()').btn Sort by match rank
+        button(ng-click='sortBallots()').btn.btn-default Sort by match rank
         = ' '
         div.inline.small-margin You can manually drag judges and rooms to fine-tune
 
@@ -140,8 +140,8 @@ div.tab-content
             div
               span: strong Reassign:&nbsp;
               div.btn-group.inline
-                button(ng-click='assignJudges()').btn Judges
-                button(ng-click='assignRooms()').btn Rooms
+                button(ng-click='assignJudges()').btn.btn-default Judges
+                button(ng-click='assignRooms()').btn.btn-default Rooms
 
           .well.settings-group.free-judges
             strong Free judges
@@ -160,13 +160,13 @@ div.tab-content
   div#judges.tab-pane
     .control-group.dont-print
       .btn-group.inline
-        button(ng-click='addAllJudges()').btn
+        button(ng-click='addAllJudges()').btn.btn-default
           i.fa.fa-fw.fa-check-square-o
           |  all
-        button(ng-click='removeAllJudges()').btn
+        button(ng-click='removeAllJudges()').btn.btn-default
           i.fa.fa-fw.fa-square-o
           |  all
-        button(ng-click='removeShadows()').btn
+        button(ng-click='removeShadows()').btn.btn-default
           i.fa.fa-fw.fa-square-o
           |  shadows
       = ' '
@@ -199,10 +199,10 @@ div.tab-content
   div#rooms.tab-pane
     .control-group.dont-print
       .btn-group.inline
-        button(ng-click='addAllRooms()').btn
+        button(ng-click='addAllRooms()').btn.btn-default
           i.fa.fa-fw.fa-check-square-o
           |  all
-        button(ng-click='removeAllRooms()').btn
+        button(ng-click='removeAllRooms()').btn.btn-default
           i.fa.fa-fw.fa-square-o
           |  all
       = ' '

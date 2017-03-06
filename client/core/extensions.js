@@ -230,7 +230,7 @@ module.exports = class Extensions {
         if (item.html != null) {
           html += item.html
         } else {
-          html += '<nav-li href="' + item.href + '">' + item.name + '</nav-li>'
+          html += '<nav-li li-href="' + item.href + '">' + item.name + '</nav-li>'
         }
       }
 

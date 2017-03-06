@@ -139,7 +139,8 @@ var adjustWidget = function (bar, row, id) {
     return
   }
 
-  var offset = row.position()
+  var offset = row.offset()
+  console.log(offset)
   var w = row.outerWidth()
   var h = row.outerHeight()
   bar.css('right', $('body').outerWidth() - offset.left - w)

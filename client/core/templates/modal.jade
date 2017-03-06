@@ -1,20 +1,22 @@
 div(id=o.id, class=o.cssClass).modal
-  .modal-header
-    if o.closeable
-      button(type="button", data-dismiss="modal", aria-hidden="true").close.modal-cancel &times;
-    h3.modal-title
-  .modal-body
-  if o.buttons.length
-    .modal-footer
-      each button, i in o.buttons
-        a(class="#{(i == o.cancelButtonIndex)?'modal-cancel ':''}#{(i == o.primaryButtonIndex)?'btn-primary ':''}", data-count="#{i}").btn.modal-button #{button}
+  .modal-dialog
+    .modal-content
+      .modal-header
+        if o.closeable
+          button(type="button", data-dismiss="modal", aria-hidden="true").close.modal-cancel &times;
+        h3.modal-title
+      .modal-body
+      if o.buttons.length
+        .modal-footer
+          each button, i in o.buttons
+            a(class="#{(i == o.cancelButtonIndex)?'modal-cancel ':''}#{(i == o.primaryButtonIndex)?'btn-primary ':'btn-default'}", data-count="#{i}").btn.modal-button #{button}
 
   if o.width 
     style.
       @media (min-width: 767px) {
-        ##{o.id} {
+        ##{o.id} > .modal-dialog,
+        ##{o.id} > .modal-content {
           width: #{o.width}px;
-          margin-left: #{-o.width / 2}px;
         }
       }
   if o.height
@@ -29,3 +31,4 @@ div(id=o.id, class=o.cssClass).modal
       .modal.fade {
         top: 20px;
       }
+    }

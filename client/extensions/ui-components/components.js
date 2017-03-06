@@ -23,7 +23,7 @@ ngModule.directive('navLi', function () {
     restrict: 'E',
 
     scope: {
-      href: '@'
+      liHref: '@'
     },
 
     transclude: true,
@@ -33,7 +33,7 @@ ngModule.directive('navLi', function () {
       return $scope.$watch(function () {
         return $location.path()
       }, function (newValue, oldValue) {
-        return $scope.class = ((newValue === $scope.href) ? 'active' : '')
+        return $scope.class = ((newValue === $scope.liHref) ? 'active' : '')
       })
     }],
 
