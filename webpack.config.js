@@ -48,9 +48,16 @@ const cssLoader = {
   }
 }
 
+const mainEntries = []
+if (debug) {
+  mainEntries.push('stack-source-map/register')
+}
+mainEntries.push('babel-polyfill')
+mainEntries.push(path.resolve(__dirname, 'client'))
+
 const config = {
   entry: {
-    main: ['babel-polyfill', path.resolve(__dirname, 'client')]
+    main: mainEntries
   },
   output: {
     path: path.resolve(__dirname, 'public'),
