@@ -2,18 +2,41 @@ import React, { Component } from 'react'
 import FirebaseLogin from './FirebaseLogin'
 import { pathToJS } from 'react-redux-firebase'
 import { connect } from 'react-redux'
+import { Grid, Row, Col, Alert } from 'react-bootstrap'
+
+import styles from './LoginWall.scss'
 
 @connect(({ firebase }) => ({
   isInitializing: pathToJS(firebase, 'isInitializing'),
-  authError: pathToJS(firebase, 'authError'),
   auth: pathToJS(firebase, 'auth')
 }))
 export default class LoginWall extends Component {
   render () {
-    const { authError, isInitializing, auth } = this.props
-    console.log('Firebase auth', authError, auth, isInitializing)
+    const { isInitializing, auth, children } = this.props
+
+    if (isInitializing) {
+      return <div className={styles.initializingWall}>
+        <i className='fa fa-2x fa-fw fa-spinner fa-spin' />
+      </div>
+    }
+
+    if (auth) {
+      return children
+    }
+
     return (
-      <FirebaseLogin />
+      <Grid>
+        <Row style={{ marginTop: '40px' }}>
+          <Col md={6} mdOffset={3} sm={8} smOffset={2}>
+            <h1 style={{ textAlign: 'center' }}>Welcome to ARGO Tabs!</h1>
+            <Alert bsStyle='info'>
+              ARGO Tabs now stores your tabs in the cloud. Log in to find your
+              tabs exactly where you left them.
+            </Alert>
+            <FirebaseLogin />
+          </Col>
+        </Row>
+      </Grid>
     )
   }
 }

@@ -1,40 +1,55 @@
 import React, { Component } from 'react'
-import { firebaseConnect } from 'react-redux-firebase'
-import firebaseui from 'firebaseui'
-import 'firebaseui/dist/firebaseui.css'
+import { firebaseConnect, pathToJS } from 'react-redux-firebase'
+import { connect } from 'react-redux'
+import { Row, Col, Button, Alert } from 'react-bootstrap'
+
+import styles from './FirebaseLogin.scss'
 
 @firebaseConnect([])
+@connect(({ firebase }) => ({
+  authError: pathToJS(firebase, 'authError')
+}))
 export default class FirebaseLogin extends Component {
-  uiConfig = {
-    callbacks: {
-      signInSuccess: (user, credential, redirectUrl) => {
-        console.log('Authenticated', user)
-        return false
-      }
-    },
-    signInFlow: 'popup',
-    signInOptions: [{
-      provider: this.props.firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-      scopes: ['https://www.googleapis.com/auth/plus.login']
-    }, {
-      provider: this.props.firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-      scopes: ['public_profile', 'email']
-    }]
+  handleLoginWithGoogle = () => {
+    this.props.firebase.login({
+      provider: 'google',
+      type: 'popup'
+    })
   }
 
-  ui = new firebaseui.auth.AuthUI(this.props.firebase.auth())
-
-  componentDidMount () {
-    this.ui.start('#firebase-login-ui', this.uiConfig)
-  }
-
-  componentWillUnmount () {
-    this.ui.reset()
+  handleLoginWithFacebook = () => {
+    this.props.firebase.login({
+      provider: 'facebook',
+      type: 'popup'
+    })
   }
 
   render () {
+    const { authError } = this.props
+
     return (
-      <div id='firebase-login-ui'>Test</div>
+      <div>
+        {authError && (
+          <Alert bsStyle='danger'>
+            <h4>Could not log in</h4>
+            <p>{authError.message}</p>
+          </Alert>
+        )}
+        <Row>
+          <Col sm={6}>
+            <Button onClick={this.handleLoginWithGoogle} className={styles.loginButton}>
+              <i className='fa fa-fw fa-google' />
+              Login with Google
+            </Button>
+          </Col>
+          <Col sm={6}>
+            <Button onClick={this.handleLoginWithFacebook} className={styles.loginButton}>
+              <i className='fa fa-fw fa-facebook' />
+              Login with Facebook
+            </Button>
+          </Col>
+        </Row>
+      </div>
     )
   }
 }

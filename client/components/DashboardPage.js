@@ -1,7 +1,18 @@
-import React from 'react'
+import React, { PureComponent } from 'react'
+import { firebaseConnect } from 'react-redux-firebase'
 
-export default function DashboardPage () {
-  return (
-    <div>Meow</div>
-  )
+@firebaseConnect([])
+export default class DashboardPage extends PureComponent {
+  handleLogout = () => {
+    this.props.firebase.logout()
+  }
+
+  render () {
+    return (
+      <div>
+        <div>Meow</div>
+        <button onClick={this.handleLogout}>Log out</button>
+      </div>
+    )
+  }
 }
