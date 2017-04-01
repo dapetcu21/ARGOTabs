@@ -4,6 +4,7 @@ const webpack = require('webpack')
 const autoprefixer = require('autoprefixer')
 const AppCachePlugin = require('appcache-webpack-plugin')
 const path = require('path')
+require('dotenv').config()
 
 const debug = process.env.NODE_ENV !== 'production'
 
@@ -25,7 +26,7 @@ const babelLoader = {
       }],
       'react'
     ],
-    plugins: ['transform-class-properties']
+    plugins: ['transform-class-properties', 'transform-decorators-legacy']
   }
 }
 
@@ -54,6 +55,22 @@ if (debug) {
 }
 mainEntries.push('babel-polyfill')
 mainEntries.push(path.resolve(__dirname, 'client'))
+
+const defines = {
+  __DEV__: debug,
+  'process.env.NODE_ENV': JSON.stringify(debug ? 'development' : 'production')
+}
+
+const injectedEnvVars = [
+  'FIREBASE_API_KEY', 'FIREBASE_PROJECT_ID', 'FIREBASE_DATABASE', 'FIREBASE_STORAGE_BUCKET'
+]
+injectedEnvVars.forEach(envVar => {
+  const value = process.env[envVar]
+  if (!value) {
+    throw new Error(`Building this project requires ${envVar} to be part of the environment`)
+  }
+  defines[`process.env.${envVar}`] = JSON.stringify(process.env[envVar])
+})
 
 const config = {
   entry: {
@@ -111,10 +128,7 @@ const config = {
       inject: true,
       template: 'client/core/assets/index.html'
     }),
-    new webpack.DefinePlugin({
-      __DEV__: debug,
-      'process.env.NODE_ENV': JSON.stringify(debug ? 'development' : 'production')
-    })
+    new webpack.DefinePlugin(defines)
   ],
   devServer: {
     historyApiFallback: true
