@@ -1,6 +1,7 @@
 import { eventChannel, channel } from 'redux-saga'
 import { take, select, put, call, actionChannel, fork } from 'redux-saga/effects'
 import isEqual from 'lodash.isequal'
+import cloneDeep from 'lodash.clonedeep'
 
 import { REQUEST_TOURNAMENT, SET_TOURNAMENT, SET_TOURNAMENT_V1 } from '../../constants/ActionTypes'
 
@@ -41,7 +42,7 @@ export default function * syncV1TournamentSaga () {
     }
 
     if (type === SET_TOURNAMENT) {
-      setTournament(payload.data)
+      setTournament(cloneDeep(payload.data))
       continue
     }
 
@@ -50,8 +51,8 @@ export default function * syncV1TournamentSaga () {
     const v1 = getTournament()
     if (!v1) { continue }
 
-    const v1Data = JSON.parse(JSON.stringify(v1.toJSON()))
-    const storedV1Data = yield select(store => store.tournament && store.tournament.v1)
+    const v1Data = JSON.parse(JSON.stringify(v1))
+    const storedV1Data = yield select(store => store.tournament.data && store.tournament.data.v1)
     if (!isEqual(v1Data, storedV1Data)) {
       yield put(setTournamentV1(v1Data))
     }

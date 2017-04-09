@@ -1,6 +1,8 @@
 import { combineReducers } from 'redux'
 
-import { REQUEST_TOURNAMENT, SET_TOURNAMENT, SET_TOURNAMENT_V1 } from '../../constants/ActionTypes'
+import {
+  REQUEST_TOURNAMENT, SET_TOURNAMENT, SET_TOURNAMENT_V1, SET_TOURNAMENT_FAILED
+} from '../../constants/ActionTypes'
 
 function title (state = null, { type, payload }) {
   if (type === SET_TOURNAMENT) {
@@ -22,22 +24,58 @@ function v1 (state = {}, { type, payload }) {
   return state
 }
 
-const tournamentReducer = combineReducers({
+const dataReducer = combineReducers({
   version: () => 2,
   v1,
   title
 })
 
-export default function tournamentOrNull (state = null, action) {
-  const { type } = action
-  if (state) {
-    if (type === REQUEST_TOURNAMENT) { return null }
-    return tournamentReducer(state, action)
-  }
+const defaultState = {
+  request: null,
+  isLoading: false,
+  error: null,
+  data: null,
+  revision: -1
+}
 
-  if (type === SET_TOURNAMENT) {
-    return tournamentReducer(undefined, action)
-  }
+export default function tournamentReducer (state = defaultState, action) {
+  const { type, payload } = action
 
-  return null
+  switch (type) {
+    case REQUEST_TOURNAMENT:
+      return {
+        request: payload.id ? payload : null,
+        isLoading: !!payload.id,
+        error: null,
+        data: null,
+        revision: -1
+      }
+
+    case SET_TOURNAMENT_FAILED:
+      return {
+        request: state.request,
+        isLoading: false,
+        error: payload.error,
+        data: null,
+        revision: -1
+      }
+
+    case SET_TOURNAMENT:
+      return {
+        request: state.request,
+        isLoading: false,
+        error: null,
+        data: dataReducer(undefined, action),
+        revision: payload.revision || 0
+      }
+
+    default: {
+      if (!state.data) { return state }
+      const data = dataReducer(state.data, action)
+      if (data !== state.data) {
+        return { ...state, data, revision: state.revision + 1 }
+      }
+      return state
+    }
+  }
 }

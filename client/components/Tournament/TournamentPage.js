@@ -8,12 +8,15 @@ import styles from './TournamentPage.scss'
 import Sidebar from './Sidebar'
 import TournamentBody from './TournamentBody'
 
-@connect(state => ({
-  isLoading: state.tournamentMeta.isLoading,
-  error: state.tournamentMeta.error,
-  title: state.tournament && state.tournament.title,
-  hasTournament: !!state.tournament
-}))
+@connect(state => {
+  const { isLoading, error, data } = state.tournament
+  return {
+    isLoading,
+    error,
+    title: data && data.title,
+    hasTournament: !!data
+  }
+})
 export default class TournamentPage extends PureComponent {
   componentWillMount () {
     const id = this.props.match.params.tournamentId
