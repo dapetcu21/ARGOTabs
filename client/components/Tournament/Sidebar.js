@@ -21,7 +21,7 @@ export default function Sidebar (props) {
     <div>
       <Panel header='Tournament'>
         <ListGroup fill>
-          <NavLink exact to={`${url}/`} {...linkProps}>Dashboard</NavLink>
+          <NavLink exact to={`${url}`} {...linkProps}>Dashboard</NavLink>
         </ListGroup>
       </Panel>
       <Panel header='Participants'>

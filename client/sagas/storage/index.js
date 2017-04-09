@@ -2,11 +2,10 @@ import { eventChannel, END } from 'redux-saga'
 import { take, takeEvery, select, fork, put, call, cancelled } from 'redux-saga/effects'
 import { getFirebase, pathToJS } from 'react-redux-firebase'
 
-import {
-  CREATE_TOURNAMENT, CREATE_TOURNAMENT_RESPONSE, REQUEST_TOURNAMENT,
-} from '../constants/ActionTypes'
+import { CREATE_TOURNAMENT, CREATE_TOURNAMENT_RESPONSE, REQUEST_TOURNAMENT } from '../../constants/ActionTypes'
+import { setTournament, setTournamentFailed } from '../../actions/StorageActions'
 
-import { setTournament } from '../actions/StorageActions'
+import syncV1TournamentSaga from './syncV1Tournament'
 
 function * createTournamentSaga () {
   const firebase = getFirebase()
@@ -96,10 +95,15 @@ function * requestTournamentSaga () {
     if (payload.id) {
       const ref = firebase.database().ref().child('tournaments').child(payload.id)
       task = yield fork(subscribeToFirebaseRef, ref, function * (snapshot) {
-        yield put(setTournament({
-          request: payload,
-          ...snapshot.val()
-        }))
+        const value = snapshot.val()
+        if (value) {
+          yield put(setTournament({ request: payload, ...value }))
+        } else {
+          yield put(setTournamentFailed({
+            request: payload,
+            error: 'Tournament not found'
+          }))
+        }
       })
     }
   }
@@ -108,6 +112,7 @@ function * requestTournamentSaga () {
 export default function * storageSaga () {
   yield [
     createTournamentSaga(),
-    requestTournamentSaga()
+    requestTournamentSaga(),
+    syncV1TournamentSaga()
   ]
 }

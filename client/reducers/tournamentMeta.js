@@ -1,6 +1,6 @@
 import { handleActions } from 'redux-actions'
 
-import { LOGOUT, REQUEST_TOURNAMENT, SET_TOURNAMENT } from '../constants/ActionTypes'
+import { REQUEST_TOURNAMENT, SET_TOURNAMENT, SET_TOURNAMENT_FAILED } from '../constants/ActionTypes'
 
 const defaultState = {
   request: null,
@@ -24,5 +24,9 @@ export default handleActions({
     lastModified: payload.lastModified
   }),
 
-  [LOGOUT]: () => defaultState
+  [SET_TOURNAMENT_FAILED]: (state, { payload }) => ({
+    ...state,
+    isLoading: false,
+    error: payload.error
+  })
 }, defaultState)

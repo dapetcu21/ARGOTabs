@@ -11,6 +11,7 @@ import TournamentBody from './TournamentBody'
 @connect(state => ({
   isLoading: state.tournamentMeta.isLoading,
   error: state.tournamentMeta.error,
+  title: state.tournament && state.tournament.title,
   hasTournament: !!state.tournament
 }))
 export default class TournamentPage extends PureComponent {
@@ -67,6 +68,8 @@ export default class TournamentPage extends PureComponent {
   }
 
   render () {
+    const { title } = this.props
+
     return (
       <div>
         <Navbar fixedTop fluid>
@@ -74,6 +77,7 @@ export default class TournamentPage extends PureComponent {
             <Link to='/'>
               <i className='fa fa-fw fa-arrow-left' />
               &nbsp;ARGO Tabs
+              {title && ` - ${title}`}
             </Link>
           </Navbar.Brand>
         </Navbar>

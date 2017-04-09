@@ -127,7 +127,7 @@ class Tournament {
     this.teamRankSorter = Sorter.teamRankSorter(model.teamRankSorter)
     this.pairRankSorter = Sorter.teamRankSorter(model.pairRankSorter)
     this.judgeRules = JudgeRules.mainRules(this, model.judgeRules)
-    this.lastData = this.toFile()
+    // this.lastData = this.toFile()
     return this.loaded = true
   }
 

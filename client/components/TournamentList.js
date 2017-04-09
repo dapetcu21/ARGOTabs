@@ -43,7 +43,14 @@ export default class TournamentList extends PureComponent {
       }
 
       if (data) {
-        this.addNewTab(data, data.name || 'Unnamed tab')
+        let title
+        if (!data.version || data.version < 2) {
+          title = data.name
+          data = { version: 2, v1: data }
+        } else {
+          title = data.title
+        }
+        this.addNewTab(data, title || 'Unnamed tournament')
       }
     }
     reader.readAsText(file)
