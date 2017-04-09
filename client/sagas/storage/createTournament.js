@@ -27,7 +27,7 @@ export default function * createTournamentSaga () {
           lastModified,
           revision
         },
-        [`/tournamentMetadata/${newKey}`]: {
+        [`/tournamentsByOwner/${uid}/${newKey}`]: {
           owner: uid,
           title,
           lastModified

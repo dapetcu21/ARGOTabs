@@ -1,6 +1,6 @@
 import { eventChannel, END } from 'redux-saga'
 import { take, fork, put, call, select, cancelled } from 'redux-saga/effects'
-import { getFirebase } from 'react-redux-firebase'
+import { getFirebase, pathToJS } from 'react-redux-firebase'
 
 import { REQUEST_TOURNAMENT, SET_TOURNAMENT } from '../../constants/ActionTypes'
 import { setTournament, setTournamentFailed, saveTournamentFailed } from '../../actions/StorageActions'
@@ -8,7 +8,7 @@ import { setTournament, setTournamentFailed, saveTournamentFailed } from '../../
 function makeFirebaseRefChannel (ref) {
   return eventChannel(emitter => {
     ref.on('value', emitter, (error) => {
-      console.error(error)
+      emitter({ error })
       emitter(END)
     })
 
@@ -36,6 +36,10 @@ function * saveTournament (firebase, request, data, revision) {
   const db = firebase.database()
   const ref = db.ref()
 
+  const auth = yield select(state => pathToJS(state.firebase, 'auth'))
+  if (!auth) { return }
+  const { uid } = auth
+
   const tournamentId = request.id
   const lastModified = firebase.database.ServerValue.TIMESTAMP
 
@@ -43,8 +47,8 @@ function * saveTournament (firebase, request, data, revision) {
     yield ref.update({
       [`/tournaments/${tournamentId}/revision`]: revision,
       [`/tournaments/${tournamentId}/lastModified`]: lastModified,
-      [`/tournamentMetadata/${tournamentId}/lastModified`]: lastModified,
-      [`/tournaments/${tournamentId}/data`]: JSON.stringify(data)
+      [`/tournaments/${tournamentId}/data`]: JSON.stringify(data),
+      [`/tournamentsByOwner/${uid}/${tournamentId}/lastModified`]: lastModified
     })
   } catch (error) {
     yield put(saveTournamentFailed({ request, error }))
@@ -72,20 +76,29 @@ export default function * syncTournamentSaga () {
     if (payload.id) {
       const ref = firebase.database().ref().child('tournaments').child(payload.id)
       fetchTask = yield fork(subscribeToFirebaseRef, ref, function * (snapshot) {
-        if (snapshot.exists()) {
-          const recievedRevision = snapshot.child('revision').val() || 0
-          const currentRevision = yield select(state => state.tournament.revision)
-          if (recievedRevision > currentRevision) {
-            const newPayload = snapshot.val()
-            newPayload.data = JSON.parse(newPayload.data)
-            newPayload.request = payload
-            yield put(setTournament(newPayload))
-          }
-        } else {
+        if (snapshot.error) {
+          yield put(setTournamentFailed({
+            request: payload,
+            error: snapshot.error.toString()
+          }))
+          return
+        }
+
+        if (!snapshot.exists()) {
           yield put(setTournamentFailed({
             request: payload,
             error: 'Tournament not found'
           }))
+          return
+        }
+
+        const recievedRevision = snapshot.child('revision').val() || 0
+        const currentRevision = yield select(state => state.tournament.revision)
+        if (recievedRevision > currentRevision) {
+          const newPayload = snapshot.val()
+          newPayload.data = JSON.parse(newPayload.data)
+          newPayload.request = payload
+          yield put(setTournament(newPayload))
         }
       })
 

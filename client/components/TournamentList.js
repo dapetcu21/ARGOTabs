@@ -8,12 +8,14 @@ import { createTournament } from '../actions/StorageActions'
 import styles from './TournamentList.scss'
 
 @withRouter
-@firebaseConnect([
-  '/tournamentMetadata'
-])
 @connect(({ firebase }) => ({
-  auth: pathToJS(firebase, 'auth'),
-  list: dataToJS(firebase, '/tournamentMetadata')
+  auth: pathToJS(firebase, 'auth')
+}))
+@firebaseConnect(({ auth }) => ([
+  `/tournamentsByOwner/${auth.uid}`
+]))
+@connect(({ firebase }, { auth }) => ({
+  list: dataToJS(firebase, `/tournamentsByOwner/${auth.uid}`)
 }))
 export default class TournamentList extends PureComponent {
   handleLogout = () => {
@@ -23,6 +25,11 @@ export default class TournamentList extends PureComponent {
   handleUploadClick = () => {
     this.setState({ uploadError: null })
     this.upload.click()
+  }
+
+  handleAddClick = () => {
+    const title = 'Untitled tournament'
+    this.addNewTab({ version: 2, title, v1: { name: title } }, title)
   }
 
   addNewTab (data, title) {
@@ -113,6 +120,7 @@ export default class TournamentList extends PureComponent {
               <Col xs={6}>
                 <Button
                   className={styles.addButton} bsStyle='primary'
+                  onClick={this.handleAddClick}
                 >
                   <i className='fa fa-plus-circle' />&nbsp;
                   New tournament
