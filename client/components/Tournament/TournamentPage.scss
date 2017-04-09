@@ -6,8 +6,7 @@
   color: #999;
 }
 
-:local .loginWall {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+:local .bodyPadding {
+  padding-top: 60px;
 }
+

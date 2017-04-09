@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import FirebaseLogin from './FirebaseLogin'
 import { pathToJS } from 'react-redux-firebase'
 import { connect } from 'react-redux'
@@ -10,14 +10,16 @@ import styles from './LoginWall.scss'
   isInitializing: pathToJS(firebase, 'isInitializing'),
   auth: pathToJS(firebase, 'auth')
 }))
-export default class LoginWall extends Component {
+export default class LoginWall extends PureComponent {
   render () {
     const { isInitializing, auth, children } = this.props
 
-    if (isInitializing) {
-      return <div className={styles.initializingWall}>
-        <i className='fa fa-2x fa-fw fa-spinner fa-spin' />
-      </div>
+    if (isInitializing || auth === undefined) {
+      return (
+        <div className={styles.initializingWall}>
+          <i className='fa fa-2x fa-fw fa-spinner fa-spin' />
+        </div>
+      )
     }
 
     if (auth) {

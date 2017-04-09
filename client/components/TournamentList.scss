@@ -1,0 +1,27 @@
+:local .avatar {
+  width: 100px;
+  height: 100px;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 50px;
+  background-color: #B2EBF2;
+  background-position: 50% 50%;
+  background-size: cover;
+}
+
+:local .profileName {
+  text-align: center;
+  height: 20px;
+}
+
+:local .signOutButton {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 24px;
+}
+
+:local .addButton {
+  display: block;
+  width: 100%;
+}

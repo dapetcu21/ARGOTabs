@@ -26,7 +26,11 @@ const babelLoader = {
       }],
       'react'
     ],
-    plugins: ['transform-class-properties', 'transform-decorators-legacy']
+    plugins: [
+      'transform-class-properties',
+      'transform-decorators-legacy',
+      ['transform-object-rest-spread', { useBuiltIns: true }]
+    ]
   }
 }
 

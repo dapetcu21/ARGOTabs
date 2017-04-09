@@ -1,6 +1,5 @@
 var _ = require('lodash')
 var $ = require('jquery')
-require('angular-route')
 require('ngreact')
 
 var extensionsArray = [
@@ -87,7 +86,6 @@ module.exports = class Extensions {
       }
     }
 
-    modules.push('ngRoute')
     modules.push('react')
     return modules = _.uniq(modules)
   }
