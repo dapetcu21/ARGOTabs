@@ -42,7 +42,7 @@ export default function * syncV1TournamentSaga () {
     }
 
     if (type === SET_TOURNAMENT) {
-      setTournament(cloneDeep(payload.data))
+      setTournament(cloneDeep(payload.data.v1))
       continue
     }
 

@@ -27,10 +27,11 @@ ngModule.controller('RoomController', ['$scope', function ($scope) {
 
 ngModule.controller('RoundController', [
   '$scope',
-  '$routeParams',
   '$compile',
-  function ($scope, $routeParams, $compile) {
-    var index = $routeParams.roundIndex - 1
+  function ($scope, $compile) {
+    $scope.uncloak = true
+
+    var index = $scope.routeParams.roundIndex - 1
     var round = $scope.round = $scope.tournament.rounds[index]
 
     if (!(round != null)) {

@@ -42,10 +42,6 @@ ngModule.controller('EditableController', ['$scope', '$element', function ($scop
 }])
 
 class Teams {
-  constructor (ui) {
-    this.ui = ui
-  }
-
   sidebarCategory () {
     return 'Participants'
   }
@@ -67,26 +63,27 @@ class Teams {
 
   routeOpts () {
     var result
-    var ui = this.ui
 
     return result = {
       template: templateView(),
 
       controller: ['$scope', function ($scope) {
+        $scope.uncloak = true
+        var tournament = $scope.tournament
+
         $scope.addTeam = function () {
-          var tournament = ui.tournament
           var team = new Team(tournament)
           return tournament.teams.push(team)
         }
 
         $scope.removeTeam = function (index) {
-          var array = ui.tournament.teams
+          var array = tournament.teams
           array[index].destroy()
           return array.splice(index, 1)
         }
 
         $scope.canRemoveTeam = function (team) {
-          for (var round of ui.tournament.rounds) {
+          for (var round of tournament.rounds) {
             var ropts = team.rounds[round.id]
 
             if (ropts != null && ropts.ballot != null) {
@@ -100,7 +97,7 @@ class Teams {
         $scope.canRemovePlayer = function (player) {
           var team = player.team
 
-          for (var round of ui.tournament.rounds) {
+          for (var round of tournament.rounds) {
             var ropts = team.rounds[round.id]
 
             if (ropts != null && ropts.ballot != null && ropts.ballot.locked && ropts.ballot.roles != null) {

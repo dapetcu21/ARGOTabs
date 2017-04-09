@@ -6,10 +6,6 @@ const templateView = require('./templates/view.jade')
 require('./common.styl')
 
 class SpeakerRank {
-  constructor (ui) {
-    this.ui = ui
-  }
-
   sidebarCategory () {
     return 'Statistics'
   }
@@ -27,14 +23,15 @@ class SpeakerRank {
 
   routeOpts () {
     var result
-    var ui = this.ui
 
     return result = {
       template: templateView(),
 
       controller: ['$scope', function ($scope) {
+        var tournament = $scope.tournament
+
         var baseRoundIds = function () {
-          var tournament = ui.tournament
+          $scope.uncloak = true
           var rf = tournament.rankFromSpeakers
           var objs = {}
 
@@ -59,7 +56,7 @@ class SpeakerRank {
           var r = [];
           (ids != null ? ids : ids = baseRoundIds())
 
-          for (var round of ui.tournament.rounds) {
+          for (var round of tournament.rounds) {
             if (ids[round.id]) {
               r.push(round)
             }
@@ -90,7 +87,7 @@ class SpeakerRank {
           var maxScoreDec = 0
           var maxReplyDec = 0
           var maxHighLowDec = 0
-          var showTotals = ui.tournament.speakerRankShowTotals
+          var showTotals = tournament.speakerRankShowTotals
 
           for (var player of players) {
             var scoreDec = Util.decimalsOf(((showTotals ? player.stats.rawScore : player.stats.score)), 2)
@@ -116,7 +113,6 @@ class SpeakerRank {
         }
 
         $scope.refreshStats = function (rounds) {
-          var tournament = ui.tournament
           var players = $scope.players = tournament.players.slice(0);
           (rounds != null ? rounds : rounds = baseRounds())
           Player.calculateStats(players, rounds)
@@ -144,7 +140,7 @@ class SpeakerRank {
         Util.installScopeUtils($scope)
 
         $scope.$watch((function () {
-          return ui.tournament.speakerRankShowTotals
+          return tournament.speakerRankShowTotals
         }), function (v) {
           return $scope.refreshDecimals()
         })

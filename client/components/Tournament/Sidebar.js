@@ -1,14 +1,6 @@
 import React from 'react'
-import { Panel, ListGroup, ListGroupItem } from 'react-bootstrap'
+import { Panel, ListGroup } from 'react-bootstrap'
 import { NavLink } from 'react-router-dom'
-
-class SidebarItem extends React.Component {
-  // render () {
-  //   const {
-  //
-  //   return (
-  //     <ListGroupItem href='#' active>
-}
 
 export default function Sidebar (props) {
   const url = props.match.url

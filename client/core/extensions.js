@@ -1,5 +1,4 @@
 var _ = require('lodash')
-var $ = require('jquery')
 require('ngreact')
 
 var extensionsArray = [
@@ -87,154 +86,20 @@ module.exports = class Extensions {
     }
 
     modules.push('react')
-    return modules = _.uniq(modules)
+    return _.uniq(modules)
   }
 
-  setUpRoutes () {
-    return this.ui.app.config(['$routeProvider', $routeProvider => {
-      return (() => {
-        var opts
+  getRouteOpts (route) {
+    const extension = this.extensions.find(ext =>
+      this.callMemberFunction(ext, 'route') === route
+    )
 
-        for (var ext of this.extensions) {
-          var route = this.callMemberFunction(ext, 'route')
+    if (!extension) { return null }
+    if (extension._cachedRouteOpts) { return extension._cachedRouteOpts }
 
-          if (route != null) {
-            if (typeof route === 'string') {
-              opts = this.callMemberFunction(ext, 'routeOpts')
+    const routeOpts = this.callMemberFunction(extension, 'routeOpts')
+    extension._cachedRouteOpts = routeOpts
 
-              if (typeof opts !== 'object') {
-                const reactComponent = this.callMemberFunction(ext, 'reactComponent')
-                if (!reactComponent) {
-                  this.throwError(ext, 'if "route" is present and "reactComponent" is not, "routeOpts" should return an object')
-                }
-                const componentName = _.uniqueId('ReactComponent')
-                window.ARGOTabs.reactComponents = window.ARGOTabs.reactComponents || {}
-                window.ARGOTabs.reactComponents[componentName] = reactComponent
-                opts = {
-                  template: `<react-component name="ARGOTabs.reactComponents.${componentName}" props="reactProps" watch-depth="reference"/>`,
-                  controller: ['$scope', '$rootScope', ($scope, $rootScope) => {
-                    const dispatch = (f) => {
-                      f()
-                      $scope.reactProps = {
-                        tournament: $scope.tournament,
-                        dispatch
-                      }
-                    }
-                    dispatch(() => {})
-                  }]
-                }
-              }
-
-              $routeProvider.when(route, opts)
-            } else if (typeof route === 'function') {
-              route.bind(ext)($routeProvider)
-            } else {
-              this.throwError(ext, '"route" should return a string or a function')
-            }
-          }
-        }
-      })()
-    }])
-  }
-
-  setUpSidebar () {
-    var rcat
-    var categories = {}
-
-    for (var ext of this.extensions) {
-      var category = this.callMemberFunction(ext, 'sidebarCategory')
-
-      if (category != null) {
-        if (typeof category === 'string') {
-          category = {
-            name: category
-          }
-        } else if (typeof category === 'object') {
-          if (!(category.name != null)) {
-            this.throwError(ext, '"sidebarCategory" must have a "name"')
-          }
-        } else {
-          this.throwError(ext, '"sidebarCategory" should return a string or a function')
-        }
-
-        rcat = categories[category.name]
-
-        if (rcat != null) {
-          if (category.sortToken != null) {
-            if (rcat.sortToken != null) {
-              if (rcat.sortToken !== category.sortToken) {
-                console.log(
-                  category.name + ': category sort token mismatch: ' + rcat.sortToken + ', ' + category.sortToken
-                )
-              }
-            } else {
-              rcat.sortToken = category.sortToken
-            }
-          }
-        } else {
-          category.items = []
-          rcat = categories[category.name] = category
-        }
-
-        item = this.callMemberFunction(ext, 'sidebarItem')
-
-        if (item != null) {
-          if (typeof item === 'string') {
-            item = {
-              name: item
-            }
-          }
-
-          if (typeof item === 'object') {
-            if (!(item.name != null) && !(item.html != null)) {
-              this.throwError(ext, '"sidebarItem" must have a "name" or a "html"')
-            }
-          } else {
-            this.throwError(ext, '"sidebarItem" should return a string or an object')
-          }
-
-          if (!(item.href != null)) {
-            item.href = this.callMemberFunction(ext, 'route')
-
-            if (!(item.href != null) || typeof item.href !== 'string') {
-              this.throwError(ext, "\"route\" must be a string if \"sidebarItem\" doesn't have href")
-            }
-          }
-
-          rcat.items.push(item)
-        }
-      }
-    }
-
-    var sortedCategories = _.sortBy(Object.keys(categories), function (o) {
-      var obj = categories[o]
-      return (obj.sortToken != null ? obj.sortToken : obj.name)
-    })
-
-    var html = ''
-
-    for (var name of sortedCategories) {
-      category = categories[name]
-      html +=
-        '<div class="panel panel-default">' +
-          '<div class="panel-heading">' + name + '</div>' +
-          '<ul class="list-group">'
-
-      var items = _.sortBy(category.items, function (o) {
-        return (o.sortToken != null ? o.sortToken : o.name)
-      })
-
-      for (var item of items) {
-        if (item.html != null) {
-          html += item.html
-        } else {
-          html += '<nav-li li-href="' + item.href + '">' + item.name + '</nav-li>'
-        }
-      }
-
-      html += '</ul></div>'
-    }
-
-    return $('#sidebar-nav').html(html)
+    return routeOpts
   }
 }

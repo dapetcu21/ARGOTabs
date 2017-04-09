@@ -1,19 +1,18 @@
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
-import { Link } from 'react-router-dom'
-import { Navbar, Grid, Row, Col, Alert } from 'react-bootstrap'
+import { Grid, Row, Col, Alert } from 'react-bootstrap'
 
 import { requestTournament } from '../../actions/StorageActions'
 import styles from './TournamentPage.scss'
 import Sidebar from './Sidebar'
 import TournamentBody from './TournamentBody'
+import TitleBar from './TitleBar'
 
 @connect(state => {
   const { isLoading, error, data } = state.tournament
   return {
     isLoading,
     error,
-    title: data && data.title,
     hasTournament: !!data
   }
 })
@@ -62,7 +61,7 @@ export default class TournamentPage extends PureComponent {
               <Sidebar match={match} />
             </Col>
             <Col sm={10}>
-              <TournamentBody />
+              <TournamentBody match={match} />
             </Col>
           </Row>
         )}
@@ -71,19 +70,9 @@ export default class TournamentPage extends PureComponent {
   }
 
   render () {
-    const { title } = this.props
-
     return (
       <div>
-        <Navbar fixedTop fluid>
-          <Navbar.Brand>
-            <Link to='/'>
-              <i className='fa fa-fw fa-arrow-left' />
-              &nbsp;ARGO Tabs
-              {title && ` - ${title}`}
-            </Link>
-          </Navbar.Brand>
-        </Navbar>
+        <TitleBar />
         {this.renderBody()}
       </div>
     )

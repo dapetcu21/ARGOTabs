@@ -6,10 +6,6 @@ const templateView = require('./templates/view.jade')
 require('./common.styl')
 
 class TeamRank {
-  constructor (ui) {
-    this.ui = ui
-  }
-
   sidebarCategory () {
     return 'Statistics'
   }
@@ -27,14 +23,15 @@ class TeamRank {
 
   routeOpts () {
     var result
-    var ui = this.ui
 
     return result = {
       template: templateView(),
 
       controller: ['$scope', function ($scope) {
+        $scope.uncloak = true
+        var tournament = $scope.tournament
+
         var baseRoundIds = function () {
-          var tournament = ui.tournament
           var rf = tournament.rankFromTeams
           var objs = {}
 
@@ -59,7 +56,7 @@ class TeamRank {
           var r = [];
           (ids != null ? ids : ids = baseRoundIds())
 
-          for (var round of ui.tournament.rounds) {
+          for (var round of tournament.rounds) {
             if (ids[round.id]) {
               r.push(round)
             }
@@ -69,7 +66,6 @@ class TeamRank {
         }
 
         $scope.refreshStats = function (rounds) {
-          var tournament = ui.tournament
           var teams = $scope.teams = tournament.teams.slice(0);
           (rounds != null ? rounds : rounds = baseRounds())
           Team.calculateStats(teams, rounds)

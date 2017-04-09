@@ -22,6 +22,8 @@ class Dashboard {
       template: templateView(),
 
       controller: ['$scope', function ($scope) {
+        $scope.uncloak = true
+
         $scope.ballotsPerMatchOptions = [1, 3, 5, 7, 9]
         $scope.infinity = 10000
         $scope.maxPanelChoices = [$scope.infinity, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]

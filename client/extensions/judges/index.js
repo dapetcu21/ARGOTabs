@@ -4,10 +4,6 @@ const templateView = require('./templates/view.jade')
 require('./common.styl')
 
 class Judges {
-  constructor (ui) {
-    this.ui = ui
-  }
-
   sidebarCategory () {
     return 'Participants'
   }
@@ -25,23 +21,24 @@ class Judges {
 
   routeOpts () {
     var result
-    var ui = this.ui
 
     return result = {
       template: templateView(),
 
       controller: ['$scope', function ($scope) {
+        $scope.uncloak = true
+        var tournament = $scope.tournament
+
         $scope.ranks = Judge.ranks
         $scope.rankStrings = Judge.rankStrings
 
         $scope.addJudge = function () {
-          var tournament = ui.tournament
           var judge = new Judge(tournament)
           return tournament.judges.push(judge)
         }
 
         $scope.removeJudge = function (index) {
-          var array = ui.tournament.judges
+          var array = tournament.judges
           array[index].destroy()
           return array.splice(index, 1)
         }
@@ -67,7 +64,7 @@ class Judges {
         }
 
         $scope.canRemoveJudge = function (judge) {
-          for (var round of ui.tournament.rounds) {
+          for (var round of tournament.rounds) {
             var ropts = judge.rounds[round.id]
 
             if (ropts != null && ropts.ballot != null && ropts.ballot.locked) {
