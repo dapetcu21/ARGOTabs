@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react'
-import { Panel, ListGroup, ListGroupItem } from 'react-bootstrap'
+import { Panel, Modal, Button, ListGroup, ListGroupItem } from 'react-bootstrap'
 import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 
@@ -12,16 +12,15 @@ import styles from './RoundsSidebarPanel.scss'
   return { roundCount: v1.rounds ? v1.rounds.length : 0 }
 })
 export default class RoundsSidebarPanel extends PureComponent {
-  handleDeleteRoundClick = index => evt => {
+  state = { roundBeingDeleted: null }
+
+  handleDeleteRoundConfirm = () => {
     const { location, url, history, dispatch } = this.props
     if (location.pathname.match(/\/rounds\/[^/]+/)) {
       history.replace(url)
     }
-    dispatch(deleteRound(index))
-
-    evt.preventDefault()
-    evt.stopPropagation()
-    return false
+    dispatch(deleteRound(this.state.roundBeingDeleted))
+    this.setState({ roundBeingDeleted: null })
   }
 
   handleNewRoundClick = evt => {
@@ -29,8 +28,20 @@ export default class RoundsSidebarPanel extends PureComponent {
     this.props.dispatch(newRound())
   }
 
+  handleModalHide = () => {
+    this.setState({ roundBeingDeleted: null })
+  }
+
+  handleDeleteRoundClick = index => evt => {
+    this.setState({ roundBeingDeleted: index })
+    evt.preventDefault()
+    evt.stopPropagation()
+    return false
+  }
+
   render () {
     const { roundCount, url } = this.props
+    const { roundBeingDeleted } = this.state
 
     const linkProps = {
       activeClassName: 'active',
@@ -53,15 +64,38 @@ export default class RoundsSidebarPanel extends PureComponent {
     }
 
     return (
-      <Panel header='In-rounds'>
-        <ListGroup fill>
-          {listItems}
-          <ListGroupItem onClick={this.handleNewRoundClick}>
-            <i className='fa fa-fw fa-plus' />
-            &nbsp;New round
-          </ListGroupItem>
-        </ListGroup>
-      </Panel>
+      <div>
+        <Panel header='In-rounds'>
+          <ListGroup fill>
+            {listItems}
+            <ListGroupItem onClick={this.handleNewRoundClick}>
+              <i className='fa fa-fw fa-plus' />
+              &nbsp;New round
+            </ListGroupItem>
+          </ListGroup>
+        </Panel>
+
+        <Modal
+          show={roundBeingDeleted !== null}
+          onHide={this.handleModalHide}
+          bsSize='small'
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Delete Round {roundBeingDeleted + 1}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>Are you sure you want to delete Round {roundBeingDeleted + 1}?</p>
+            <p>
+              This will remove the pairing, all ballots and all scores associated with this round.
+              Most mistakes can be corrected without deleting the whole round.
+            </p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={this.handleModalHide}>Cancel</Button>
+            <Button bsStyle='primary' onClick={this.handleDeleteRoundConfirm}>Delete</Button>
+          </Modal.Footer>
+        </Modal>
+      </div>
     )
   }
 }
