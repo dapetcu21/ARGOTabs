@@ -75,6 +75,18 @@ export default class RoundsSidebarPanel extends PureComponent {
           </ListGroup>
         </Panel>
 
+        <Panel header='Eliminatories'>
+          <ListGroup fill>
+            <NavLink exact to={`${url}/eliminatories`} {...linkProps}>
+              Setup
+            </NavLink>
+            <ListGroupItem onClick={this.handleNewElimRound}>
+              <i className='fa fa-fw fa-plus' />
+              &nbsp;New out-round
+            </ListGroupItem>
+          </ListGroup>
+        </Panel>
+
         <Modal
           show={roundBeingDeleted !== null}
           onHide={this.handleModalHide}

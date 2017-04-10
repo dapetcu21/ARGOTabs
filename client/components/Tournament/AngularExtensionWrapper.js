@@ -1,33 +1,21 @@
 import React, { PureComponent } from 'react'
 import AngularTemplate from 'react-angular'
-import { getTournament, onTournament } from '../../store/tournament-v1'
+import { withTournament } from '../../store/tournament-v1'
 
 import styles from './AngularExtensionWrapper.scss'
 
 export default (angularRoute) => {
   const routeOpts = window.ARGOTabs.extensions.getRouteOpts(angularRoute)
 
+  @withTournament({ update: false })
   class AngularExtensionWrapper extends PureComponent {
-    state = { tournament: getTournament() }
-
-    componentWillMount () {
-      this.clearSubscription = onTournament(tournament => {
-        this.setState({ tournament })
-      })
-    }
-
-    componentWillUnmount () {
-      this.clearSubscription()
-    }
-
     render () {
-      const { tournament } = this.state
-      const { match } = this.props
+      const { match, tournament } = this.props
 
       if (!tournament) { return <div /> }
 
       const scope = {
-        tournament: this.state.tournament,
+        tournament,
         uncloak: false,
         routeParams: match.params
       }

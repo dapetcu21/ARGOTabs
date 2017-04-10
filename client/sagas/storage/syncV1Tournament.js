@@ -11,7 +11,7 @@ import {
  } from '../../constants/ActionTypes'
 
 import { setTournamentV1 } from '../../actions/StorageActions'
-import { setTournament, getTournament } from '../../store/tournament-v1'
+import { setTournament, getTournament, updateTournament } from '../../store/tournament-v1'
 
 const timer = ms => eventChannel(emitter => {
   const interval = window.setInterval(() => {
@@ -58,7 +58,7 @@ function * respondToAction (chan, action) {
 
 export default function * syncV1TournamentSaga () {
   const timerCh = yield call(timer, 1000)
-  const actionCh = yield actionChannel('*')
+  const actionCh = yield actionChannel([REQUEST_TOURNAMENT, SET_TOURNAMENT, SET_TOURNAMENT_V1])
   const mergedCh = yield call(channel)
   yield fork(mergeChannels, mergedCh, [timerCh, actionCh])
 
@@ -85,6 +85,7 @@ export default function * syncV1TournamentSaga () {
     const v1Data = JSON.parse(JSON.stringify(v1))
     const storedV1Data = yield select(store => store.tournament.data && store.tournament.data.v1)
     if (!isEqual(v1Data, storedV1Data)) {
+      updateTournament()
       yield put(setTournamentV1(v1Data))
     }
   }

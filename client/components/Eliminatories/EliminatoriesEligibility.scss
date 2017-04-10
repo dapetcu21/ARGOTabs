@@ -1,0 +1,19 @@
+:local .eligible {
+  color: #1e6917;
+}
+
+:local .uneligible {
+  color: #a81313;
+}
+
+:local .highlighted {
+  background-color: #f5f5f5;
+}
+
+:local .checkbox {
+  margin-top: 0;
+}
+
+:local .table > tbody > tr > td {
+  vertical-align: middle;
+}

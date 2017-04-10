@@ -4,6 +4,8 @@ import {
   REQUEST_TOURNAMENT, SET_TOURNAMENT, SET_TOURNAMENT_V1, SET_TOURNAMENT_FAILED
 } from '../../constants/ActionTypes'
 
+import eliminatories from './eliminatories'
+
 function title (state = null, { type, payload }) {
   if (type === SET_TOURNAMENT) {
     return payload.data.title || payload.data.v1.name || 'Untitled tournament'
@@ -27,7 +29,8 @@ function v1 (state = {}, { type, payload }) {
 const dataReducer = combineReducers({
   version: () => 2,
   v1,
-  title
+  title,
+  eliminatories
 })
 
 const defaultState = {

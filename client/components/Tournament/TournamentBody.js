@@ -2,6 +2,7 @@ import React from 'react'
 import { Switch, Route } from 'react-router-dom'
 
 import AngularExtensionWrapper from './AngularExtensionWrapper'
+import EliminatoriesPage from '../Eliminatories/EliminatoriesPage'
 
 export default function TournamentBody (props) {
   const url = props.match.url
@@ -16,6 +17,7 @@ export default function TournamentBody (props) {
       <Route path={`${url}/team-rank`} exact component={AngularExtensionWrapper('/team-rank')} />
       <Route path={`${url}/speaker-rank`} exact component={AngularExtensionWrapper('/speaker-rank')} />
       <Route path={`${url}/rounds/:roundIndex`} exact component={AngularExtensionWrapper('/rounds/:roundIndex')} />
+      <Route path={`${url}/eliminatories`} exact component={EliminatoriesPage} />
     </Switch>
   )
 }
