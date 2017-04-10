@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Table, Checkbox } from 'react-bootstrap'
 
@@ -13,7 +13,7 @@ import Team from '../../models/team'
   uneligibleTeams: state.tournament.data.eliminatories.uneligibleTeams
 }))
 @withTournament()
-export default class EliminatoriesSidebar extends PureComponent {
+export default class EliminatoriesSidebar extends Component {
   handleToggleEligibleForBreak = (id, value) => () => {
     this.props.dispatch(setEligibleForBreak(id, !value))
   }
@@ -27,6 +27,8 @@ export default class EliminatoriesSidebar extends PureComponent {
 
     const sorter = tournament.teamRankSorter.boundComparator()
     teams.sort((a, b) => sorter(a.stats, b.stats))
+
+    const readOnly = tournament.elimRounds.length !== 0
 
     let skippedSoFar = 0
 
@@ -54,9 +56,10 @@ export default class EliminatoriesSidebar extends PureComponent {
                   <td>{team.name}</td>
                   <td>
                     <Checkbox
-                      value={eligible}
+                      checked={eligible}
                       onChange={this.handleToggleEligibleForBreak(team.id, eligible)}
                       className={styles.checkbox}
+                      disabled={readOnly}
                       inline
                     >
                       <span className={eligible ? styles.eligible : styles.uneligible}>

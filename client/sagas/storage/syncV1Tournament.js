@@ -4,10 +4,11 @@ import isEqual from 'lodash.isequal'
 import cloneDeep from 'lodash.clonedeep'
 
 import Round from '../../models/round'
+import { newElimRound } from './elimRounds'
 
 import {
   REQUEST_TOURNAMENT, SET_TOURNAMENT, SET_TOURNAMENT_V1,
-  NEW_ROUND, DELETE_ROUND
+  NEW_ROUND, NEW_ELIM_ROUND, DELETE_ROUND, DELETE_ELIM_ROUND
  } from '../../constants/ActionTypes'
 
 import { setTournamentV1 } from '../../actions/StorageActions'
@@ -49,6 +50,21 @@ function * respondToAction (chan, action) {
     case DELETE_ROUND: {
       const round = tournament.rounds[payload]
       tournament.rounds.splice(payload, 1)
+      round.destroy()
+      yield put(chan, pingAction)
+      break
+    }
+
+    case NEW_ELIM_ROUND: {
+      const eliminatories = yield select(state => state.tournament.data.eliminatories)
+      newElimRound(tournament, eliminatories)
+      yield put(chan, pingAction)
+      break
+    }
+
+    case DELETE_ELIM_ROUND: {
+      const round = tournament.elimRounds.pop()
+      if (!round) { break }
       round.destroy()
       yield put(chan, pingAction)
       break

@@ -4,7 +4,7 @@ import { withTournament } from '../../store/tournament-v1'
 
 import styles from './AngularExtensionWrapper.scss'
 
-export default (angularRoute) => {
+export default (angularRoute, extraScope = {}) => {
   const routeOpts = window.ARGOTabs.extensions.getRouteOpts(angularRoute)
 
   @withTournament({ update: false })
@@ -17,7 +17,8 @@ export default (angularRoute) => {
       const scope = {
         tournament,
         uncloak: false,
-        routeParams: match.params
+        routeParams: match.params,
+        ...extraScope
       }
 
       const template = `<div class="${styles.cloak} AngularExtensionWrapper__uncloak_{{uncloak}}">${routeOpts.template}</div>`

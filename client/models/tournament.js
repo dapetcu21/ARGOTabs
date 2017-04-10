@@ -20,6 +20,7 @@ class Tournament {
     this.rooms = []
     this.players = []
     this.rounds = []
+    this.elimRounds = []
     this.tableOpts = {}
     this.ballotsPerMatch = 1
     this.evenBrackets = 0
@@ -99,6 +100,10 @@ class Tournament {
       this.rounds[i] = new Round(this, round)
     }
 
+    for (var [i, round] of this.elimRounds.entries()) {
+      this.elimRounds[i] = new Round(this, round)
+    }
+
     for (var club of this.clubs) {
       club.unpackCycles()
     }
@@ -123,6 +128,10 @@ class Tournament {
       round.unpackCycles()
     }
 
+    for (var round of this.elimRounds) {
+      round.unpackCycles()
+    }
+
     this.speakerRankSorter = Sorter.speakerRankSorter(model.speakerRankSorter)
     this.teamRankSorter = Sorter.teamRankSorter(model.teamRankSorter)
     this.pairRankSorter = Sorter.teamRankSorter(model.pairRankSorter)
@@ -133,6 +142,12 @@ class Tournament {
 
   roundWithId (id) {
     for (var round of this.rounds) {
+      if ('' + round.id === '' + id) {
+        return round
+      }
+    }
+
+    for (var round of this.elimRounds) {
       if ('' + round.id === '' + id) {
         return round
       }

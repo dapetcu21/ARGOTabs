@@ -32,7 +32,9 @@ ngModule.controller('RoundController', [
     $scope.uncloak = true
 
     var index = parseInt($scope.routeParams.roundIndex, 10) - 1
-    var round = $scope.round = $scope.tournament.rounds[index]
+    var round = $scope.round = $scope.eliminatory
+      ? $scope.tournament.elimRounds[index]
+      : $scope.tournament.rounds[index]
 
     if (!(round != null)) {
       document.location.href = '#/404'

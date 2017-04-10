@@ -3,29 +3,46 @@ import { Panel, Modal, Button, ListGroup, ListGroupItem } from 'react-bootstrap'
 import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 
-import { newRound, deleteRound } from '../../actions/TournamentActions'
+import { newRound, newElimRound, deleteRound, deleteElimRound } from '../../actions/TournamentActions'
 import styles from './RoundsSidebarPanel.scss'
+
+import { elimRoundName } from '../../sagas/storage/elimRounds'
 
 @withRouter
 @connect(state => {
-  const v1 = state.tournament.data.v1
-  return { roundCount: v1.rounds ? v1.rounds.length : 0 }
+  const tournament = state.tournament.data
+  const v1 = tournament.v1
+  return {
+    roundCount: v1.rounds ? v1.rounds.length : 0,
+    elimRoundCount: v1.elimRounds ? v1.elimRounds.length : 0,
+    breakingSlots: tournament.eliminatories.breakingSlots
+  }
 })
 export default class RoundsSidebarPanel extends PureComponent {
   state = { roundBeingDeleted: null }
 
   handleDeleteRoundConfirm = () => {
     const { location, url, history, dispatch } = this.props
-    if (location.pathname.match(/\/rounds\/[^/]+/)) {
+    if (location.pathname.match(/\/(rounds|eliminatories)\/[^/]+/)) {
       history.replace(url)
     }
-    dispatch(deleteRound(this.state.roundBeingDeleted))
+    const { roundBeingDeleted } = this.state
+    if (roundBeingDeleted === 'elim') {
+      dispatch(deleteElimRound())
+    } else {
+      dispatch(deleteRound(roundBeingDeleted))
+    }
     this.setState({ roundBeingDeleted: null })
   }
 
   handleNewRoundClick = evt => {
     evt.preventDefault()
     this.props.dispatch(newRound())
+  }
+
+  handleNewElimRoundClick = evt => {
+    evt.preventDefault()
+    this.props.dispatch(newElimRound())
   }
 
   handleModalHide = () => {
@@ -39,8 +56,15 @@ export default class RoundsSidebarPanel extends PureComponent {
     return false
   }
 
+  handleDeleteElimRoundClick = evt => {
+    this.setState({ roundBeingDeleted: 'elim' })
+    evt.preventDefault()
+    evt.stopPropagation()
+    return false
+  }
+
   render () {
-    const { roundCount, url } = this.props
+    const { roundCount, elimRoundCount, breakingSlots, url } = this.props
     const { roundBeingDeleted } = this.state
 
     const linkProps = {
@@ -48,9 +72,9 @@ export default class RoundsSidebarPanel extends PureComponent {
       className: 'list-group-item'
     }
 
-    const listItems = []
+    const roundItems = []
     for (let i = 0; i < roundCount; i++) {
-      listItems.push(
+      roundItems.push(
         <NavLink key={i} exact to={`${url}/rounds/${i + 1}`} {...linkProps}>
           Round {i + 1}
           <div
@@ -63,11 +87,34 @@ export default class RoundsSidebarPanel extends PureComponent {
       )
     }
 
+    const elimRoundItems = []
+    for (let i = 0; i < elimRoundCount; i++) {
+      elimRoundItems.push(
+        <NavLink key={i} exact to={`${url}/eliminatories/${i + 1}`} {...linkProps}>
+          {elimRoundName(breakingSlots, i)}
+          {i === elimRoundCount - 1 && (
+            <div
+              className={styles.closeButton}
+              onClick={this.handleDeleteElimRoundClick}
+            >
+              <i className='fa fa-fw fa-lg fa-times' />
+            </div>
+          )}
+        </NavLink>
+      )
+    }
+
+    const deletedTitle = roundBeingDeleted === null
+      ? ''
+      : roundBeingDeleted === 'elim'
+        ? elimRoundName(breakingSlots, elimRoundCount - 1, true)
+        : `round ${roundBeingDeleted + 1}`
+
     return (
       <div>
         <Panel header='In-rounds'>
           <ListGroup fill>
-            {listItems}
+            {roundItems}
             <ListGroupItem onClick={this.handleNewRoundClick}>
               <i className='fa fa-fw fa-plus' />
               &nbsp;New round
@@ -80,9 +127,10 @@ export default class RoundsSidebarPanel extends PureComponent {
             <NavLink exact to={`${url}/eliminatories`} {...linkProps}>
               Setup
             </NavLink>
-            <ListGroupItem onClick={this.handleNewElimRound}>
+            {elimRoundItems}
+            <ListGroupItem onClick={this.handleNewElimRoundClick}>
               <i className='fa fa-fw fa-plus' />
-              &nbsp;New out-round
+              &nbsp;New {elimRoundName(breakingSlots, elimRoundCount, true)}
             </ListGroupItem>
           </ListGroup>
         </Panel>
@@ -93,10 +141,10 @@ export default class RoundsSidebarPanel extends PureComponent {
           bsSize='small'
         >
           <Modal.Header closeButton>
-            <Modal.Title>Delete Round {roundBeingDeleted + 1}</Modal.Title>
+            <Modal.Title>Delete {deletedTitle}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <p>Are you sure you want to delete Round {roundBeingDeleted + 1}?</p>
+            <p>Are you sure you want to delete {deletedTitle}?</p>
             <p>
               This will remove the pairing, all ballots and all scores associated with this round.
               Most mistakes can be corrected without deleting the whole round.

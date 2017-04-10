@@ -6,7 +6,8 @@ import { setBreakingSlots } from '../../actions/TournamentActions'
 import styles from './EliminatoriesSidebar.scss'
 
 @connect(state => ({
-  breakingSlots: state.tournament.data.eliminatories.breakingSlots
+  breakingSlots: state.tournament.data.eliminatories.breakingSlots,
+  readOnly: state.tournament.data.v1.elimRounds.length !== 0
 }))
 export default class EliminatoriesSidebar extends PureComponent {
   handleBreakingSlotsChange = evt => {
@@ -14,7 +15,7 @@ export default class EliminatoriesSidebar extends PureComponent {
   }
 
   render () {
-    const { breakingSlots } = this.props
+    const { breakingSlots, readOnly } = this.props
 
     return (
       <Well>
@@ -26,7 +27,8 @@ export default class EliminatoriesSidebar extends PureComponent {
           placeholder='select'
           value={breakingSlots}
           onChange={this.handleBreakingSlotsChange}
-          >
+          disabled={readOnly}
+        >
           <option value={2}>2 (Break to final)</option>
           <option value={4}>4 (Semi-finals)</option>
           <option value={8}>8 (Quarter-finals)</option>

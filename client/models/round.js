@@ -356,6 +356,8 @@ class Round {
     var balance = opts.balanceSides;
     (balance != null ? balance : balance = true);
 
+    console.log(opts)
+
     var pairTeams = (a, b, skillIndex = 0) => {
       var db;
       var da;
