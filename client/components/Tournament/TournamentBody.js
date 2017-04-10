@@ -15,6 +15,7 @@ export default function TournamentBody (props) {
       <Route path={`${url}/rooms`} exact component={AngularExtensionWrapper('/rooms')} />
       <Route path={`${url}/team-rank`} exact component={AngularExtensionWrapper('/team-rank')} />
       <Route path={`${url}/speaker-rank`} exact component={AngularExtensionWrapper('/speaker-rank')} />
+      <Route path={`${url}/rounds/:roundIndex`} exact component={AngularExtensionWrapper('/rounds/:roundIndex')} />
     </Switch>
   )
 }

@@ -1,9 +1,14 @@
 import { eventChannel, channel } from 'redux-saga'
-import { take, select, put, call, actionChannel, fork } from 'redux-saga/effects'
+import { take, takeEvery, select, put, call, actionChannel, fork } from 'redux-saga/effects'
 import isEqual from 'lodash.isequal'
 import cloneDeep from 'lodash.clonedeep'
 
-import { REQUEST_TOURNAMENT, SET_TOURNAMENT, SET_TOURNAMENT_V1 } from '../../constants/ActionTypes'
+import Round from '../../models/round'
+
+import {
+  REQUEST_TOURNAMENT, SET_TOURNAMENT, SET_TOURNAMENT_V1,
+  NEW_ROUND, DELETE_ROUND
+ } from '../../constants/ActionTypes'
 
 import { setTournamentV1 } from '../../actions/StorageActions'
 import { setTournament, getTournament } from '../../store/tournament-v1'
@@ -27,11 +32,37 @@ function * mergeChannels (mergedChannel, channels) {
   }
 }
 
+const pingAction = { type: 'PING' }
+function * respondToAction (chan, action) {
+  const { type, payload } = action
+
+  const tournament = getTournament()
+  if (!tournament) { return }
+
+  switch (type) {
+    case NEW_ROUND: {
+      tournament.rounds.push(new Round(tournament))
+      yield put(chan, pingAction)
+      break
+    }
+
+    case DELETE_ROUND: {
+      const round = tournament.rounds[payload]
+      tournament.rounds.splice(payload, 1)
+      round.destroy()
+      yield put(chan, pingAction)
+      break
+    }
+  }
+}
+
 export default function * syncV1TournamentSaga () {
   const timerCh = yield call(timer, 1000)
   const actionCh = yield actionChannel('*')
   const mergedCh = yield call(channel)
   yield fork(mergeChannels, mergedCh, [timerCh, actionCh])
+
+  yield takeEvery('*', respondToAction, mergedCh)
 
   while (true) {
     const { type, payload } = yield take(mergedCh)

@@ -22,11 +22,14 @@ export default (angularRoute) => {
 
     render () {
       const { tournament } = this.state
+      const { match } = this.props
+
       if (!tournament) { return <div /> }
 
       const scope = {
         tournament: this.state.tournament,
-        uncloak: false
+        uncloak: false,
+        routeParams: match.params
       }
 
       const template = `<div class="${styles.cloak} AngularExtensionWrapper__uncloak_{{uncloak}}">${routeOpts.template}</div>`

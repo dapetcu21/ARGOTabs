@@ -1,9 +1,12 @@
 import React from 'react'
 import { Panel, ListGroup } from 'react-bootstrap'
-import { NavLink } from 'react-router-dom'
+import { Route, NavLink } from 'react-router-dom'
+
+import RoundsSidebarPanel from './RoundsSidebarPanel'
 
 export default function Sidebar (props) {
-  const url = props.match.url
+  const match = props.match
+  const url = match.url
   const linkProps = {
     activeClassName: 'active',
     className: 'list-group-item'
@@ -30,6 +33,7 @@ export default function Sidebar (props) {
           <NavLink exact to={`${url}/speaker-rank`} {...linkProps}>Speaker rank</NavLink>
         </ListGroup>
       </Panel>
+      <RoundsSidebarPanel url={url} />
     </div>
   )
 }

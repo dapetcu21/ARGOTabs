@@ -1,0 +1,26 @@
+:local .closeButton {
+  position: absolute;
+  width: 44px;
+  top: -1px;
+  bottom: -1px;
+  right: 0px;
+
+  border-left: 1px solid #ddd;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  background-color: #fff;
+  color: #999;
+  text-shadow: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:local .closeButton:hover {
+  color: #666;
+}
+
+:local .newRound {
+  text-align: center !important;
+}
