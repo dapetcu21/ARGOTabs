@@ -562,7 +562,7 @@ class Round {
     switch (opts.algorithm) {
     case 1:
       for (var o of opts.manualPairing) {
-        pairTeams(o.prop, o.opp);
+        pairTeams(o.prop, o.opp, skillIndex++);
       }
 
       break;

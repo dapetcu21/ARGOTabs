@@ -22,10 +22,45 @@ export function elimRoundName (breakingSlots, index, lowerCase = false) {
   return lowerCase ? namesLower[slots] : namesUpper[slots]
 }
 
+function getWinner (ballot) {
+  if (!ballot.locked) { return null }
+  if (ballot.presence[0] && !ballot.presence[1]) { return ballot.teams[0] }
+  if (!ballot.presence[0] && ballot.presence[1]) { return ballot.teams[1] }
+  if (!ballot.presence[0] && !ballot.presence[1]) { return null }
+
+  const { prop, opp } = ballot.votes.reduce((acc, { prop, opp }) => ({
+    prop: prop + acc.prop,
+    opp: opp + acc.opp
+  }), { prop: 0, opp: 0 })
+  return prop > opp ? ballot.teams[0] : ballot.teams[1]
+}
+
+export function canCreateNewElimRound (tournament, { uneligibleTeams, breakingSlots }) {
+  const elimRoundCount = tournament.elimRounds.length
+
+  if (!elimRoundCount) {
+    const eligibleTeamCount = tournament.teams.reduce((acc, team) =>
+      !uneligibleTeams.has(team.id) ? acc + 1 : acc
+    , 0)
+    return eligibleTeamCount >= breakingSlots
+  }
+
+  const slots = breakingSlots / Math.pow(2, elimRoundCount)
+  if (slots < 2) { return false }
+
+  const prevRound = tournament.elimRounds[elimRoundCount - 1]
+  const ballots = prevRound.ballots
+  return !ballots.find(ballot => {
+    const winner = getWinner(ballot)
+    return winner === null || winner === undefined || winner === -1
+  })
+}
+
 export function newElimRound (tournament, { uneligibleTeams, breakingSlots }) {
   let teams
+  const elimRoundCount = tournament.elimRounds.length
 
-  if (!tournament.elimRounds.length) {
+  if (!elimRoundCount) {
     teams = tournament.teams.slice(0)
     Team.calculateStats(teams, tournament.rounds)
 
@@ -35,11 +70,19 @@ export function newElimRound (tournament, { uneligibleTeams, breakingSlots }) {
     teams = teams.filter(team => !uneligibleTeams.has(team.id))
     teams = teams.slice(0, breakingSlots)
   } else {
-    console.log('idk')
-    teams = []
+    const prevRound = tournament.elimRounds[elimRoundCount - 1]
+    const ballots = prevRound.ballots.slice(0)
+    ballots.sort((a, b) => a.skillIndex - b.skillIndex)
+    teams = ballots.map(ballot => {
+      const winner = getWinner(ballot)
+      if (!winner) {
+        throw new Error('Not all ballots for previous eliminatory round are entered')
+      }
+      return winner
+    })
   }
 
-  const slots = breakingSlots / Math.pow(2, tournament.elimRounds.length)
+  const slots = breakingSlots / Math.pow(2, elimRoundCount)
 
   if (teams.length !== slots) {
     throw new Error('Incorrect number of teams for eliminatory round')

@@ -6,16 +6,17 @@ import { NavLink, withRouter } from 'react-router-dom'
 import { newRound, newElimRound, deleteRound, deleteElimRound } from '../../actions/TournamentActions'
 import styles from './RoundsSidebarPanel.scss'
 
-import { elimRoundName } from '../../sagas/storage/elimRounds'
+import { canCreateNewElimRound, elimRoundName } from '../../sagas/storage/elimRounds'
 
 @withRouter
 @connect(state => {
   const tournament = state.tournament.data
   const v1 = tournament.v1
   return {
+    v1,
     roundCount: v1.rounds ? v1.rounds.length : 0,
     elimRoundCount: v1.elimRounds ? v1.elimRounds.length : 0,
-    breakingSlots: tournament.eliminatories.breakingSlots
+    eliminatories: tournament.eliminatories
   }
 })
 export default class RoundsSidebarPanel extends PureComponent {
@@ -64,7 +65,8 @@ export default class RoundsSidebarPanel extends PureComponent {
   }
 
   render () {
-    const { roundCount, elimRoundCount, breakingSlots, url } = this.props
+    const { roundCount, elimRoundCount, eliminatories, v1, url } = this.props
+    const { breakingSlots } = eliminatories
     const { roundBeingDeleted } = this.state
 
     const linkProps = {
@@ -128,10 +130,12 @@ export default class RoundsSidebarPanel extends PureComponent {
               Setup
             </NavLink>
             {elimRoundItems}
-            <ListGroupItem onClick={this.handleNewElimRoundClick}>
-              <i className='fa fa-fw fa-plus' />
-              &nbsp;New {elimRoundName(breakingSlots, elimRoundCount, true)}
-            </ListGroupItem>
+            {canCreateNewElimRound(v1, eliminatories) && (
+              <ListGroupItem onClick={this.handleNewElimRoundClick}>
+                <i className='fa fa-fw fa-plus' />
+                &nbsp;New {elimRoundName(breakingSlots, elimRoundCount, true)}
+              </ListGroupItem>
+            )}
           </ListGroup>
         </Panel>
 
