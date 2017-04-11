@@ -629,7 +629,7 @@ ngModule.controller('RoundController', [
         }
       } else if (!pres0 || !pres1) {
         ballot.stats = {
-          scores: ['default win', ''],
+          scores: ['bye match', ''],
           winClass: 'hidden-true',
           classes: [((pres0 ? 'prop' : 'opp')), 'hidden-true']
         }

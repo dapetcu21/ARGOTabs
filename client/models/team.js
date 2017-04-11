@@ -245,9 +245,11 @@ class Team {
       }
     }
 
-    o.wins = o.rawWins + o.byeWins
-    o.ballots = o.rawBallots + o.byeBallots
     var rp = o.roundsPlayed + o.roundsBotched
+
+    o.byeCountsAsWin = o.rawWins >= rp - o.rawWins
+    o.wins = o.rawWins + (o.byeCountsAsWin ? o.byeWins : 0)
+    o.ballots = o.rawBallots + (o.byeCountsAsWin ? o.byeBallots : 0)
 
     o.score = o.rawScore + o.byeWins * (() => {
       if (rp) {
@@ -268,9 +270,6 @@ class Team {
     if (o.byeWins + rp > 2 && rp) {
       o.scoreHighLow = o.score - o.minScore - o.maxScore
     }
-
-    o.wins = o.rawWins + o.byeWins
-    o.ballots = o.rawBallots + o.byeBallots
     return o
   }
 
