@@ -2,21 +2,15 @@ var _ = require('lodash')
 require('ngreact')
 
 var extensionsArray = [
-  require('../extensions/404'),
-  require('../extensions/categories'),
   require('../extensions/clubs'),
   require('../extensions/dashboard'),
-  require('../extensions/json'),
   require('../extensions/judges'),
-  require('../extensions/loading'),
   require('../extensions/rooms'),
   require('../extensions/rounds'),
   require('../extensions/speaker-rank'),
   require('../extensions/team-rank'),
   require('../extensions/teams'),
-  require('../extensions/ui-components'),
-  require('../extensions/url'),
-  require('../extensions/react-test')
+  require('../extensions/ui-components')
 ]
 
 module.exports = class Extensions {
