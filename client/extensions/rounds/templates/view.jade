@@ -114,9 +114,9 @@ div.tab-content
                       = ' '
                       +judgeCell(false, true)
                 td(data-index='{{$index}}').nowrap.win-cell
-                  span(class="{{o.stats.classes[0]}}") {{o.stats.scores[0]}}&nbsp;
+                  span(class="{{o.stats.classes[0]}}") {{round.eliminatory ? o.stats.votes[0] : o.stats.scores[0]}}&nbsp;
                   span(class="{{o.stats.winClass}}"): i.fa.fa-trophy
-                  span(class="{{o.stats.classes[1]}}") &nbsp;{{o.stats.scores[1]}}
+                  span(class="{{o.stats.classes[1]}}") &nbsp;{{round.eliminatory ? o.stats.votes[1] : o.stats.scores[1]}}
         .col-sm-3.dont-print
           .well.settings-group.ca-mode
             div

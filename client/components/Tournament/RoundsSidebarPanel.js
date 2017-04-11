@@ -133,7 +133,7 @@ export default class RoundsSidebarPanel extends PureComponent {
             {canCreateNewElimRound(v1, eliminatories) && (
               <ListGroupItem onClick={this.handleNewElimRoundClick}>
                 <i className='fa fa-fw fa-plus' />
-                &nbsp;New {elimRoundName(breakingSlots, elimRoundCount, true)}
+                &nbsp;Add {elimRoundName(breakingSlots, elimRoundCount, true)}
               </ListGroupItem>
             )}
           </ListGroup>

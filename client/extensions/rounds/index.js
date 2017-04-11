@@ -656,6 +656,7 @@ ngModule.controller('RoundController', [
 
         ballot.stats = {
           scores: [s[0].toFixed(dc), s[1].toFixed(dc)],
+          votes: [w[0], w[1]],
           rawScores: s,
           winClass: (w[0] > w[1] ? 'prop' : 'opp'),
           classes: ['', '']
