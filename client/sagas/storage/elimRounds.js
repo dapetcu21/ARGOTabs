@@ -37,6 +37,7 @@ function getWinner (ballot) {
 
 export function canCreateNewElimRound (tournament, { uneligibleTeams, breakingSlots }) {
   const elimRoundCount = tournament.elimRounds ? tournament.elimRounds.length : 0
+  if (!tournament.teams) { return }
 
   if (!elimRoundCount) {
     const eligibleTeamCount = tournament.teams.reduce((acc, team) =>
