@@ -154,10 +154,10 @@ if (debug) {
   )
 } else {
   config.plugins.push(new webpack.optimize.UglifyJsPlugin())
-  config.plugins.push(new AppCachePlugin({
-    settings: ['prefer-online'],
-    output: 'manifest.appcache'
-  }))
+  // config.plugins.push(new AppCachePlugin({
+  //   settings: ['prefer-online'],
+  //   output: 'manifest.appcache'
+  // }))
 }
 
 module.exports = config
