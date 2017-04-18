@@ -1,13 +1,12 @@
 import React, { PureComponent } from 'react'
 import { firebaseConnect, pathToJS, dataToJS } from 'react-redux-firebase'
 import { connect } from 'react-redux'
-import { Grid, Row, Col, Button, Alert, ListGroup, ListGroupItem } from 'react-bootstrap'
-import { withRouter } from 'react-router'
+import { Grid, Row, Col, Button, Alert, ListGroup } from 'react-bootstrap'
 
 import { createTournament } from '../actions/StorageActions'
+import TournamentListItem from './TournamentListItem'
 import styles from './TournamentList.scss'
 
-@withRouter
 @connect(({ firebase }) => ({
   auth: pathToJS(firebase, 'auth')
 }))
@@ -100,18 +99,13 @@ export default class TournamentList extends PureComponent {
             <Row>
               <Col xs={12}>
                 <ListGroup>
-                  {keys.map(tournamentId => {
-                    const meta = list[tournamentId]
-                    return (
-                      <ListGroupItem
-                        key={tournamentId}
-                        onClick={this.handleTournamentClick(tournamentId)}
-                      >
-                        <i className='fa fa-fw fa-file-o' />&nbsp;
-                        {meta.title}
-                      </ListGroupItem>
-                    )
-                  })}
+                  {keys.map(tournamentId => (
+                    <TournamentListItem
+                      key={tournamentId}
+                      tournamentId={tournamentId}
+                      metadata={list[tournamentId]}
+                    />
+                  ))}
                 </ListGroup>
               </Col>
             </Row>

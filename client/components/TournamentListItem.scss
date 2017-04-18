@@ -1,0 +1,37 @@
+:local .listGroupItem {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+:local .listGroupItemRename {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+:local .title {
+  flex: 1;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+:local .form {
+  flex: 1;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+:local .formGroup {
+  margin-bottom: 0px;
+  margin-right: 10px;
+  flex: 1;
+}
+
