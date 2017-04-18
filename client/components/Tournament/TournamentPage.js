@@ -57,7 +57,7 @@ export default class TournamentPage extends PureComponent {
         )}
         {hasTournament && (
           <Row>
-            <Col sm={2}>
+            <Col sm={2} className={styles.sidebarColumn}>
               <Sidebar match={match} />
             </Col>
             <Col sm={10}>
