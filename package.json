@@ -53,7 +53,9 @@
     "webpack": "^2.2.1",
     "webpack-dev-server": "^2.4.1"
   },
-  "engines": {},
+  "engines": {
+    "node": "^6.0.0"
+  },
   "scripts": {
     "start": "node server",
     "watch": "PUBLIC_PATH=\"http://localhost:8080/\" webpack-dev-server --inline --hot --content-base public",
