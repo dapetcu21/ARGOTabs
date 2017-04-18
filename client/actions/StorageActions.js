@@ -11,10 +11,10 @@ export const createTournament = createAction(CREATE_TOURNAMENT,
   (tournament, title) => ({ tournament, title })
 )
 export const renameTournament = createAction(RENAME_TOURNAMENT,
-  (tournament, title) => ({ tournament, title })
+  (tournamentId, title) => ({ tournamentId, title })
 )
 export const deleteTournament = createAction(DELETE_TOURNAMENT,
-  (tournament) => ({ tournament })
+  (tournamentId) => ({ tournamentId })
 )
 
 export const createTournamentResponse = createAction(CREATE_TOURNAMENT_RESPONSE)
