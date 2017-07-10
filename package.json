@@ -61,7 +61,7 @@
     "start": "node server",
     "watch": "PUBLIC_PATH=\"http://localhost:8080/\" webpack-dev-server --inline --hot --content-base public",
     "build": "NODE_ENV=production webpack",
-    "postinstall": "if test \"$NODE_ENV\" = production; then webpack; else true; fi"
+    "postinstall": "if test \"$NODE_ENV\" = production; then npm rebuild node-sass && webpack; fi"
   },
   "repository": {
     "type": "git",
