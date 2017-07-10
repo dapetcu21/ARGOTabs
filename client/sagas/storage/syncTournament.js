@@ -1,9 +1,13 @@
 import { eventChannel, END } from 'redux-saga'
 import { take, fork, put, call, select, cancelled } from 'redux-saga/effects'
-import { getFirebase, pathToJS } from 'react-redux-firebase'
+import { getFirebase } from 'react-redux-firebase'
 
-import { REQUEST_TOURNAMENT, SET_TOURNAMENT } from '../../constants/ActionTypes'
-import { setTournament, setTournamentFailed, saveTournamentFailed } from '../../actions/StorageActions'
+import {
+  REQUEST_TOURNAMENT, SET_TOURNAMENT, SOLVE_SYNC_CONFLICT_LOCAL, SOLVE_SYNC_CONFLICT_REMOTE
+} from '../../constants/ActionTypes'
+import { setTournamentFailed } from '../../actions/StorageActions'
+
+import { getReconciler, deactivateReconciler, remoteUpdate, localUpdate, solveConflict } from './syncReconciler'
 
 function makeFirebaseRefChannel (ref) {
   return eventChannel(emitter => {
@@ -32,33 +36,11 @@ function * subscribeToFirebaseRef (ref, sagaToRun) {
   }
 }
 
-function * saveTournament (firebase, request, data, revision) {
-  const db = firebase.database()
-  const ref = db.ref()
-
-  const auth = yield select(state => pathToJS(state.firebase, 'auth'))
-  if (!auth) { return }
-  const { uid } = auth
-
-  const tournamentId = request.id
-  const lastModified = firebase.database.ServerValue.TIMESTAMP
-
-  try {
-    yield ref.update({
-      [`/tournaments/${tournamentId}/revision`]: revision,
-      [`/tournaments/${tournamentId}/lastModified`]: lastModified,
-      [`/tournaments/${tournamentId}/data`]: JSON.stringify(data),
-      [`/tournamentsByOwner/${uid}/${tournamentId}/lastModified`]: lastModified
-    })
-  } catch (error) {
-    yield put(saveTournamentFailed({ request, error }))
-  }
-}
-
 export default function * syncTournamentSaga () {
   const firebase = getFirebase()
   let fetchTask = null
   let pushTask = null
+  let reconciler = null
 
   while (true) {
     const { payload } = yield take(REQUEST_TOURNAMENT)
@@ -73,59 +55,74 @@ export default function * syncTournamentSaga () {
       pushTask = null
     }
 
-    if (payload.id) {
-      const ref = firebase.database().ref().child('tournaments').child(payload.id)
-      fetchTask = yield fork(subscribeToFirebaseRef, ref, function * (snapshot) {
-        if (snapshot.error) {
-          yield put(setTournamentFailed({
-            request: payload,
-            error: snapshot.error.toString()
-          }))
-          return
-        }
-
-        if (!snapshot.exists()) {
-          yield put(setTournamentFailed({
-            request: payload,
-            error: 'Tournament not found'
-          }))
-          return
-        }
-
-        const recievedRevision = snapshot.child('revision').val() || 0
-        const currentRevision = yield select(state => state.tournament.revision)
-        if (recievedRevision > currentRevision) {
-          const newPayload = snapshot.val()
-          newPayload.data = JSON.parse(newPayload.data)
-          newPayload.request = payload
-          yield put(setTournament(newPayload))
-        }
-      })
-
-      pushTask = yield fork(function * () {
-        let tournament = null
-
-        while (true) {
-          const { type } = yield take('*')
-
-          if (type === SET_TOURNAMENT) {
-            tournament = yield select(state => state.tournament.data)
-            continue
-          }
-
-          if (tournament === null) { continue }
-
-          const oldTournament = tournament
-          const { revision, data: newTournament } = yield select(state => state.tournament)
-          tournament = newTournament
-
-          if (tournament === null) { continue }
-
-          if (tournament !== oldTournament) {
-            yield fork(saveTournament, firebase, payload, newTournament, revision)
-          }
-        }
-      })
+    if (reconciler) {
+      yield put(reconciler, deactivateReconciler())
+      reconciler = null
     }
+
+    if (!payload.id) {
+      // TODO: preview / external
+      continue
+    }
+
+    reconciler = yield call(getReconciler, payload.id)
+
+    const ref = firebase.database().ref().child('tournaments').child(payload.id)
+    fetchTask = yield fork(subscribeToFirebaseRef, ref, function * (snapshot) {
+      if (snapshot.error) {
+        yield put(setTournamentFailed({
+          request: payload,
+          error: snapshot.error.toString()
+        }))
+        return
+      }
+
+      if (!snapshot.exists()) {
+        yield put(setTournamentFailed({
+          request: payload,
+          error: 'Tournament not found'
+        }))
+        return
+      }
+
+      const recievedRevision = snapshot.child('revision').val()
+      const recievedData = snapshot.child('data')
+      yield put(reconciler, remoteUpdate(recievedRevision, recievedData))
+    })
+
+    pushTask = yield fork(function * () {
+      let tournament = null
+
+      while (true) {
+        const { type } = yield take('*')
+
+        if (type === SET_TOURNAMENT) {
+          tournament = yield select(state => state.tournament.data)
+          continue
+        }
+
+        if (tournament === null) { continue }
+
+        if (type === SOLVE_SYNC_CONFLICT_LOCAL) {
+          yield put(reconciler, solveConflict(true))
+          continue
+        }
+
+        if (type === SOLVE_SYNC_CONFLICT_REMOTE) {
+          yield put(reconciler, solveConflict(false))
+          continue
+        }
+
+        const oldTournament = tournament
+        const { revision, data: newTournament } = yield select(state => state.tournament)
+        tournament = newTournament
+
+        if (tournament === null) { continue }
+
+        if (tournament !== oldTournament) {
+          yield put(reconciler, localUpdate(revision, newTournament))
+        }
+      }
+    })
   }
 }

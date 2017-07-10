@@ -4,7 +4,8 @@ import {
   RENAME_TOURNAMENT, RENAME_TOURNAMENT_RESPONSE,
   DELETE_TOURNAMENT, DELETE_TOURNAMENT_RESPONSE,
   REQUEST_TOURNAMENT, SET_TOURNAMENT, SET_TOURNAMENT_FAILED,
-  SET_TOURNAMENT_V1, SAVE_TOURNAMENT_FAILED
+  SET_TOURNAMENT_V1, SAVE_TOURNAMENT_FAILED,
+  SET_SYNC_CONFLICT, SOLVE_SYNC_CONFLICT_LOCAL, SOLVE_SYNC_CONFLICT_REMOTE
 } from '../constants/ActionTypes'
 
 export const createTournament = createAction(CREATE_TOURNAMENT,
@@ -32,3 +33,7 @@ export const setTournamentV1 = createAction(SET_TOURNAMENT_V1,
 )
 
 export const saveTournamentFailed = createAction(SAVE_TOURNAMENT_FAILED)
+
+export const setSyncConflict = createAction(SET_SYNC_CONFLICT)
+export const solveSyncConflictLocal = createAction(SOLVE_SYNC_CONFLICT_LOCAL)
+export const solveSyncConflictRemote = createAction(SOLVE_SYNC_CONFLICT_REMOTE)
