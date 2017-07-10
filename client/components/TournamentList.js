@@ -6,6 +6,7 @@ import { Grid, Row, Col, Button, Alert, ListGroup } from 'react-bootstrap'
 import { createTournament } from '../actions/StorageActions'
 import TournamentListItem from './TournamentListItem'
 import styles from './TournamentList.scss'
+import { convertFromLegacy, getTitle } from '../store/legacy'
 
 @connect(({ firebase }) => ({
   auth: pathToJS(firebase, 'auth')
@@ -49,14 +50,7 @@ export default class TournamentList extends PureComponent {
       }
 
       if (data) {
-        let title
-        if (!data.version || data.version < 2) {
-          title = data.name
-          data = { version: 2, v1: data }
-        } else {
-          title = data.title
-        }
-        this.addNewTab(data, title || 'Unnamed tournament')
+        this.addNewTab(convertFromLegacy(data), getTitle(data) || 'Unnamed tournament')
       }
     }
     reader.readAsText(file)

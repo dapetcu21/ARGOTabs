@@ -3,6 +3,7 @@ import { actionTypes } from 'react-redux-firebase'
 
 import { CREATE_TOURNAMENT_RESPONSE } from '../../constants/ActionTypes'
 import { createTournament } from '../../actions/StorageActions'
+import { convertFromLegacy, getTitle } from '../../store/legacy'
 
 export default function * importV1TournamentsSaga () {
   yield takeEvery(actionTypes.LOGIN, function * () {
@@ -21,7 +22,10 @@ export default function * importV1TournamentsSaga () {
           title = data.title
         }
 
-        const action = createTournament(data, title || 'Unnamed imported tournament')
+        const action = createTournament(
+          convertFromLegacy(data),
+          getTitle(title) || 'Unnamed imported tournament'
+        )
         action.payload.storageKey = storageKey
         yield put(action)
       } catch (ex) {}

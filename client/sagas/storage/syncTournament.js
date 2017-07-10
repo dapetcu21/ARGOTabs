@@ -1,12 +1,14 @@
 import { eventChannel, END } from 'redux-saga'
 import { take, fork, put, call, select, cancelled } from 'redux-saga/effects'
 import { getFirebase } from 'react-redux-firebase'
+import uuid from 'uuid'
 
 import {
   REQUEST_TOURNAMENT, SET_TOURNAMENT, SOLVE_SYNC_CONFLICT_LOCAL, SOLVE_SYNC_CONFLICT_REMOTE
 } from '../../constants/ActionTypes'
-import { setTournamentFailed } from '../../actions/StorageActions'
 
+import { setTournament, setTournamentFailed } from '../../actions/StorageActions'
+import { convertFromLegacy } from '../../store/legacy'
 import { getReconciler, deactivateReconciler, remoteUpdate, localUpdate, solveConflict } from './syncReconciler'
 
 function makeFirebaseRefChannel (ref) {
@@ -60,10 +62,29 @@ export default function * syncTournamentSaga () {
       reconciler = null
     }
 
-    if (!payload.id) {
-      // TODO: preview / external
+    if (payload.remoteUrl) {
+      fetchTask = yield fork(function * () {
+        try {
+          const request = yield window.fetch(payload.remoteUrl)
+          const data = convertFromLegacy(yield request.json())
+
+          yield put(setTournament({
+            request,
+            data,
+            revision: uuid.v4(),
+            readOnly: true
+          }))
+        } catch (ex) {
+          yield put(setTournamentFailed({
+            request: payload,
+            error: ex.toString()
+          }))
+        }
+      })
       continue
     }
+
+    if (!payload.id) { continue }
 
     reconciler = yield call(getReconciler, payload.id)
 

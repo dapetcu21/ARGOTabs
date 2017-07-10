@@ -23,7 +23,7 @@ export const renameTournamentResponse = createAction(RENAME_TOURNAMENT_RESPONSE)
 export const deleteTournamentResponse = createAction(DELETE_TOURNAMENT_RESPONSE)
 
 export const requestTournament = createAction(REQUEST_TOURNAMENT,
-  (id) => ({ id })
+  (payload) => (payload || {})
 )
 
 export const setTournament = createAction(SET_TOURNAMENT)

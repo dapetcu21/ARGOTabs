@@ -19,8 +19,18 @@ import TitleBar from './TitleBar'
 })
 export default class TournamentPage extends PureComponent {
   componentWillMount () {
-    const id = this.props.match.params.tournamentId
-    this.props.dispatch(requestTournament(id))
+    this.requestFromParams(this.props.match.params)
+  }
+
+  requestFromParams (params) {
+    const { tournamentId, remoteUrl } = params
+    const payload = {}
+    if (tournamentId) {
+      payload.id = tournamentId
+    } else if (remoteUrl) {
+      payload.remoteUrl = decodeURIComponent(remoteUrl)
+    }
+    this.props.dispatch(requestTournament(payload))
   }
 
   componentWillUnmount () {
@@ -29,7 +39,7 @@ export default class TournamentPage extends PureComponent {
 
   componentWillReceiveNewProps (newProps) {
     if (this.props.match.url !== newProps.match.url) {
-      this.props.dispatch(requestTournament(newProps.match.params.tournamentId))
+      this.requestFromParams(newProps.match.params)
     }
   }
 

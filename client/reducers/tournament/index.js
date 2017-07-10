@@ -43,7 +43,8 @@ const defaultState = {
   error: null,
   data: null,
   revision: null,
-  conflict: false
+  conflict: false,
+  readOnly: false
 }
 
 export default function tournamentReducer (state = defaultState, action) {
@@ -57,7 +58,8 @@ export default function tournamentReducer (state = defaultState, action) {
         error: null,
         data: null,
         revision: null,
-        conflict: false
+        conflict: false,
+        readOnly: false
       }
 
     case SET_TOURNAMENT_FAILED:
@@ -75,7 +77,8 @@ export default function tournamentReducer (state = defaultState, action) {
         isLoading: false,
         error: null,
         data: dataReducer(undefined, action),
-        revision: payload.revision
+        revision: payload.revision,
+        readOnly: !!payload.readOnly
       }
 
     case SET_SYNC_CONFLICT:
