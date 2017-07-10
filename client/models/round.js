@@ -356,8 +356,6 @@ class Round {
     var balance = opts.balanceSides;
     (balance != null ? balance : balance = true);
 
-    console.log(opts)
-
     var pairTeams = (a, b, skillIndex = 0) => {
       var db;
       var da;
@@ -768,7 +766,8 @@ class Round {
 
           m = restrictions.match(t, function(test) {
             return (() => {
-              for (var tt of bracket.teams) {
+              for (let k = bracket.teams.length - 1; k >= 0; k--) {
+                let tt = bracket.teams[k]
                 if (test(tt)) {
                   return;
                 }
