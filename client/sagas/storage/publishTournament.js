@@ -1,5 +1,6 @@
 import { takeEvery, take, fork, put, select } from 'redux-saga/effects'
 import { getFirebase, pathToJS } from 'react-redux-firebase'
+import { censor } from '../../store/censor'
 
 import {
   PUBLISH_REQUEST, PUBLISH_ID_REQUEST, REQUEST_TOURNAMENT
@@ -40,8 +41,12 @@ function * publishRequestSaga (tournamentId, { payload }) {
     if (!auth) { throw new Error('Needs authentication') }
     const { uid } = auth
 
-    const data = yield select(state => state.tournament.data)
+    let data = yield select(state => state.tournament.data)
     if (!data) { throw new Error('No tournament data to publish') }
+
+    if (payload.censored) {
+      data = censor(data)
+    }
 
     let publishId = (yield db.ref(`/publishData/${tournamentId}/id`).once('value')).val()
     if (!publishId) { publishId = db.ref('/publishedTournaments').push().key }
