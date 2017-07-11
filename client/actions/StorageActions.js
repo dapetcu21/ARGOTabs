@@ -1,4 +1,6 @@
 import { createAction } from 'redux-actions'
+import uuid from 'uuid'
+
 import {
   CREATE_TOURNAMENT, CREATE_TOURNAMENT_RESPONSE,
   RENAME_TOURNAMENT, RENAME_TOURNAMENT_RESPONSE,
@@ -9,7 +11,7 @@ import {
 } from '../constants/ActionTypes'
 
 export const createTournament = createAction(CREATE_TOURNAMENT,
-  (tournament, title) => ({ tournament, title })
+  (tournament, title, revision = uuid.v4()) => ({ tournament, title, revision })
 )
 export const renameTournament = createAction(RENAME_TOURNAMENT,
   (tournamentId, title) => ({ tournamentId, title })

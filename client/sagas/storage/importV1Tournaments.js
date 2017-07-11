@@ -13,18 +13,9 @@ export default function * importV1TournamentsSaga () {
 
       try {
         let data = JSON.parse(window.localStorage[storageKey])
-        let title
-
-        if (!data.version || data.version < 2) {
-          title = data.name
-          data = { version: 2, v1: data }
-        } else {
-          title = data.title
-        }
-
         const action = createTournament(
           convertFromLegacy(data),
-          getTitle(title) || 'Unnamed imported tournament'
+          getTitle(data) || 'Unnamed imported tournament'
         )
         action.payload.storageKey = storageKey
         yield put(action)

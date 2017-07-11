@@ -1,5 +1,6 @@
 import { takeEvery, select, put } from 'redux-saga/effects'
 import { getFirebase, pathToJS } from 'react-redux-firebase'
+import uuid from 'uuid'
 
 import { CREATE_TOURNAMENT, CREATE_TOURNAMENT_RESPONSE } from '../../constants/ActionTypes'
 
@@ -7,7 +8,7 @@ export default function * createTournamentSaga () {
   const firebase = getFirebase()
 
   yield takeEvery(CREATE_TOURNAMENT, function * (action) {
-    const { title, tournament } = action.payload
+    const { title, tournament, revision } = action.payload
 
     const auth = yield select(state => pathToJS(state.firebase, 'auth'))
     if (!auth) { return }
@@ -17,7 +18,6 @@ export default function * createTournamentSaga () {
     const ref = db.ref()
     const newKey = ref.child('tournaments').push().key
     const lastModified = firebase.database.ServerValue.TIMESTAMP
-    const revision = 0
 
     try {
       yield ref.update({
