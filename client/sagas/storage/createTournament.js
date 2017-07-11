@@ -1,6 +1,5 @@
 import { takeEvery, select, put } from 'redux-saga/effects'
 import { getFirebase, pathToJS } from 'react-redux-firebase'
-import uuid from 'uuid'
 
 import { CREATE_TOURNAMENT, CREATE_TOURNAMENT_RESPONSE } from '../../constants/ActionTypes'
 

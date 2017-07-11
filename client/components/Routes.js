@@ -14,6 +14,7 @@ export default function Routes () {
         <LegacyTabRedirect location={location}>
           <Switch>
             <Route path='/remote/:remoteUrl' component={TournamentPage} />
+            <Route path='/published/:publishId' component={TournamentPage} />
             <Route render={() => (
               <LoginWall location={location}>
                 <Switch>

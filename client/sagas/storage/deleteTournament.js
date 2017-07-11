@@ -19,6 +19,7 @@ export default function * deleteTournamentSaga () {
     try {
       yield ref.update({
         [`/tournaments/${tournamentId}`]: null,
+        [`/publishData/${tournamentId}`]: null,
         [`/tournamentsByOwner/${uid}/${tournamentId}`]: null
       })
     } catch (ex) {

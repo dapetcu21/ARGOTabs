@@ -14,6 +14,7 @@
     "babel-preset-react": "^6.23.0",
     "bootstrap": "3",
     "css-loader": "^0.26.2",
+    "date-fns": "^1.28.5",
     "dotenv": "^4.0.0",
     "express-history-api-fallback": "^2.1.0",
     "extract-text-webpack-plugin": "^2.1.0",

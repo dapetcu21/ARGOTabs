@@ -69,7 +69,32 @@ export default function * syncTournamentSaga () {
           const data = convertFromLegacy(yield request.json())
 
           yield put(setTournament({
-            request,
+            request: payload,
+            data,
+            revision: uuid.v4(),
+            readOnly: true
+          }))
+        } catch (ex) {
+          yield put(setTournamentFailed({
+            request: payload,
+            error: ex.toString()
+          }))
+        }
+      })
+      continue
+    }
+
+    if (payload.publishId) {
+      fetchTask = yield fork(function * () {
+        try {
+          const ref = firebase.database().ref(`/publishedTournaments/${payload.publishId}/data`)
+          const jsonData = (yield ref.once('value')).val()
+          if (!jsonData) { throw new Error('Published tournament not found') }
+
+          const data = JSON.parse(jsonData)
+
+          yield put(setTournament({
+            request: payload,
             data,
             revision: uuid.v4(),
             readOnly: true

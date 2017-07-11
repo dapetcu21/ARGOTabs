@@ -23,12 +23,14 @@ export default class TournamentPage extends PureComponent {
   }
 
   requestFromParams (params) {
-    const { tournamentId, remoteUrl } = params
+    const { tournamentId, remoteUrl, publishId } = params
     const payload = {}
     if (tournamentId) {
       payload.id = tournamentId
     } else if (remoteUrl) {
       payload.remoteUrl = decodeURIComponent(remoteUrl)
+    } else if (publishId) {
+      payload.publishId = publishId
     }
     this.props.dispatch(requestTournament(payload))
   }
