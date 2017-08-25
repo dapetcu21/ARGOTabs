@@ -133,7 +133,7 @@ class Round {
     const freeJudges = this.freeJudges
     this.freeJudges = []
     for (let judge of freeJudges) {
-      if (!this.freeJudges.includes(judge)) {
+      if (judge && !this.freeJudges.includes(judge)) {
         this.freeJudges.push(judge)
       }
     }
