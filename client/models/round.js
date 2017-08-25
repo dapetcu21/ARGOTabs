@@ -129,6 +129,15 @@ class Round {
     Util.unpackCycles(this.rooms, this.tournament.rooms);
     Util.unpackCycles(this.freeRooms, this.tournament.rooms);
 
+    // Remove duplicates from freeJudges which might have appeared due to a bug
+    const freeJudges = this.freeJudges
+    this.freeJudges = []
+    for (let judge of freeJudges) {
+      if (!this.freeJudges.includes(judge)) {
+        this.freeJudges.push(judge)
+      }
+    }
+
     return (() => {
       for (var ballot of this.ballots) {
         ballot.unpackCycles();
