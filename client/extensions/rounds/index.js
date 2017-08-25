@@ -147,7 +147,9 @@ ngModule.controller('RoundController', [
           }
 
           if (v) {
-            round.freeJudges.push(judge)
+            if (!round.freeJudges.includes(judge)) {
+              round.freeJudges.push(judge)
+            }
           } else {
             ropts = judge.rounds[round.id]
 

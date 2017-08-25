@@ -993,11 +993,11 @@ class Round {
       () => mainsPerMatch
     );
 
-    judges.forEach(function(o) {
-      if (!(o.rounds[id].ballot != null)) {
-        return freeJ.push(o);
+    judges.forEach((o) => {
+      if (!(o.rounds[id].ballot != null) && !freeJ.includes(o)) {
+        freeJ.push(o)
       }
-    });
+    })
 
     var report = this.judgeShadowReportSolved();
 
@@ -1015,18 +1015,18 @@ class Round {
     if (report) {
       freeJ.length = 0;
 
-      judges.forEach(o => {
-        if (!(o.rounds[id].ballot != null)) {
-          freeJ.push(o);
+      judges.forEach((o) => {
+        if (!(o.rounds[id].ballot != null) && !freeJ.includes(o)) {
+          freeJ.push(o)
         }
-      });
+      })
     }
 
     shadowJudges.forEach(o => {
-      if (!(o.rounds[id].ballot != null)) {
-        freeJ.push(o);
+      if (!(o.rounds[id].ballot != null) && !freeJ.includes(o)) {
+        freeJ.push(o)
       }
-    });
+    })
 
     return (() => {
       for (var b of ballots) {
