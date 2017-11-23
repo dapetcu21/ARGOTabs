@@ -5,14 +5,18 @@ let tournament = null
 let setListeners = []
 let updateListeners = []
 
+window.ARGOTabs = window.ARGOTabs || {}
+
 export function setTournament (data) {
   if (!data) {
     tournament = null
+    window.ARGOTabs.tournament = null
     return
   }
 
   tournament = new Tournament()
   tournament.loadFromModel(data)
+  window.ARGOTabs.tournament = tournament
 
   setListeners.map(f => { f(tournament) })
 }

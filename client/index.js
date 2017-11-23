@@ -11,7 +11,8 @@ const angular = require('angular')
 const Extensions = require('./core/extensions')
 const extensions = new Extensions()
 
-window.ARGOTabs = { extensions }
+window.ARGOTabs = window.ARGOTabs || {}
+window.ARGOTabs.extensions = extensions
 
 angular.bootstrap(document, extensions.angularModules())
 
