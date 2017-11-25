@@ -1,5 +1,5 @@
 function evaluate () {
-  let t = window.ARGOTabs.uiController.tournament
+  let t = window.ARGOTabs.tournament
   let judges = t.judges
   let rows = judges.map(judge => ({ judge, rounds: [] }))
   let rounds = t.rounds
