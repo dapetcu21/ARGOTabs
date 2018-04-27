@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "api-project-416458260788",
+    "staging": "argo-tabs-staging"
+  }
+}

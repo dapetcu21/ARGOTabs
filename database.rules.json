@@ -1,0 +1,34 @@
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid"
+      }
+    },
+    "tournamentsByOwner": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid"
+      }
+    },
+    "tournaments": {
+      "$tab": {
+        ".read": "data.child('owner').val() === auth.uid",
+        ".write": "data.child('owner').val() === auth.uid || newData.child('owner').val() === auth.uid"
+      }
+    },
+    "publishData": {
+      "$tab": {
+        ".read": "root.child('tournaments').child($tab).child('owner').val() === auth.uid",
+        ".write": "root.child('tournaments').child($tab).child('owner').val() === auth.uid"
+      }
+    },
+    "publishedTournaments": {
+      "$tab": {
+        ".read": "true",
+        ".write": "data.child('owner').val() === auth.uid || newData.child('owner').val() === auth.uid"
+      }
+    }
+  }
+}
