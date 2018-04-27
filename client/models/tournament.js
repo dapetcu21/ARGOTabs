@@ -9,6 +9,7 @@ var Round = require('./round')
 var Sorter = require('./sorter')
 var JudgeRules = require('./judgerules')
 var UUID = require('./uuid')
+var _ = require('lodash')
 
 class Tournament {
   constructor (source) {
@@ -216,6 +217,32 @@ class Tournament {
     }
 
     return null
+  }
+
+  getRoom (id) {
+    return this.rooms.find(x => x.id === id)
+  }
+
+  getJudge (id) {
+    return this.judges.find(x => x.id === id)
+  }
+
+  getClub (id) {
+    return this.clubs.find(x => x.id === id)
+  }
+
+  getTeam (id) {
+    return this.teams.find(x => x.id === id)
+  }
+
+  getPlayer (id, teamId) {
+    let team
+    if (teamId) {
+      team = this.getTeam(teamId)
+    } else {
+      team = this.teams.find(x => !!x.getPlayer(id))
+    }
+    return team && team.getPlayer(id)
   }
 
   censor (ext) {

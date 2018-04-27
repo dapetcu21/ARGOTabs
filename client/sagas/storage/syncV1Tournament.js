@@ -4,11 +4,13 @@ import isEqual from 'lodash.isequal'
 import cloneDeep from 'lodash.clonedeep'
 
 import Round from '../../models/round'
+import Room from '../../models/room'
 import { newElimRound } from './elimRounds'
 
 import {
   REQUEST_TOURNAMENT, SET_TOURNAMENT, SET_TOURNAMENT_V1,
-  NEW_ROUND, NEW_ELIM_ROUND, DELETE_ROUND, DELETE_ELIM_ROUND
+  NEW_ROUND, NEW_ELIM_ROUND, DELETE_ROUND, DELETE_ELIM_ROUND,
+  NEW_ROOM, UPDATE_ROOM, DELETE_ROOM
  } from '../../constants/ActionTypes'
 
 import { setTournamentV1 } from '../../actions/StorageActions'
@@ -66,6 +68,31 @@ function * respondToAction (chan, action) {
       const round = tournament.elimRounds.pop()
       if (!round) { break }
       round.destroy()
+      yield put(chan, pingAction)
+      break
+    }
+
+    case NEW_ROOM: {
+      const room = new Room(tournament)
+      tournament.rooms.push(room)
+      yield put(chan, pingAction)
+      break
+    }
+
+    case UPDATE_ROOM: {
+      const room = tournament.getRoom(payload.id)
+      if (!room) { break }
+      Object.assign(room, payload.patch)
+      yield put(chan, pingAction)
+      break
+    }
+
+    case DELETE_ROOM: {
+      const array = tournament.rooms
+      const index = array.findIndex(x => x.id === payload.id)
+      if (index < 0) { break }
+      array[index].destroy()
+      array.splice(index, 1)
       yield put(chan, pingAction)
       break
     }

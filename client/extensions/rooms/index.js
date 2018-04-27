@@ -1,5 +1,5 @@
-const Room = require('../../models/room')
 const templateView = require('./templates/view.jade')
+const { newRoom, deleteRoom } = require('../../actions/TournamentActions')
 
 require('./common.styl')
 
@@ -30,14 +30,11 @@ class Rooms {
         var tournament = $scope.tournament
 
         $scope.addRoom = function () {
-          var room = new Room(tournament)
-          return tournament.rooms.push(room)
+          $scope.dispatch(newRoom())
         }
 
         $scope.removeRoom = function (index) {
-          var array = tournament.rooms
-          array[index].destroy()
-          return array.splice(index, 1)
+          $scope.dispatch(deleteRoom(tournament.rooms[index].id))
         }
 
         return $scope.canRemoveRoom = function (room) {

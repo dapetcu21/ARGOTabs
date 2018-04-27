@@ -294,6 +294,10 @@ class Team {
     return arr.splice(idx, 1)
   }
 
+  getPlayer (id) {
+    return this.players.find(x => x.id === id)
+  }
+
   destroy () {
     for (var round of this.tournament.rounds) {
       round.unregisterTeam(this)
