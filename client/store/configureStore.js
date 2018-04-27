@@ -7,8 +7,8 @@ import rootSaga from '../sagas'
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
   authDomain: `${process.env.FIREBASE_PROJECT_ID}.firebaseapp.com`,
-  databaseURL: `https://${process.env.FIREBASE_DATABASE}.firebaseio.com`,
-  storageBucket: `gs://${process.env.FIREBASE_STORAGE_BUCKET}.appspot.com`
+  databaseURL: `https://${process.env.FIREBASE_DATABASE || process.env.FIREBASE_PROJECT_ID}.firebaseio.com`,
+  storageBucket: `gs://${process.env.FIREBASE_STORAGE_BUCKET || process.env.FIREBASE_PROJECT_ID}.appspot.com`
 }
 
 const reduxFirebaseConfig = {

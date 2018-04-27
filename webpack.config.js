@@ -70,10 +70,10 @@ const injectedEnvVars = [
 ]
 injectedEnvVars.forEach(envVar => {
   const value = process.env[envVar]
-  if (!value) {
+  if ((envVar === 'FIREBASE_API_KEY' || envVar === 'FIREBASE_PROJECT_ID') && !value) {
     throw new Error(`Building this project requires ${envVar} to be part of the environment`)
   }
-  defines[`process.env.${envVar}`] = JSON.stringify(process.env[envVar])
+  defines[`process.env.${envVar}`] = JSON.stringify(value || '')
 })
 
 const config = {
